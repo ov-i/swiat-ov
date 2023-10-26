@@ -1,0 +1,112 @@
+version: "4"
+
+services:
+  database:
+    image: mysql:8.0
+    container_name: database
+    tty: true
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - db-storage:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+    restart: unless-stopped
+    networks:
+      - blog-net
+  db-panel:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: db-panel
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: database
+      PMA_USER: root
+      PMA_PASSWORD: ${DB_ROOT_PASSWORD}
+      PMA_ARBITRARY: 1
+    restart: unless-stopped
+    depends_on:
+      - database
+    networks:
+      - blog-net
+  cache-driver:
+    image: redis:latest
+    container_name: cache-driver
+    ports:
+      - "127.0.0.1:6379:6379"
+    restart: unless-stopped
+    volumes:
+      - ./docker/redis/data:/data
+      - ./docker/redis/logs:/var/opt/redislabs/log/
+    networks:
+      - blog-net
+  webserver:
+    image: nginx:latest
+    container_name: webserver
+    tty: true
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+      - ./docker/nginx/snippets:/etc/nginx/snippets
+      - ./docker/nginx/logs:/var/log/nginx
+    restart: unless-stopped
+    networks:
+      - blog-net
+  application:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: application
+    ports:
+      - "2222:2222"
+    volumes:
+      - ./:/var/www
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+      - ./docker/php/ini/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - ./docker/php/ini/opcache:/usr/local/etc/php/conf.d/opcache.ini
+    tty: true
+    restart: unless-stopped
+    depends_on:
+      - database
+      - webserver
+      - cache-driver
+      - mailpit
+    networks:
+      - blog-net
+  mailpit:
+    image: axllent/mailpit
+    tty: true
+    container_name: mailpit
+    ports:
+      - "8025:8025"
+      - "127.0.0.1:1025:1025"
+    volumes:
+      - ./docker/mailpit/data:/maildir
+    environment:
+      MH_STORAGE: maildir
+      MH_MAILDIR_PATH: /home/mailpit
+    networks:
+      - blog-net
+  grafana:
+    image: grafana/grafana-oss
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    networks:
+      - blog-net
+    restart: unless-stopped
+
+networks:
+  blog-net:
+
+volumes:
+  db-storage:
+  grafana-storage:

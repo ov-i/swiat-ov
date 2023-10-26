@@ -2,13 +2,20 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
+use App\Models\License\License;
+use App\Models\Posts\Post;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Cashier\Billable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
@@ -17,6 +24,8 @@ class User extends Authenticatable
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
+    use Billable;
+    use HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -58,4 +67,46 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    /**
+     * @return HasMany<Post>
+     */
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    /**
+     * @return HasMany<BlockUser>
+     */
+    public function blocks(): HasMany
+    {
+        return $this->hasMany(BlockUser::class);
+    }
+
+    /**
+     * @return BelongsToMany<License>
+     */
+    public function licenses(): BelongsToMany
+    {
+        return $this->belongsToMany(License::class, 'license_user', 'license_id', 'user_id')->withTimestamps();
+    }
+
+    /**
+     * @return Factory<self>
+     */
+    protected static function newFactory(): Factory
+    {
+        return UserFactory::new();
+    }
+
+    /**
+     * @return string|void
+     */
+    public function guardName()
+    {
+        if (app()->runningInConsole()) {
+            return 'admin';
+        }
+    }
 }
