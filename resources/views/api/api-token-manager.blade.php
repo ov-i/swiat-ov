@@ -1,5 +1,6 @@
 <div>
     <!-- Generate API Token -->
+    @can('create-token')
     <x-form-section submit="createApiToken">
         <x-slot name="title">
             {{ __('Create API Token') }}
@@ -44,7 +45,9 @@
             </x-button>
         </x-slot>
     </x-form-section>
+    @endcan
 
+    <h1>Tokens list</h1>
     @if ($this->user->tokens->isNotEmpty())
         <x-section-border />
 

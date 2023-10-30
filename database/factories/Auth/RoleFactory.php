@@ -31,26 +31,7 @@ class RoleFactory extends Factory
 
         return [
             'name' => $role,
-            'guard_name' => $this->getGuardNameBasedOnRole($role),
+            'guard_name' => $role === RoleNamesEnum::subAuthor()->value ? 'api' : 'web',
         ];
-    }
-
-    private function getGuardNameBasedOnRole(string $role): string
-    {
-        $guardName = null;
-
-        switch($role) {
-            case RoleNamesEnum::subAuthor()->value:
-                $guardName = 'api';
-                break;
-            case RoleNamesEnum::vipMember()->value:
-                $guardName = 'web';
-                break;
-            default:
-                $guardName = 'admin';
-                break;
-        }
-
-        return $guardName;
     }
 }

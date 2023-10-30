@@ -25,10 +25,11 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $userEmailNumber = fake()->unique()->numberBetween(1, 3);
         return [
-            'name' => 'ov',
+            'name' => fake()->unique()->userName(),
             'ip' => fake()->ipv4(),
-            'email' => 'admin@admin.com',
+            'email' => "user@example{$userEmailNumber}.com",
             'profile_photo_path' => fake()->imageUrl(640, 480, 'user'),
             'email_verified_at' => now(),
             'password' => bcrypt('password'),

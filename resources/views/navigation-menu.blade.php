@@ -102,11 +102,23 @@
                                 {{ __('Profile') }}
                             </x-dropdown-link>
 
-                            @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
-                                <x-dropdown-link href="{{ route('api-tokens.index') }}">
-                                    {{ __('API Tokens') }}
-                                </x-dropdown-link>
-                            @endif
+                            <section id="Admin dashboard">
+                                @can('view-admin-panel')
+                                    <div class="block px-4 py-2 text-xs text-gray-400">
+                                        {{ __('Admin Dashboard') }}
+                                    </div>
+
+                                    @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
+                                        <x-dropdown-link href="{{ route('admin.api-tokens.index') }}">
+                                            {{ __('API Tokens') }}
+                                        </x-dropdown-link>
+                                    @endif
+
+                                    <x-dropdown-link href="{{ route('admin.users.index') }}">
+                                        {{ __('Users list') }}
+                                    </x-dropdown-link>
+                                @endcan
+                            </section>
 
                             <div class="border-t border-gray-200 dark:border-gray-600"></div>
 
@@ -166,7 +178,7 @@
                 </x-responsive-nav-link>
 
                 @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
-                    <x-responsive-nav-link href="{{ route('api-tokens.index') }}" :active="request()->routeIs('api-tokens.index')">
+                    <x-responsive-nav-link href="{{ route('admin.api-tokens.index') }}" :active="request()->routeIs('api-tokens.index')">
                         {{ __('API Tokens') }}
                     </x-responsive-nav-link>
                 @endif

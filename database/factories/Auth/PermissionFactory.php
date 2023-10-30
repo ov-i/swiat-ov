@@ -2,7 +2,7 @@
 
 namespace Database\Factories\Auth;
 
-use App\Enums\Auth\AdminGuardPermissionsEnum;
+use App\Enums\Auth\PermissionsEnum;
 use App\Models\Auth\Permission;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -27,11 +27,11 @@ class PermissionFactory extends Factory
      */
     public function definition(): array
     {
-        $name = fake()->unique()->randomElement(AdminGuardPermissionsEnum::values());
+        $name = fake()->unique()->randomElement(PermissionsEnum::toValues());
 
         return [
             'name' => $name,
-            'guard_name' => 'admin',
+            'guard_name' => 'web',
         ];
     }
 }

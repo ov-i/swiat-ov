@@ -27,7 +27,10 @@ RUN apk add --update --no-cache \
     yarn \
     libsodium-dev \
     libxslt-dev \
-    linux-headers
+    linux-headers \
+    sqlite-dev \
+    sqlite-libs \
+    sqlite
 
 RUN docker-php-ext-configure zip
 RUN docker-php-ext-configure intl
@@ -35,6 +38,7 @@ RUN docker-php-ext-configure gd --with-jpeg --with-freetype
 
 RUN docker-php-ext-install \
     gd -j $(nproc) \
+    pdo_sqlite \
     pdo_mysql \
     zip \
     bcmath \

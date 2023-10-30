@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Enums\Auth\AdminGuardPermissionsEnum;
+use App\Enums\Auth\PermissionsEnum;
 use App\Enums\Auth\RoleNamesEnum;
 use App\Models\Auth\Permission;
 use App\Models\Auth\Role;
@@ -23,16 +23,28 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        Permission::factory()->count(count(AdminGuardPermissionsEnum::values()))->create();
+        Permission::factory()->count(count(PermissionsEnum::toValues()))->create();
         Role::factory()->count(RoleNamesEnum::count())->create();
         Category::factory()->count(count(CategoryFactory::$categories))->create();
 
         User::factory()
+            ->count(3)
             ->create();
+
         User::query()
-            ->where('email', 'admin@admin.com')
+            ->where('email', 'user@example1.com')
             ->first()
             ->assignRole(RoleNamesEnum::admin()->value);
+
+        User::query()
+            ->where('email', 'user@example2.com')
+            ->first()
+            ->assignRole(RoleNamesEnum::moderator()->value);
+
+        User::query()
+            ->where('email', 'user@example3.com')
+            ->first()
+            ->assignRole(RoleNamesEnum::user()->value);
 
         Post::factory()
             ->has(User::factory())
@@ -43,8 +55,31 @@ class DatabaseSeeder extends Seeder
             ->create();
 
         Role::query()
-            ->where('name', 'admin')
+            ->where('name', RoleNamesEnum::admin()->value)
             ->first()
             ->givePermissionTo(Permission::all());
+
+        Role::query()
+            ->where('name', RoleNamesEnum::user()->value)
+            ->first()
+            ->givePermissionTo(
+                PermissionsEnum::postRead()->value,
+                PermissionsEnum::postDelete()->value,
+                PermissionsEnum::postCommentRead()->value,
+                PermissionsEnum::postCommentWrite()->value,
+                PermissionsEnum::postCommentDelete()->value,
+                PermissionsEnum::siteMapRead()->value,
+            );
+
+        Role::query()
+            ->where('name', RoleNamesEnum::moderator()->value)
+            ->first()
+            ->givePermissionTo(Permission::query()->whereNot('name', [
+                PermissionsEnum::tokenWrite()->value,
+                PermissionsEnum::tokenUpdate()->value,
+                PermissionsEnum::tokenRestore()->value,
+                PermissionsEnum::tokenDelete()->value,
+                PermissionsEnum::tokenForceDelete()->value,
+            ])->get());
     }
 }
