@@ -7,6 +7,7 @@ use Spatie\Enum\Enum;
 /**
  * @method static self user()
  * @method static self admin()
+ * @method static self moderator()
  * @method static self subAuthor()
  * @method static self vipMember()
  */

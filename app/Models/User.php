@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Auth\RoleNamesEnum;
 use Database\Factories\UserFactory;
 use App\Models\License\License;
 use App\Models\Posts\Post;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Request;
 use Laravel\Cashier\Billable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
@@ -36,7 +38,13 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'ip'
     ];
+
+    public function ip(): string
+    {
+        return Request::ip();
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -57,6 +65,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'password' => 'hashed'
     ];
 
     /**
@@ -79,7 +88,7 @@ class User extends Authenticatable
     /**
      * @return HasMany<BlockUser>
      */
-    public function blocks(): HasMany
+    public function blockUsers(): HasMany
     {
         return $this->hasMany(BlockUser::class);
     }
@@ -101,12 +110,14 @@ class User extends Authenticatable
     }
 
     /**
-     * @return string|void
+     * @return string
      */
-    public function guardName()
+    public function guardName(): string
     {
-        if (app()->runningInConsole()) {
-            return 'admin';
+        if ($this->roles()->where('name', RoleNamesEnum::subAuthor()->value)->first()) {
+            return 'api';
         }
+
+        return 'web';
     }
 }

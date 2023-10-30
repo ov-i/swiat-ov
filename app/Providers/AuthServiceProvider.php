@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
+use App\Enums\Auth\RoleNamesEnum;
+use App\Models\User;
+use App\Policies\ApiTokenPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -13,7 +17,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        //
+        PersonalAccessToken::class => ApiTokenPolicy::class
     ];
 
     /**
@@ -21,6 +25,10 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Gate::define('create-token', [ApiTokenPolicy::class, 'create']);
+
+        Gate::define('view-admin-panel', function (User $user) {
+            return $user->hasRole([RoleNamesEnum::admin()->value, RoleNamesEnum::moderator()->value]);
+        });
     }
 }

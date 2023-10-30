@@ -8,6 +8,7 @@ use OpenApi\Attributes\Property;
 use OpenApi\Attributes\Schema;
 use Spatie\LaravelData\Attributes\MapName;
 use Spatie\LaravelData\Attributes\Validation\Email;
+use Spatie\LaravelData\Attributes\Validation\IPv4;
 use Spatie\LaravelData\Attributes\Validation\Max;
 use Spatie\LaravelData\Attributes\Validation\Password;
 use Spatie\LaravelData\Data;
@@ -41,10 +42,15 @@ use Spatie\LaravelData\Mappers\SnakeCaseMapper;
                 maxLength: 255
             ),
             new Property(
+                property: 'ip',
+                description: 'User IP v4 address',
+                type: 'string',
+            ),
+            new Property(
                 property: 'remember',
                 description: 'Whether the user should kept in memory or not',
                 type: 'boolean'
-            )
+            ),
         ]
     )
 ]
@@ -57,6 +63,8 @@ class RegisterRequestData extends Data
         public readonly string $email,
         #[Password(min: 10, mixedCase: true, numbers: true), Max(255)]
         public readonly string $password,
+        #[IPv4]
+        public readonly string $ip,
         public readonly bool $remember = false,
     ) {
     }
