@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\Auth\RoleNamesEnum;
+use Coderflex\LaravelTicket\Concerns\HasTickets;
+use Coderflex\LaravelTicket\Contracts\CanUseTickets;
 use Database\Factories\UserFactory;
 use App\Models\License\License;
 use App\Models\Posts\Post;
@@ -19,7 +21,13 @@ use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string $ip
+ */
+class User extends Authenticatable implements CanUseTickets
 {
     use HasApiTokens;
     use HasFactory;
@@ -28,6 +36,7 @@ class User extends Authenticatable
     use TwoFactorAuthenticatable;
     use Billable;
     use HasRoles;
+    use HasTickets;
 
     /**
      * The attributes that are mass assignable.
@@ -119,5 +128,15 @@ class User extends Authenticatable
         }
 
         return 'web';
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole(RoleNamesEnum::admin()->value);
+    }
+
+    public function isModerator(): bool
+    {
+        return $this->hasRole(RoleNamesEnum::moderator()->value);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Enums\Auth;
 use Spatie\Enum\Enum;
 
 /**
+ * Users
  * @method static self userIndex()
  * @method static self userRead()
  * @method static self userWrite()
@@ -22,6 +23,8 @@ use Spatie\Enum\Enum;
  * @method static self userBlockDelete()
  * @method static self userBlockForceDelete()
  * @method static self userBlockRestore()
+ * 
+ * Tokens
  * @method static self tokenIndex()
  * @method static self tokenRead()
  * @method static self tokenWrite()
@@ -29,6 +32,15 @@ use Spatie\Enum\Enum;
  * @method static self tokenDelete()
  * @method static self tokenForceDelete()
  * @method static self tokenRestore()
+ * 
+ * Tickets
+ * @method static self ticketIndex()
+ * @method static self ticketRead()
+ * @method static self ticketWrite()
+ * @method static self ticketUpdate()
+ * @method static self ticketDelete()
+ * @method static self ticketForceDelete()
+ * @method static self ticketRestore()
  * @method static self roleIndex()
  * @method static self roleRead()
  * @method static self roleWrite()
