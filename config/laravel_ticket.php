@@ -20,7 +20,7 @@ return [
         /**
          * Categories table for the tickets
          */
-        'categories' => 'categories',
+        'categories' => 'tickets__categories',
         /**
          * Labels table for the tickets
          */
@@ -66,11 +66,7 @@ return [
          * @see https://laravel.com/docs/9.x/eloquent-relationships#many-to-many
          */
         'category_ticket' => [
-            'table' => 'category_ticket',
-            'columns' => [
-                'category_foreign_id' => 'category_id',
-                'ticket_foreign_id' => 'ticket_id',
-            ],
+            'table' => 'tickets__categories',
         ],
     ],
 
