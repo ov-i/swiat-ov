@@ -13,4 +13,8 @@ class UserRepository extends BaseRepository
         parent::__construct($user);
     }
 
+    public function findUserById(string|int $userId): ?User
+    {
+        return $this->find($userId);
+    }
 }

@@ -139,6 +139,9 @@ return [
     |
     */
 
+    // Custom
+    'admin_pass' => env('ADMIN_PASS', 'password'),
+
     'maintenance' => [
         'driver' => 'file',
         // 'store'  => 'redis',

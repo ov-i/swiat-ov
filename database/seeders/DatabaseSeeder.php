@@ -26,25 +26,7 @@ class DatabaseSeeder extends Seeder
         Permission::factory()->count(count(PermissionsEnum::toValues()))->create();
         Role::factory()->count(RoleNamesEnum::count())->create();
         Category::factory()->count(count(CategoryFactory::$categories))->create();
-
-        User::factory()
-            ->count(3)
-            ->create();
-
-        User::query()
-            ->where('email', 'user@example1.com')
-            ->first()
-            ->assignRole(RoleNamesEnum::admin()->value);
-
-        User::query()
-            ->where('email', 'user@example2.com')
-            ->first()
-            ->assignRole(RoleNamesEnum::moderator()->value);
-
-        User::query()
-            ->where('email', 'user@example3.com')
-            ->first()
-            ->assignRole(RoleNamesEnum::user()->value);
+        User::factory()->count(4)->create();
 
         Post::factory()
             ->has(User::factory())
@@ -54,32 +36,9 @@ class DatabaseSeeder extends Seeder
             ->has(Comment::factory()->count(10))
             ->create();
 
-        Role::query()
-            ->where('name', RoleNamesEnum::admin()->value)
-            ->first()
-            ->givePermissionTo(Permission::all());
-
-        Role::query()
-            ->where('name', RoleNamesEnum::user()->value)
-            ->first()
-            ->givePermissionTo(
-                PermissionsEnum::postRead()->value,
-                PermissionsEnum::postDelete()->value,
-                PermissionsEnum::postCommentRead()->value,
-                PermissionsEnum::postCommentWrite()->value,
-                PermissionsEnum::postCommentDelete()->value,
-                PermissionsEnum::siteMapRead()->value,
-            );
-
-        Role::query()
-            ->where('name', RoleNamesEnum::moderator()->value)
-            ->first()
-            ->givePermissionTo(Permission::query()->whereNot('name', [
-                PermissionsEnum::tokenWrite()->value,
-                PermissionsEnum::tokenUpdate()->value,
-                PermissionsEnum::tokenRestore()->value,
-                PermissionsEnum::tokenDelete()->value,
-                PermissionsEnum::tokenForceDelete()->value,
-            ])->get());
+        $this->call([
+            RolesPermissionsTableSeeder::class,
+            AssignRoleToUserTableSeeder::class,
+        ]);
     }
 }

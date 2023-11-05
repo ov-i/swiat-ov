@@ -2,15 +2,17 @@
 
 namespace App\Actions\Fortify;
 
+use App\Data\Auth\RegisterRequestData;
 use App\Models\User;
-use App\Services\RegisterService;
+use App\Services\Auth\AuthService;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 
 class CreateNewUser implements CreatesNewUsers
 {
     public function __construct(
-        private readonly RegisterService $registerService,
+        private readonly AuthService $authService,
     ) {
     }
 
@@ -23,6 +25,10 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
-        return $this->registerService->create($input);
+        $input = RegisterRequestData::from($input);
+        $user = $this->authService->create($input);
+        $user->notify(new VerifyEmail());
+
+        return $user;
     }
 }

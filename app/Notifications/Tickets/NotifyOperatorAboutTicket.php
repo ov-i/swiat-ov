@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Notifications;
+namespace App\Notifications\Tickets;
 
+use App\Models\Tickets\Ticket;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class PasswordReset extends Notification implements ShouldQueue
+class NotifyOperatorAboutTicket extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -16,7 +17,7 @@ class PasswordReset extends Notification implements ShouldQueue
      * Create a new notification instance.
      */
     public function __construct(
-        private readonly User $user,
+        private readonly Ticket $ticket,
     ) {
     }
 
@@ -40,11 +41,13 @@ class PasswordReset extends Notification implements ShouldQueue
 
     public function buildMessage(): MailMessage
     {
+        /** @var User $user */
+        $user = $this->ticket->user()->first();
         // TODO: Localize message content
         return (new MailMessage())
-                    ->subject('Email has been reset successfully')
-                    ->line("Hi {$this->user->name}, your password has been changed")
-                    ->line('If you\'re the one who changed it, take some rest');
+            ->subject("New ticket from user [{$user->email}}]")
+            ->line("Hi, you've been assigned to a ")
+            ->line('If you\'re the one who changed it, take some rest');
     }
 
     /**

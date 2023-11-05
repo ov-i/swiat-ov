@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\UserDashboardController;
+use App\Http\Controllers\TicketsController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Jetstream\Http\Controllers\Livewire\ApiTokenController;
 use Laravel\Jetstream\Http\Controllers\Livewire\UserProfileController;
@@ -52,4 +53,11 @@ Route::middleware(['verified', 'can:view-admin-panel'])->prefix('admin')->group(
         Route::get('/users', [UserDashboardController::class, 'index'])
             ->name('admin.users.index');
     });
+});
+
+Route::middleware([
+    'auth:sanctum', 'verified', 'can:create-ticket'
+])->prefix('tickets')->group(function () {
+    Route::get('/', [TicketsController::class, 'create'])->name('tickets.create');
+    Route::post('/', [TicketsController::class, 'store'])->name('tickets.store');
 });

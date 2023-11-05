@@ -1,12 +1,15 @@
 <?php
 
+use App\Data\Auth\RegisterRequestData;
 use App\Models\User;
-use App\Services\RegisterService;
+use App\Services\Auth\AuthService;
 use Illuminate\Support\Str;
 
 it('should be able to create a User', function (array $requestData) {
-    $authServiceMock = mock(RegisterService::class);
+    $authServiceMock = mock(AuthService::class);
     $userMock = mock(User::class);
+
+    $requestData = RegisterRequestData::from($requestData);
 
     $authServiceMock->shouldReceive('create')
         ->once()
