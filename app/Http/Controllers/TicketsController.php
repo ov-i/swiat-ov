@@ -14,7 +14,7 @@ class TicketsController extends Controller
         private readonly TicketService $ticketService,
     ) {
     }
-    
+
     public function create(): View
     {
         return view('tickets.index');

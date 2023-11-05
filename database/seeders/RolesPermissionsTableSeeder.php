@@ -3,12 +3,9 @@
 namespace Database\Seeders;
 
 use App\Enums\Auth\RoleNamesEnum;
-use App\Models\Auth\Role;
 use App\Services\Users\UserService;
 use App\Strategies\Auth\RoleHasPermissions\AdminHasPermissionsStrategy;
 use App\Strategies\Auth\RoleHasPermissions\ModeratorHasPermissions;
-use App\Strategies\Auth\RoleHasPermissions\RoleHasPermissionsStrategy;
-use App\Strategies\Auth\RoleHasPermissions\RoleHasPermissionsStrategyInterface;
 use App\Strategies\Auth\RoleHasPermissions\SubAuthorHasPermissionsStrategy;
 use App\Strategies\Auth\RoleHasPermissions\UserHasPermissionsStrategy;
 use App\Strategies\Auth\RoleHasPermissions\VipMemberHasPermissionsStrategy;
@@ -47,8 +44,8 @@ class RolesPermissionsTableSeeder extends Seeder
             ->giveRolePermissions($vipMember, $this->vipMemberHasPermissionsStrategy);
 
         // TODO: Fix seeder for api permissins
-//        $subAuthor = $this->userService->getRoleByName(RoleNamesEnum::subAuthor());
-//        $this->userService
-//            ->giveRolePermissions($subAuthor, $this->subAuthorHasPermissionsStrategy);
+        //        $subAuthor = $this->userService->getRoleByName(RoleNamesEnum::subAuthor());
+        //        $this->userService
+        //            ->giveRolePermissions($subAuthor, $this->subAuthorHasPermissionsStrategy);
     }
 }

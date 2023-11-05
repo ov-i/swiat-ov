@@ -24,9 +24,9 @@ class BaseRepository extends EloquentRepository
 
     /**
      * Checks if pagination cursor from passed dataset is empty.
-     * 
+     *
      * @param CursorPaginator<int, Model> $cursor
-     * 
+     *
      * @return bool
      */
     protected function isPaginationCursorEmpty(CursorPaginator $cursor): bool

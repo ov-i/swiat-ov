@@ -6,14 +6,14 @@ class RoleHasPermissionsStrategy
 {
     /**
      * Strategy instance for setting up proper permissions to a specific role.
-     * 
+     *
      * @var RoleHasPermissionsStrategyInterface $permission
      */
     private RoleHasPermissionsStrategyInterface $permission;
 
     /**
      * Available permissions for a role.
-     * 
+     *
      * @var array<array-key, string>
      */
     private array $permissionsList;

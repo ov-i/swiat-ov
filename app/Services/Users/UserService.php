@@ -12,7 +12,6 @@ use App\Repositories\Eloquent\Users\UserRepository;
 use App\Strategies\Auth\RoleHasPermissions\RoleHasPermissionsStrategy;
 use App\Strategies\Auth\RoleHasPermissions\RoleHasPermissionsStrategyInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class UserService
@@ -97,7 +96,7 @@ class UserService
         return $this;
     }
 
-    public function getRoleByName(RoleNamesEnum $roleName): Builder
+    public function getRoleByName(RoleNamesEnum $roleName): Role
     {
         return Role::query()->where('name', $roleName->value)->first();
     }
