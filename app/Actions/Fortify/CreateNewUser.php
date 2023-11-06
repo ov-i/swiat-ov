@@ -4,8 +4,9 @@ namespace App\Actions\Fortify;
 
 use App\Data\Auth\RegisterRequestData;
 use App\Models\User;
+use App\Notifications\VerifyEmail;
 use App\Services\Auth\AuthService;
-use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 
@@ -25,7 +26,10 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
-        $input = RegisterRequestData::from($input);
+        $input = RegisterRequestData::from([
+            ...$input,
+            'ip' => Request::ip(),
+        ]);
         $user = $this->authService->create($input);
         $user->notify(new VerifyEmail());
 

@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Coderflex\LaravelTicket\Concerns;
+use Database\Factories\Tickets\TicketFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @property string $uuid
@@ -92,7 +94,11 @@ class Ticket extends Model
         );
     }
 
-    protected static function newFactory()
+    /**
+     * @return Factory<self>
+     */
+    protected static function newFactory(): Factory
     {
+        return TicketFactory::new();
     }
 }
