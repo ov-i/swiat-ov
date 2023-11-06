@@ -16,5 +16,5 @@ return [
     'failed' => 'Podane dane nie istnieją w naszej bazie',
     'password' => 'Hasło jest niepoprawne',
     'throttle' => 'Wykryto zbyt wiele prób logowania. Prosimy spróbować za :seconds sekund.',
-
+    'invalid_role_assignment' => "Rola 'Vip Member' nie może być używana samodzielnie."
 ];

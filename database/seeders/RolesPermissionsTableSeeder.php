@@ -3,10 +3,9 @@
 namespace Database\Seeders;
 
 use App\Enums\Auth\RoleNamesEnum;
-use App\Services\Users\UserService;
+use App\Services\Auth\AuthService;
 use App\Strategies\Auth\RoleHasPermissions\AdminHasPermissionsStrategy;
 use App\Strategies\Auth\RoleHasPermissions\ModeratorHasPermissions;
-use App\Strategies\Auth\RoleHasPermissions\SubAuthorHasPermissionsStrategy;
 use App\Strategies\Auth\RoleHasPermissions\UserHasPermissionsStrategy;
 use App\Strategies\Auth\RoleHasPermissions\VipMemberHasPermissionsStrategy;
 use Illuminate\Database\Seeder;
@@ -14,7 +13,7 @@ use Illuminate\Database\Seeder;
 class RolesPermissionsTableSeeder extends Seeder
 {
     public function __construct(
-        private readonly UserService $userService,
+        private readonly AuthService $authService,
         private readonly UserHasPermissionsStrategy $userHasPermissionsStrategy,
         private readonly AdminHasPermissionsStrategy $adminHasPermissionsStrategy,
         private readonly ModeratorHasPermissions $moderatorHasPermissions,
@@ -27,25 +26,25 @@ class RolesPermissionsTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $userRole = $this->userService->getRoleByName(RoleNamesEnum::user());
-        $this->userService
+        $userRole = $this->authService->getRoleByName(RoleNamesEnum::user());
+        $this->authService
             ->giveRolePermissions($userRole, $this->userHasPermissionsStrategy);
 
-        $adminRole = $this->userService->getRoleByName(RoleNamesEnum::admin());
-        $this->userService
+        $adminRole = $this->authService->getRoleByName(RoleNamesEnum::admin());
+        $this->authService
             ->giveRolePermissions($adminRole, $this->adminHasPermissionsStrategy);
 
-        $moderator = $this->userService->getRoleByName(RoleNamesEnum::moderator());
-        $this->userService
+        $moderator = $this->authService->getRoleByName(RoleNamesEnum::moderator());
+        $this->authService
             ->giveRolePermissions($moderator, $this->moderatorHasPermissions);
 
-        $vipMember = $this->userService->getRoleByName(RoleNamesEnum::vipMember());
-        $this->userService
+        $vipMember = $this->authService->getRoleByName(RoleNamesEnum::vipMember());
+        $this->authService
             ->giveRolePermissions($vipMember, $this->vipMemberHasPermissionsStrategy);
 
         // TODO: Fix seeder for api permissins
-        //        $subAuthor = $this->userService->getRoleByName(RoleNamesEnum::subAuthor());
-        //        $this->userService
+        //        $subAuthor = $this->authService->getRoleByName(RoleNamesEnum::subAuthor());
+        //        $this->authService
         //            ->giveRolePermissions($subAuthor, $this->subAuthorHasPermissionsStrategy);
     }
 }

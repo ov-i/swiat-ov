@@ -3,7 +3,7 @@
 namespace App\Models\Tickets;
 
 use Coderflex\LaravelTicket\Concerns\HasVisibility;
-use Database\Factories\CategoryFactory;
+use Database\Factories\Tickets\TicketCategoriesFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -31,8 +31,11 @@ class Category extends Model
         return config('laravel_ticket.table_names.categories');
     }
 
+    /**
+     * @return Factory<self>
+     */
     protected static function newFactory(): Factory
     {
-        return CategoryFactory::new();
+        return TicketCategoriesFactory::new();
     }
 }
