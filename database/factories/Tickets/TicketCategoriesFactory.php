@@ -3,23 +3,22 @@
 namespace Database\Factories\Tickets;
 
 use App\Enums\Ticket\TicketCategoriesEnum;
-use App\Models\Tickets\Ticket;
+use App\Models\Tickets\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Ramsey\Uuid\Uuid;
 
 /**
- * @template TModel of Ticket
+ * @template TModel of \App\Models\Tickets\Category
  *
- * @extends Factory<TModel>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<TModel>
  */
-class TicketFactory extends Factory
+class TicketCategoriesFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var class-string<TModel>
      */
-    protected $model = Ticket::class;
+    protected $model = Category::class;
 
     /**
      * Define the model's default state.
@@ -29,11 +28,7 @@ class TicketFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => Uuid::uuid4(),
-            'title' => fake()->realText(),
-            'user_id' => 3,
-            'category_id' => fake()->numberBetween(1, count(TicketCategoriesEnum::toValues())),
-            'message' => fake()->realText()
+            'name' => fake()->unique()->randomElement(TicketCategoriesEnum::toValues()),
         ];
     }
 }

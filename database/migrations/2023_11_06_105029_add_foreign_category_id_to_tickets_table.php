@@ -10,9 +10,8 @@ return new class () extends Migration {
      */
     public function up(): void
     {
-        Schema::table('tickets__categories', function (Blueprint $table) {
+        Schema::table('tickets', function (Blueprint $table) {
             $table->foreignId('category_id')->constrained('tickets__categories');
-            ;
         });
     }
 
@@ -21,8 +20,8 @@ return new class () extends Migration {
      */
     public function down(): void
     {
-        Schema::table('tickets_categories', function (Blueprint $table) {
-            //
+        Schema::table('tickets', function (Blueprint $table) {
+            $table->dropColumn('category_id');
         });
     }
 };

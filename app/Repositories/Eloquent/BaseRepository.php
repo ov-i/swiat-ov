@@ -13,6 +13,9 @@ class BaseRepository extends EloquentRepository
         return $this->getModel()->query()->find($id);
     }
 
+    /**
+     * @param Data|array<array-key, mixed> $data
+     */
     protected function create(Data|array $data): ?Model
     {
         if (is_array($data)) {
@@ -25,7 +28,7 @@ class BaseRepository extends EloquentRepository
     /**
      * Checks if pagination cursor from passed dataset is empty.
      *
-     * @param CursorPaginator<int, Model> $cursor
+     * @param CursorPaginator<Model> $cursor
      *
      * @return bool
      */

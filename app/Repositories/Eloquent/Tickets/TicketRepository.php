@@ -20,10 +20,11 @@ class TicketRepository extends BaseRepository
 
     /**
      * @param CreateTicketRequestData $requestData
-     * @return Model<Ticket>|null
+     * @return Ticket|null
      */
-    public function createTicket(CreateTicketRequestData $requestData): ?Model
+    public function createTicket(CreateTicketRequestData $requestData): ?Ticket
     {
+        /** @phpstan-ignore-next-line */
         return $this->create([
             'user_id' => auth()->id(),
             'uuid' => Uuid::uuid4(),
@@ -34,7 +35,7 @@ class TicketRepository extends BaseRepository
     /**
      * @param TicketPriorityEnum $priority Searched priority of tickets
      *
-     * @return CursorPaginator<int, Ticket>|null
+     * @return CursorPaginator<Model>|null
      */
     public function getTicketsByPriority(TicketPriorityEnum $priority): ?CursorPaginator
     {
@@ -52,7 +53,7 @@ class TicketRepository extends BaseRepository
     /**
      * @param TicketStatusEnum $status Searched status of tickets
      *
-     * @return CursorPaginator<int, Ticket>|null
+     * @return CursorPaginator<Model>|null
      */
     public function getTicketsByStatus(TicketStatusEnum $status): ?CursorPaginator
     {
@@ -69,7 +70,7 @@ class TicketRepository extends BaseRepository
 
     public function setStatus(Ticket $ticket, TicketStatusEnum $status): self
     {
-        $ticket->status = $status->value;
+        $ticket->status = (string) $status->value;
         $ticket->update();
 
         return $this;
@@ -77,7 +78,7 @@ class TicketRepository extends BaseRepository
 
     public function setPriority(Ticket $ticket, TicketPriorityEnum $priority): self
     {
-        $ticket->priority = $priority->value;
+        $ticket->priority = (string) $priority->value;
         $ticket->update();
 
         return $this;

@@ -20,7 +20,7 @@ class AuthRepository extends BaseRepository
      */
     public function createUser(array|RegisterRequestData $requestData): ?Model
     {
-        /** @var User $user */
+        /** @phpstan-ignore-next-line */
         return $this->create($requestData);
     }
 }
