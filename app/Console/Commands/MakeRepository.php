@@ -47,7 +47,7 @@ class MakeRepository extends OVGeneratorCommand
         return "{$baseNamespace}\\Eloquent\\{$className}";
     }
 
-    protected function replaceModel(&$stub): string
+    protected function replaceModel(string &$stub): string
     {
         $model = $this->argument('model');
         $modelVariable = lcfirst(class_basename($model));

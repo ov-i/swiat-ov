@@ -6,6 +6,9 @@ use App\Enums\Auth\PermissionsEnum;
 
 class VipMemberHasPermissionsStrategy implements RoleHasPermissionsStrategyInterface
 {
+    /**
+     * @inheritDoc
+     */
     public function boot(): array
     {
         return [

@@ -7,6 +7,7 @@ namespace App\Services\Auth;
 use App\Data\Auth\RegisterRequestData;
 use App\Enums\Auth\RoleNamesEnum;
 use App\Exceptions\UserNotFoundException;
+use App\Models\Auth\Permission;
 use App\Models\Auth\Role;
 use App\Models\User;
 use App\Repositories\Eloquent\Auth\AuthRepository;
@@ -87,6 +88,9 @@ class AuthService
         return Role::query()->where('name', $roleName->value)->first();
     }
 
+    /**
+     * @return Collection<int, Permission>
+     */
     public function getRolePermissions(Role $role): Collection
     {
         return $role->permissions()->get();

@@ -13,8 +13,12 @@ class UserRepository extends BaseRepository
         parent::__construct($user);
     }
 
+    /**
+     * @return User|null
+     */
     public function findUserById(string|int $userId): ?User
     {
+        /** @phpstan-ignore-next-line */
         return $this->find($userId);
     }
 }

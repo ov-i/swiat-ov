@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace App\Services\Users;
 
 use App\Models\User;
-use App\Repositories\Eloquent\Users\UserRepository;
+use Coderflex\LaravelTicket\Models\Ticket;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class UserService
 {
     public function __construct(
-        private readonly UserRepository $userRepository,
     ) {
     }
 
@@ -20,7 +19,7 @@ class UserService
      *
      * @param User $user
      *
-     * @return LengthAwarePaginator|null Returns null, if user was not found.
+     * @return LengthAwarePaginator<Ticket>|null Returns null, if user was not found.
      */
     public function getUserTickets(User $user): ?LengthAwarePaginator
     {

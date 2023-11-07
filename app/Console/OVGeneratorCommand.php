@@ -8,7 +8,7 @@ abstract class OVGeneratorCommand extends GeneratorCommand
 {
     /**
      * Returns a stub file name.
-     * 
+     *
      * @return string
      */
     abstract protected function getStubName(): string;
@@ -23,8 +23,8 @@ abstract class OVGeneratorCommand extends GeneratorCommand
 
     /**
      * Cuts suffix from class's namespace of the stub
-     * 
-     * @param string $className A {{ namespace }} replacement
+     *
+     * @param string $namespace A {{ namespace }} replacement
      * @param string $suffix Suffix that should be deleted
      */
     protected function cutSuffix(string $namespace, string $suffix): string
