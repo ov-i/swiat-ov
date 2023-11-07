@@ -27,11 +27,12 @@ class AssignRoleToUserTableSeeder extends Seeder
 
         $this->authService->assignRolesFromUserEmail('user@example1.com', RoleNamesEnum::admin());
         $this->authService->assignRolesFromUserEmail('user@example2.com', RoleNamesEnum::moderator());
-        $this->authService->assignRolesFromUserEmail('user@example3.com', 
-            RoleNamesEnum::user(), 
+        $this->authService->assignRolesFromUserEmail(
+            'user@example3.com',
+            RoleNamesEnum::user(),
             RoleNamesEnum::vipMember()
         );
-        
+
         $this->authService->assignRolesFromUserEmail('user@example4.com', RoleNamesEnum::user());
     }
 }

@@ -45,7 +45,7 @@ class AuthService
 
     /**
      * @param RoleNamesEnum ...$roles Seperated by (optional) coma roles
-     * 
+     *
      * @return self
      */
     public function assignRolesFromUserEmail(string $userEmail, RoleNamesEnum ...$roles): ?self

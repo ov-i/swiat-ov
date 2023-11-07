@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->loadAuthRelatedFactories();
         $this->loadPostsRelatedFactories();
-        
+
         TicketCategory::factory()
             ->has(Ticket::factory())
             ->count(count(TicketCategoriesEnum::toValues()))
@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
 
     private function loadPostsRelatedFactories(): void
     {
-        Category::factory()->count(count(CategoryFactory::$categories))->create();        
+        Category::factory()->count(count(CategoryFactory::$categories))->create();
         Post::factory()
             ->has(User::factory())
             ->has(Attachment::factory()->count(3))
