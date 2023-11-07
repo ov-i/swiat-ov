@@ -2,29 +2,24 @@
 
 namespace App\Console\Commands;
 
+use App\Console\OVGeneratorCommand;
 use App\Enums\ORMEnginesEnum;
 use Exception;
-use Illuminate\Console\GeneratorCommand;
 
-class MakeRepository extends GeneratorCommand
+class MakeRepository extends OVGeneratorCommand
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'ov:make-repository 
-        {name : Repository name} 
-        {--o|orm=eloquent : Which ORM Engine should be used.}
-        {--m|model= : Attach model}
-    ';
+    protected $signature = "ov:make-repository 
+        {name : Repository name.} 
+        {model : Attached model.} 
+        {--orm=eloquent : Which ORM Engine should be used [availables: eloquent, sqlite]}.
+    ";
 
     /**
      * The console command <description class=""></description>
      *
      * @var string
      */
-    protected $description = 'Creates a new Repository class based on orm engine and name';
+    protected $description = 'Creates a new Repository class with name and model attached';
 
     public function handle(): ?bool
     {
@@ -35,15 +30,15 @@ class MakeRepository extends GeneratorCommand
         }
     }
 
-    protected function getStub(): string
+    protected function getStubName(): string
     {
-        return base_path('stubs/custom/repository.stub');
+        return 'repository';
     }
 
     protected function getDefaultNamespace($rootNamespace): string
     {
         $repositoryNameNamespace = ucfirst($this->argument('name'));
-        $className = $this->substractRepositorySuffix($repositoryNameNamespace);
+        $className = $this->cutSuffix($repositoryNameNamespace, 'Repository');
         $baseNamespace = "{$rootNamespace}\\Repositories";
         if (ORMEnginesEnum::sqlite()->value === $this->option('orm')) {
             return "{$baseNamespace}\\SQlite\\{$className}";
@@ -54,13 +49,13 @@ class MakeRepository extends GeneratorCommand
 
     protected function replaceModel(&$stub): string
     {
-        $model = $this->option('model');
+        $model = $this->argument('model');
         $modelVariable = lcfirst(class_basename($model));
 
         return str_replace(['{{ model }}', '{{ modelVariable }}'], [$model, $modelVariable], $stub);
     }
 
-    protected function buildClass($name)
+    protected function buildClass($name): string
     {
         $stub = $this->files->get($this->getStub());
 
@@ -69,10 +64,5 @@ class MakeRepository extends GeneratorCommand
             ->replaceClass($stub, $name);
 
         return $this->replaceModel($stub);
-    }
-
-    private function substractRepositorySuffix(string $name): string
-    {
-        return str_replace('Repository', '', $name);
     }
 }
