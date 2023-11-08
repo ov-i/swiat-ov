@@ -6,6 +6,7 @@ use App\Models\Tickets\Ticket;
 use App\Models\User;
 use App\Policies\ApiTokenPolicy;
 use App\Policies\TicketPolicy;
+use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Sanctum\PersonalAccessToken;
@@ -20,6 +21,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         PersonalAccessToken::class => ApiTokenPolicy::class,
         Ticket::class => TicketPolicy::class,
+        User::class => UserPolicy::class
     ];
 
     /**

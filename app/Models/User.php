@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Request;
 use Laravel\Cashier\Billable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
@@ -49,11 +48,6 @@ class User extends Authenticatable implements CanUseTickets
         'password',
         'ip'
     ];
-
-    public function ip(): string
-    {
-        return Request::ip();
-    }
 
     /**
      * The attributes that should be hidden for serialization.

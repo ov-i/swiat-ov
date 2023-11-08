@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Eloquent;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\LaravelData\Data;
 
@@ -11,6 +12,13 @@ abstract class EloquentRepository
         protected readonly Model $model,
     ) {
     }
+
+    /**
+     * Gets all models from database
+     * 
+     * @return LengthAwarePaginator<Model>|null;
+     */
+    abstract protected function all(): ?LengthAwarePaginator;
 
     /**
      * Finds the result based on id
@@ -28,7 +36,7 @@ abstract class EloquentRepository
      */
     abstract protected function create(Data $data): ?Model;
 
-    protected function getModel(): Model
+    public function getModel(): Model
     {
         return $this->model;
     }

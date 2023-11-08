@@ -3,11 +3,29 @@
 namespace App\Repositories\Eloquent;
 
 use Illuminate\Contracts\Pagination\CursorPaginator;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\LaravelData\Data;
 
 class BaseRepository extends EloquentRepository
 {
+    /**
+     * @inheritDoc
+     */
+    protected function all(): ?LengthAwarePaginator
+    {
+        $models = $this->getModel()
+            ->query()
+            ->orderBy("id","desc")
+            ->paginate(10);
+
+        if (false === $models->isNotEmpty()) {
+            return null;
+        }
+                
+        return $models;
+    }
+
     protected function find(string|int $id): ?Model
     {
         return $this->getModel()->query()->find($id);
@@ -23,17 +41,5 @@ class BaseRepository extends EloquentRepository
         }
 
         return $this->getModel()->query()->create($data->toArray());
-    }
-
-    /**
-     * Checks if pagination cursor from passed dataset is empty.
-     *
-     * @param CursorPaginator<Model> $cursor
-     *
-     * @return bool
-     */
-    protected function isPaginationCursorEmpty(CursorPaginator $cursor): bool
-    {
-        return 0 === count($cursor->items());
     }
 }
