@@ -9,6 +9,9 @@ services:
       - "127.0.0.1:3306:3306"
     volumes:
       - db-storage:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/my.cnf
+      - ./docker/mysql/logs:/var/log
+      - ./docker/mysql/keys:/usr/local/mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_USER: ${DB_USERNAME}
