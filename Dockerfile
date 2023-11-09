@@ -23,6 +23,7 @@ RUN apk add --update --no-cache \
     libxml2-dev \
     libxml2-utils \
     postfix \
+    openssl \
     nodejs \
     yarn \
     libsodium-dev \
@@ -30,7 +31,9 @@ RUN apk add --update --no-cache \
     linux-headers \
     sqlite-dev \
     sqlite-libs \
-    sqlite
+    sqlite \
+    man-pages \
+    ca-certificates
 
 RUN docker-php-ext-configure zip
 RUN docker-php-ext-configure intl
@@ -60,6 +63,8 @@ RUN adduser -D -u 1000 -G www www
 COPY . .
 
 RUN chown -R www:www /var/www
+
+RUN update-ca-certificates
 
 USER www
 
