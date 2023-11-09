@@ -109,12 +109,12 @@
                                     </div>
 
                                     @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
-                                        <x-dropdown-link href="{{ route('admin.api-tokens.index') }}">
+                                        <x-dropdown-link href="{{ route('dashboard.api-tokens.index') }}">
                                             {{ __('API Tokens') }}
                                         </x-dropdown-link>
                                     @endif
 
-                                    <x-dropdown-link href="{{ route('admin.users.index') }}">
+                                    <x-dropdown-link href="{{ route('dashboard.users.index') }}">
                                         {{ __('Users list') }}
                                     </x-dropdown-link>
                                 @endcan
@@ -178,7 +178,7 @@
                 </x-responsive-nav-link>
 
                 @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
-                    <x-responsive-nav-link href="{{ route('admin.api-tokens.index') }}" :active="request()->routeIs('api-tokens.index')">
+                    <x-responsive-nav-link href="{{ route('dashboard.api-tokens.index') }}" :active="request()->routeIs('api-tokens.index')">
                         {{ __('API Tokens') }}
                     </x-responsive-nav-link>
                 @endif

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\UserDashboardController;
 use App\Http\Controllers\TicketsController;
+use App\Livewire\Admin\UsersFilterList;
 use Illuminate\Support\Facades\Route;
 use Laravel\Jetstream\Http\Controllers\Livewire\ApiTokenController;
 use Laravel\Jetstream\Http\Controllers\Livewire\UserProfileController;
@@ -48,10 +49,10 @@ Route::middleware($middlewares)->group(function () {
 Route::middleware(['verified', 'can:view-admin-panel'])->prefix('admin')->group(function () {
     Route::prefix('dashboard')->group(function () {
         Route::get('/api-tokens', [ApiTokenController::class, 'index'])
-            ->name('admin.api-tokens.index');
+            ->name('dashboard.api-tokens.index');
 
-        Route::get('/users', [UserDashboardController::class, 'index'])
-            ->name('admin.users.index');
+        Route::get('/users', UsersFilterList::class)
+            ->name('dashboard.users.index');
     });
 });
 

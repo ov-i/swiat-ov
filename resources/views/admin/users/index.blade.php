@@ -10,9 +10,7 @@
                 <h2>Filtruj lub wyszukaj użytkowników</h2>
                 <article class="filters">
                     <div class="filter">
-                        <x-dropdown>
-                            Admin
-                        </x-dropdown>
+                        <x-customs.select-role-dropdown align='left' />
                     </div>
                 </article>
             </section>

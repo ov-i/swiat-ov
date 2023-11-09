@@ -46,4 +46,23 @@ final class UserService
     {
         return 0 === count($user->tickets()->get());
     }
+
+    /**
+     * @return ?LengthAwarePaginator<User>
+     */
+    public function getUsersWithRoles(): ?LengthAwarePaginator
+    {
+        $users = $this->userRepository
+            ->getModel()
+            ->query()
+            ->orderBy('email')
+            ->with(['roles', 'permissions'])
+            ->paginate(3);
+
+        if (true === $users->isEmpty()) {
+            return null;
+        }
+
+        return $users;
+    }
 }
