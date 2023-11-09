@@ -49,12 +49,15 @@ services:
     tty: true
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./:/var/www
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./docker/nginx/conf.d:/etc/nginx/conf.d
       - ./docker/nginx/snippets:/etc/nginx/snippets
       - ./docker/nginx/logs:/var/log/nginx
+      - ./docker/ssl/swiat-ov.test.key:/etc/ssl/certs/swiat-ov.test.key
+      - ./docker/ssl/swiat-ov.test.crt:/etc/ssl/certs/swiat-ov.test.crt
     restart: unless-stopped
     networks:
       - blog-net
@@ -70,6 +73,8 @@ services:
       - ./docker/php/php.ini:/usr/local/etc/php/php.ini
       - ./docker/php/ini/local.ini:/usr/local/etc/php/conf.d/local.ini
       - ./docker/php/ini/opcache:/usr/local/etc/php/conf.d/opcache.ini
+      - ./docker/ssl/swiat-ov.test.key:/etc/ssl/certs/swiat-ov.test.key
+      - ./docker/ssl/swiat-ov.test.crt:/etc/ssl/certs/swiat-ov.test.crt
     tty: true
     restart: unless-stopped
     depends_on:
