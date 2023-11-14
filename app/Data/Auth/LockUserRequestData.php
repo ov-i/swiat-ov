@@ -10,7 +10,7 @@ use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Mappers\SnakeCaseMapper;
 
 #[MapName(SnakeCaseMapper::class)]
-class LockUserRequestData extends Data
+final class LockUserRequestData extends Data
 {
     public function __construct(
         #[Required, Enum(enum: BanDurationEnum::class)]

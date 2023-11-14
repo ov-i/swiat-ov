@@ -41,7 +41,7 @@ use Spatie\LaravelData\Mappers\SnakeCaseMapper;
         ]
     )
 ]
-class CreateUserBlockHistoryRequestData extends Data
+final class CreateUserBlockHistoryRequestData extends Data
 {
     public function __construct(
         #[Exists(table: 'users', column: 'id'), Required()]

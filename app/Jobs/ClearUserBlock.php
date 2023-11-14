@@ -2,10 +2,13 @@
 
 namespace App\Jobs;
 
+use App\Enums\Auth\UserStatusEnum;
 use App\Models\User;
-use App\Repositories\Eloquent\Auth\AuthRepository;
+use App\Repositories\Eloquent\Users\UserRepository;
+use App\Services\Auth\AuthService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -21,7 +24,6 @@ class ClearUserBlock implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        private readonly AuthRepository $authRepository
     ) {
     }
 
@@ -30,13 +32,24 @@ class ClearUserBlock implements ShouldQueue
      */
     public function handle(): void
     {
-        foreach (User::all() as $user) {
+        /** @var UserRepository $userRepository */
+        $userRepository = app(UserRepository::class);
+
+        /** @var AuthService $authService */
+        $authService = app(AuthService::class);
+
+        /** @var Collection<int, User> $blockedUsers */
+        $blockedUsers = $userRepository->getUsersByStatus(UserStatusEnum::banned());
+        if ($blockedUsers->isEmpty()) {
+            return;
+        }
+
+        foreach ($blockedUsers as $user) {
             if (
                 true === $user->isBlocked() &&
-                $this->authRepository->isBanDurationOver($user)
+                $authService->isBanDurationOver($user)
             ) {
-                $this->authRepository->unlockUser($user);
-                $user->notify(new \App\Notifications\NotifyAboutUnlock($user));
+                $authService->unlockUser($user);
             }
         }
     }

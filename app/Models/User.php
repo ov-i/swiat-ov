@@ -9,6 +9,7 @@ use Coderflex\LaravelTicket\Contracts\CanUseTickets;
 use Database\Factories\UserFactory;
 use App\Models\License\License;
 use App\Models\Posts\Post;
+use DateTime;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -26,6 +27,10 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $name
  * @property string $email
  * @property string $ip
+ * @property UserStatusEnum|string $status
+ * @property ?DateTime $last_login_at
+ * @property ?DateTime $banned_at
+ * @property ?string $ban_duration
  */
 class User extends Authenticatable implements CanUseTickets
 {
@@ -136,6 +141,11 @@ class User extends Authenticatable implements CanUseTickets
     }
 
     public function isBlocked(): bool
+    {
+        return UserStatusEnum::banned()->value === $this->status;
+    }
+
+    public function isActive(): bool
     {
         return UserStatusEnum::banned()->value === $this->status;
     }

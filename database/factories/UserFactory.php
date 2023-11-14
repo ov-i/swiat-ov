@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\Auth\BanDurationEnum;
+use App\Enums\Auth\UserStatusEnum;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -42,6 +44,15 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    public function locked(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => UserStatusEnum::banned(),
+            'banned_at' => now(),
+            'ban_duration' => BanDurationEnum::oneDay()->value
         ]);
     }
 }

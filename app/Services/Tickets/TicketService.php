@@ -19,8 +19,9 @@ class TicketService
      */
     public function pickOperator(Ticket $ticket, User $operator): Ticket
     {
-        $ticket->assigned_to = $operator->id;
-        $ticket->update();
+        $ticket->update([
+            'assigned_to' => $operator->id,
+        ]);
 
         return $ticket;
     }

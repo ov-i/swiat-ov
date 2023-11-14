@@ -8,7 +8,6 @@ use App\Enums\Ticket\TicketStatusEnum;
 use App\Models\Tickets\Ticket;
 use App\Repositories\Eloquent\BaseRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Model;
 use Ramsey\Uuid\Uuid;
 
 class TicketRepository extends BaseRepository
@@ -35,7 +34,7 @@ class TicketRepository extends BaseRepository
     /**
      * @param TicketPriorityEnum $priority Searched priority of tickets
      *
-     * @return LengthAwarePaginator<Model>|null
+     * @return LengthAwarePaginator<Ticket>|null
      */
     public function getTicketsByPriority(TicketPriorityEnum $priority): ?LengthAwarePaginator
     {
@@ -45,7 +44,7 @@ class TicketRepository extends BaseRepository
     /**
      * @param TicketStatusEnum $status Searched status of tickets
      *
-     * @return LengthAwarePaginator<Model>|null
+     * @return LengthAwarePaginator<Ticket>|null
      */
     public function getTicketsByStatus(TicketStatusEnum $status): ?LengthAwarePaginator
     {
@@ -58,7 +57,7 @@ class TicketRepository extends BaseRepository
      * @param string $criteria Searched value
      * @param mixed $value Matched value to criteria
      *
-     * @return LengthAwarePaginator|null
+     * @return LengthAwarePaginator<Ticket>|null
      */
     public function getTicketsBy(string $criteria, mixed $value): ?LengthAwarePaginator
     {

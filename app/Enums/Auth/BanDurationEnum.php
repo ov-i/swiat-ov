@@ -7,8 +7,6 @@ namespace App\Enums\Auth;
 use Spatie\Enum\Enum;
 
 /**
- * @method static self fiveMinutes()
- * @method static self oneHour()
  * @method static self oneDay()
  * @method static self oneWeek()
  * @method static self oneMonth()
@@ -17,12 +15,12 @@ use Spatie\Enum\Enum;
  */
 final class BanDurationEnum extends Enum
 {
+    /**
+     * @return array<string, string>
+     */
     protected static function values(): array
     {
         return [
-            'fiveMinutes' => 'PT5M',
-            'halfAnHour' => 'PT30M',
-            'oneHour' => 'PT1H',
             'oneDay' => 'P1D',
             'oneWeek' => 'P1W',
             'oneMonth' => 'P1M',

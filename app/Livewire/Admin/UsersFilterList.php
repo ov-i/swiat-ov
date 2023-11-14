@@ -5,6 +5,7 @@ namespace App\Livewire\Admin;
 use App\Enums\Auth\BanDurationEnum;
 use App\Enums\Auth\RoleNamesEnum;
 use App\Exceptions\UserNotFoundException;
+use App\Models\User;
 use App\Repositories\Eloquent\Auth\AuthRepository;
 use App\Services\Auth\AuthService;
 use App\Services\Users\UserService;
@@ -25,7 +26,7 @@ class UsersFilterList extends Component
 
     public string $duration;
 
-    public function mount(AuthService $authService, AuthRepository $authRepository)
+    public function mount(AuthService $authService, AuthRepository $authRepository): void
     {
         $this->authService = $authService;
         $this->authRepository = $authRepository;
@@ -42,14 +43,16 @@ class UsersFilterList extends Component
 
     public function lockUser(): RedirectResponse
     {
-        $user = $this->authRepository->getModel()->find($this->user_id);
-        if (false === $user) {
+        /** @var ?User $user */
+        $user = $this->authRepository->getModel()->find($this->userId);
+        if (null === $user) {
             throw new UserNotFoundException("User with id: {$this->userId} was not found.");
         }
         $banDuration = BanDurationEnum::from($this->duration);
 
         $this->authService->lockUser($user, $banDuration);
 
+        /** @phpstan-ignore-next-line */
         return redirect()->with('blocked', __('auth.blocked', [
             'user' => $user->name,
             'duration' => $this->authRepository->blockedUntil($user),

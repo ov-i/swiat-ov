@@ -7,8 +7,8 @@ namespace App\Enums\Auth;
 use Spatie\Enum\Enum;
 
 /**
- * @method static self blocked()
- * @method static self unLocked()
+ * @method static self locked()
+ * @method static self unlocked()
  */
 final class UserBlockHistoryActionEnum extends Enum
 {
