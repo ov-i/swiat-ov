@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace App\Services\Auth;
 
+use App\Data\Auth\CreateUserBlockHistoryRequestData;
 use App\Data\Auth\RegisterRequestData;
+use App\Enums\Auth\BanDurationEnum;
 use App\Enums\Auth\RoleNamesEnum;
+use App\Enums\Auth\UserBlockHistoryActionEnum;
 use App\Exceptions\UserNotFoundException;
 use App\Models\Auth\Permission;
 use App\Models\Auth\Role;
 use App\Models\User;
 use App\Repositories\Eloquent\Auth\AuthRepository;
+use App\Repositories\Eloquent\UserBlockHistory\UserBlockHistoryRepository;
 use App\Strategies\Auth\RoleHasPermissions\RoleHasPermissionsStrategy;
 use App\Strategies\Auth\RoleHasPermissions\RoleHasPermissionsStrategyInterface;
 use Illuminate\Database\Eloquent\Collection;
@@ -20,6 +24,7 @@ class AuthService
 {
     public function __construct(
         private readonly AuthRepository $authRepository,
+        private readonly UserBlockHistoryRepository $userBlockHistoryRepository,
         private readonly RoleHasPermissionsStrategy $roleHasPermissionsStrategy,
     ) {
     }
@@ -94,5 +99,32 @@ class AuthService
     public function getRolePermissions(Role $role): Collection
     {
         return $role->permissions()->get();
+    }
+
+    /**
+     * Locks an user's account for a certain time.
+     *
+     * @param User $user User that get's a ban
+     * @param BanDurationEnum $duration Ban time
+     *
+     * @return bool
+     */
+    public function lockUser(User $user, BanDurationEnum $duration): bool
+    {
+        if (true === $this->authRepository->lockUser($user, $duration)) {
+            $historyRequest = CreateUserBlockHistoryRequestData::from([
+                'user_id' => $user->id,
+                'action' => UserBlockHistoryActionEnum::blocked()->value,
+                'ban_duration' => $duration->value
+            ]);
+
+            $this->userBlockHistoryRepository->addToHistory($historyRequest);
+
+            $user->notify(new \App\Notifications\NotifyAboutLock($user));
+
+            return true;
+        }
+
+        return false;
     }
 }

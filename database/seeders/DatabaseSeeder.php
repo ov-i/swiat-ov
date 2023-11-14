@@ -54,7 +54,7 @@ class DatabaseSeeder extends Seeder
 
     private function loadAuthRelatedFactories(): void
     {
-        User::factory()->count(4)->create();
+        User::factory()->create();
         Permission::factory()->count(count(PermissionsEnum::toValues()))->create();
         Role::factory()->count(RoleNamesEnum::count())->create();
     }

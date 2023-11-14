@@ -8,7 +8,6 @@ use App\Models\User;
 use App\Repositories\Eloquent\Users\UserRepository;
 use Coderflex\LaravelTicket\Models\Ticket;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Collection;
 
 final class UserService
 {
@@ -56,7 +55,7 @@ final class UserService
             ->getModel()
             ->query()
             ->orderBy('email')
-            ->with(['roles', 'permissions'])
+            ->with(['roles'])
             ->paginate(3);
 
         if (true === $users->isEmpty()) {

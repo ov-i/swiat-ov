@@ -2,7 +2,6 @@
 
 namespace App\Repositories\Eloquent;
 
-use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\LaravelData\Data;
@@ -16,13 +15,13 @@ class BaseRepository extends EloquentRepository
     {
         $models = $this->getModel()
             ->query()
-            ->orderBy("id","desc")
+            ->orderBy("id", "desc")
             ->paginate(10);
 
         if (false === $models->isNotEmpty()) {
             return null;
         }
-                
+
         return $models;
     }
 

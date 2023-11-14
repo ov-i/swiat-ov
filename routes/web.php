@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Admin\UserDashboardController;
 use App\Http\Controllers\TicketsController;
 use App\Livewire\Admin\UsersFilterList;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +24,7 @@ Route::get('/', function () {
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
+    'blocked',
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
@@ -43,7 +43,8 @@ $authSessionMiddleware = config('jetstream.auth_session', false)
 $middlewares = array_filter([$authMiddleware, $authSessionMiddleware]);
 
 Route::middleware($middlewares)->group(function () {
-    Route::get('/profile', [UserProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile', [UserProfileController::class, 'show'])
+        ->name('profile.show');
 });
 
 Route::middleware(['verified', 'can:view-admin-panel'])->prefix('admin')->group(function () {

@@ -10,6 +10,6 @@ use Spatie\Enum\Enum;
  * @method static self unpublished()
  * @method static self closed()
  */
-class PostStatusEnum extends Enum
+final class PostStatusEnum extends Enum
 {
 }

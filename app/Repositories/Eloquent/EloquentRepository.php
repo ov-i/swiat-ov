@@ -15,7 +15,7 @@ abstract class EloquentRepository
 
     /**
      * Gets all models from database
-     * 
+     *
      * @return LengthAwarePaginator<Model>|null;
      */
     abstract protected function all(): ?LengthAwarePaginator;

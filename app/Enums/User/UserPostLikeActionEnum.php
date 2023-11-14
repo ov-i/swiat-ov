@@ -8,6 +8,6 @@ use Spatie\Enum\Enum;
  * @method static self liked()
  * @method static self disliked()
  */
-class UserPostLikeActionEnum extends Enum
+final class UserPostLikeActionEnum extends Enum
 {
 }

@@ -10,11 +10,8 @@ return new class () extends Migration {
      */
     public function up(): void
     {
-        Schema::create('block_users', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained('users');
-            $table->time('duration');
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->text('block_reason')->nullable();
         });
     }
 
@@ -23,6 +20,8 @@ return new class () extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_blocks');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('block_reason');
+        });
     }
 };

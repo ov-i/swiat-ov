@@ -31,7 +31,7 @@ class TicketFactory extends Factory
         return [
             'uuid' => Uuid::uuid4(),
             'title' => fake()->realText(),
-            'user_id' => 3,
+            'user_id' => 1,
             'category_id' => fake()->numberBetween(1, count(TicketCategoriesEnum::toValues())),
             'message' => fake()->realText()
         ];

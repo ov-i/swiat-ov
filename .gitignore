@@ -24,3 +24,4 @@ docker/redis/data
 docker/ssl
 docker/mysql/keys/private.pem
 docker/mysql/logs/*.json
+tests/database.sqlite

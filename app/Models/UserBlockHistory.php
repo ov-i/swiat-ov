@@ -5,13 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class BlockUser extends Model
+class UserBlockHistory extends Model
 {
-    protected $table = 'block_users';
-
     protected $fillable = [
         'user_id',
-        'duration'
+        'action',
+        'block_duration'
     ];
 
     /**

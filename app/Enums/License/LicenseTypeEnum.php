@@ -9,6 +9,6 @@ use Spatie\Enum\Enum;
  * @method static self developer()
  * @method static self extended()
  */
-class LicenseTypeEnum extends Enum
+final class LicenseTypeEnum extends Enum
 {
 }

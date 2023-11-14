@@ -10,7 +10,7 @@ use Spatie\Enum\Enum;
  * @method static self account()
  * @method static self bug()
  */
-class TicketCategoriesEnum extends Enum
+final class TicketCategoriesEnum extends Enum
 {
     public function getCount(): int
     {

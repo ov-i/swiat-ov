@@ -13,6 +13,6 @@ use Spatie\Enum\Enum;
  * @method static self yearly()
  * @method static self never()
  */
-class SiteMapChangeFreqEnum extends Enum
+final class SiteMapChangeFreqEnum extends Enum
 {
 }

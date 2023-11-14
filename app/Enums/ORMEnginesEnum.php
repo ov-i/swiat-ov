@@ -8,6 +8,6 @@ use Spatie\Enum\Enum;
  * @method static self eloquent()
  * @method static self sqlite()
  */
-class ORMEnginesEnum extends Enum
+final class ORMEnginesEnum extends Enum
 {
 }
