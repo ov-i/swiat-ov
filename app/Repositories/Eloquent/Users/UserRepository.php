@@ -31,7 +31,7 @@ class UserRepository extends BaseRepository
     /**
      * @return User|null
      */
-    public function frById(string|int $userId): ?User
+    public function findUserById(string|int $userId): ?User
     {
         /** @phpstan-ignore-next-line */
         return $this->find($userId);
