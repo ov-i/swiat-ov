@@ -9,7 +9,7 @@ use Spatie\LaravelData\Data;
 abstract class EloquentRepository
 {
     protected function __construct(
-        protected readonly Model $model,
+        private readonly Model $model,
     ) {
     }
 

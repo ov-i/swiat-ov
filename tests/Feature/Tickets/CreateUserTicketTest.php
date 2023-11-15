@@ -6,23 +6,25 @@ use App\Repositories\Eloquent\Tickets\TicketRepository;
 use Illuminate\Support\Str;
 
 describe('Tickets system', function () {
-    beforeEach(function () {
-        $this->ticketRepository = mock(TicketRepository::class);
-        $this->ticketModel = mock(Ticket::class);
+    beforeEach(function() {        
+        $ticketModel = mock(Ticket::class);
 
-        $this->ticketModel->shouldReceive('getAttribute')
-            ->atLeast()
+        $ticketModel->shouldReceive('getAttribute')
             ->once()
-            ->andReturn('mixed');
+            ->andReturn('string');
+
+        $ticketModel->shouldReceive('query')
+            ->once()
+            ->andReturnSelf();
+
+        $ticketModel->shouldReceive('create')
+            ->once()
+            ->andReturnSelf();
+
+        $this->ticketRepository = new TicketRepository($ticketModel);
     });
 
     it('user tickets can be create', function () {
-        $this->ticketRepository->shouldReceive('createTicket')
-            ->once()
-            ->andReturn($this->ticketModel);
-
-        $this->withSession(['auth.password_confirmed_at' => time()]);
-
         $ticketRequestData = CreateTicketRequestData::from([
             'title' => Str::random(10)
         ]);
@@ -31,5 +33,9 @@ describe('Tickets system', function () {
 
         assert($ticket instanceof Ticket);
         expect($ticket->title)->not()->toBeNull();
+    });
+
+    afterEach(function () {
+        $this->ticketRepository = null;
     });
 });

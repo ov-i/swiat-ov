@@ -27,12 +27,17 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $adminPass = 'password';
+        if (false === app()->environment('testing')) {
+            $adminPass = config('app.admin_pass');
+        }
+
         return [
             'name' => 'ov',
             'email' => 'ov@swiat-ov.pl',
             'ip' => fake()->ipv4(),
             'email_verified_at' => now(),
-            'password' => bcrypt(config('app.admin_pass')),
+            'password' => bcrypt($adminPass),
             'remember_token' => Str::random(10),
         ];
     }

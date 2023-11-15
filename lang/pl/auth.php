@@ -19,5 +19,6 @@ return [
     'invalid_role_assignment' => "Rola 'Vip Member' nie może być używana samodzielnie.",
     'block_header' => 'Twoje konto zostało zablokowane.',
     'blocked' => 'Użytkownik :user został zablokowany przez: :duration.',
-    'block_reason' => 'Drogi użytkowniku, zostałeś zablokowany z powodu: :reason.'
+    'block_reason' => 'Drogi użytkowniku, zostałeś zablokowany z powodu: :reason.',
+    'invalid_block_history_record' => 'Nie można zapisać historii z blokadą użytkownika bez czasu trwania.'
 ];

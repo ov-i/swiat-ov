@@ -19,5 +19,6 @@ return [
     'invalid_role_assignment' => "Role 'Vip Member' cannot be used for itself.",
     'blocked' => 'User :user has been blocked until: :duration.',
     'block_header' => 'Your account have been locked.',
-    'block_reason' => 'Dear user, you\'ve been locked for reason of: :reason.'
+    'block_reason' => 'Dear user, you\'ve been locked for reason of: :reason.',
+    'invalid_block_history_record' => 'The user\'s block history cannot be added without ban duration',
 ];

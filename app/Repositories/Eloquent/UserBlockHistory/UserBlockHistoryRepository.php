@@ -5,9 +5,12 @@ namespace App\Repositories\Eloquent\UserBlockHistory;
 use App\Data\Auth\CreateUserBlockHistoryRequestData;
 use App\Enums\Auth\BanDurationEnum;
 use App\Enums\Auth\UserBlockHistoryActionEnum;
+use App\Enums\ItemsPerPageEnum;
+use App\Exceptions\InvalidUserBlockHistoryRecordException;
 use App\Models\User;
 use App\Models\UserBlockHistory;
 use App\Repositories\Eloquent\BaseRepository;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class UserBlockHistoryRepository extends BaseRepository
 {
@@ -18,15 +21,32 @@ class UserBlockHistoryRepository extends BaseRepository
     }
 
     /**
-     * Creates history record for currently banned user
+     * Gets history recors for referenced user with action type [default: locked]
      *
-     * @param CreateUserBlockHistoryRequestData $requestData
+     * @param User& $user Referenced user
+     * @param UserBlockHistoryActionEnum|null $action If it's stays nullable then default is locked() value
      *
-     * @return UserBlockHistory|null
+     * @return LengthAwarePaginator|null Returns null if there were not any records in user block histories
      */
-    public function addToHistory(CreateUserBlockHistoryRequestData $requestData): ?UserBlockHistory
-    {
-        return $this->create($requestData);
+    public function getBlockHistoryRecords(
+        User&$user,
+        ?UserBlockHistoryActionEnum $action = null
+    ): ?LengthAwarePaginator {
+        if (null === $action) {
+            $action = UserBlockHistoryActionEnum::locked();
+        }
+
+        $userBlockHistories = $this->getModel()
+            ->query()
+            ->where(['user_id' => $user->id, 'action' => $action->value])
+            ->orderBy('created_at')
+            ->paginate(ItemsPerPageEnum::DEFAULT);
+
+        if (true === $userBlockHistories->isEmpty()) {
+            return null;
+        }
+
+        return $userBlockHistories;
     }
 
     /**
@@ -38,10 +58,12 @@ class UserBlockHistoryRepository extends BaseRepository
      * @return UserBlockHistory|null
      */
     public function addHistoryFrom(
-        User &$user,
+        User& $user,
         UserBlockHistoryActionEnum $action,
         ?BanDurationEnum $duration = null,
     ): ?UserBlockHistory {
+        $this->denyIfLockedWithoutDuration($action, $duration);
+
         return $this->addToHistory(
             CreateUserBlockHistoryRequestData::from([
                 'user_id' => $user->id,
@@ -49,5 +71,26 @@ class UserBlockHistoryRepository extends BaseRepository
                 'ban_duration' => $duration->value ?? null,
             ])
         );
+    }
+
+    public function denyIfLockedWithoutDuration(
+        UserBlockHistoryActionEnum $action,
+        ?BanDurationEnum $duration = null,
+    ): void {
+        if (UserBlockHistoryActionEnum::locked() === $action && null === $duration) {
+            throw new InvalidUserBlockHistoryRecordException(__('auth.invalid_block_history_record'));
+        }
+    }
+
+    /**
+     * Creates history record for currently banned user
+     *
+     * @param CreateUserBlockHistoryRequestData $requestData
+     *
+     * @return UserBlockHistory|null
+     */
+    private function addToHistory(CreateUserBlockHistoryRequestData $requestData): ?UserBlockHistory
+    {
+        return $this->create($requestData);
     }
 }
