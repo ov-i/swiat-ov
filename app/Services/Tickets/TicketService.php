@@ -19,7 +19,7 @@ class TicketService
      * @return bool
      * @throws InvalidOperatorAssignmentException If user is a ticket
      */
-    public function pickOperator(User& $operator, Ticket& $ticket): bool
+    public function pickOperator(User &$operator, Ticket &$ticket): bool
     {
         if ($ticket->user_id === $operator->id) {
             throw new InvalidOperatorAssignmentException(__('ticket.invalid_operator'));

@@ -5,7 +5,7 @@ namespace App\Jobs;
 use App\Enums\Auth\UserStatusEnum;
 use App\Models\User;
 use App\Repositories\Eloquent\Users\UserRepository;
-use App\Services\Auth\AuthService;
+use App\Services\Auth\UserLockService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Collection;
@@ -35,8 +35,8 @@ class ClearUserBlock implements ShouldQueue
         /** @var UserRepository $userRepository */
         $userRepository = app(UserRepository::class);
 
-        /** @var AuthService $authService */
-        $authService = app(AuthService::class);
+        /** @var UserLockService $userLockService */
+        $userLockService = app(UserLockService::class);
 
         /** @var Collection<int, User> $blockedUsers */
         $blockedUsers = $userRepository->getUsersByStatus(UserStatusEnum::banned());
@@ -46,10 +46,10 @@ class ClearUserBlock implements ShouldQueue
 
         foreach ($blockedUsers as $user) {
             if (
-                true === $user->isBlocked() &&
-                $authService->isBanDurationOver($user)
+                true === $user->canBeUnlocked() &&
+                $userLockService->isLockDurationOver($user)
             ) {
-                $authService->unlockUser($user);
+                $userLockService->unlockUser($user);
             }
         }
     }

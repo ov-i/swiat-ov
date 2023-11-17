@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\UserBlockHistory;
 use App\Repositories\Eloquent\BaseRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 class UserBlockHistoryRepository extends BaseRepository
 {
@@ -21,15 +22,15 @@ class UserBlockHistoryRepository extends BaseRepository
     }
 
     /**
-     * Gets history recors for referenced user with action type [default: locked]
+     * Gets paginated history records for referenced user with action type [default: locked]
      *
      * @param User& $user Referenced user
      * @param UserBlockHistoryActionEnum|null $action If it's stays nullable then default is locked() value
      *
      * @return LengthAwarePaginator|null Returns null if there were not any records in user block histories
      */
-    public function getBlockHistoryRecords(
-        User&$user,
+    public function getBlockHistoryPaginatedRecords(
+        User &$user,
         ?UserBlockHistoryActionEnum $action = null
     ): ?LengthAwarePaginator {
         if (null === $action) {
@@ -50,6 +51,53 @@ class UserBlockHistoryRepository extends BaseRepository
     }
 
     /**
+     * Gets history records for referencd user with action type: Default locked()
+     *
+     * @param User& $user Referenced user
+     * @param UserBlockHistoryActionEnum|null $action User blocked enum: default locked()
+     * @param BanDurationEnum|null Optional flag getting a ban duration value
+     *
+     * @return Collection<int, UserBlockHistory>|null Returns null if the is no matching records
+     */
+    public function getBlockHistoryRecords(
+        User &$user,
+        ?UserBlockHistoryActionEnum $action = null,
+        ?BanDurationEnum $banDurationEnum = null,
+    ): ?Collection {
+        if (null === $action) {
+            $action = UserBlockHistoryActionEnum::locked();
+        }
+
+        $userBlockHistories = $this->getModel()
+            ->query()
+            ->orderBy('id')
+            ->where(['user_id' => $user->id, 'action' => $action->value]);
+
+        if (null !== $banDurationEnum) {
+            $userBlockHistories->where('ban_duration', $banDurationEnum->value);
+        }
+
+        if (count($userBlockHistories->get()) === 0) {
+            return null;
+        }
+
+        return $userBlockHistories->get();
+    }
+
+    public function getCount(
+        User &$user,
+        ?UserBlockHistoryActionEnum $action,
+        BanDurationEnum $duration
+    ): ?int {
+        $historyRecords = $this->getBlockHistoryRecords($user, $action, $duration);
+        if (null === $historyRecords) {
+            return null;
+        }
+
+        return $historyRecords->count();
+    }
+
+    /**
      * Adds history record for locked user based on user reference and duration.
      *
      * @param User& $user
@@ -58,7 +106,7 @@ class UserBlockHistoryRepository extends BaseRepository
      * @return UserBlockHistory|null
      */
     public function addHistoryFrom(
-        User& $user,
+        User &$user,
         UserBlockHistoryActionEnum $action,
         ?BanDurationEnum $duration = null,
     ): ?UserBlockHistory {

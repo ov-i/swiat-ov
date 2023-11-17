@@ -2,10 +2,15 @@
 
 namespace App\Providers;
 
+use App\Events\Auth\UserLocked;
+use App\Events\Auth\UserUnlocked;
+use App\Listeners\Auth\SaveLockToHistory;
+use App\Listeners\Auth\SaveUnlockToHistory;
+use App\Listeners\Auth\SendLockNotification;
+use App\Listeners\Auth\SendUnlockNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -17,6 +22,14 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        UserLocked::class => [
+            SendLockNotification::class,
+            SaveLockToHistory::class
+        ],
+        UserUnlocked::class => [
+            SendUnlockNotification::class,
+            SaveUnlockToHistory::class
         ],
     ];
 

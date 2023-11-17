@@ -6,6 +6,9 @@ use App\Data\Auth\RegisterRequestData;
 use App\Enums\Auth\BanDurationEnum;
 use App\Enums\Auth\UserStatusEnum;
 use App\Exceptions\AdminIsNotBlockableException;
+use App\Exceptions\CannotLockAlreadyLockedUserException;
+use App\Exceptions\CannotUnlockNotLockedUserException;
+use App\Exceptions\CannotUnlockPermamentLockException;
 use App\Models\User;
 use App\Repositories\Eloquent\BaseRepository;
 use Illuminate\Support\Carbon;
@@ -51,21 +54,30 @@ class AuthRepository extends BaseRepository
      */
     public function lockUser(User &$user, BanDurationEnum $duration): bool
     {
-        // TODO: Move it to the actionable controller.
-        if (true === $user->isAdmin()) {
-            throw new AdminIsNotBlockableException($user);
-        }
+        if (true === $user->isBlocked()) {
+            throw new CannotLockAlreadyLockedUserException();
+        }        
 
-        return false === $user->isBlocked() && $user->update([
+        $locked = false === $user->isBlocked() && $user->update([
             'status' => UserStatusEnum::banned()->value,
             'ban_duration' => $duration->value,
             'banned_at' => now(),
         ]);
+
+        return $locked;
     }
 
     public function unlockUser(User &$user): bool
     {
-        return $user->isBlocked() && $user->update([
+        if (false === $user->canBeUnlocked()) {
+            throw new CannotUnlockPermamentLockException();
+        }
+        
+        if (false === $user->isBlocked()) {
+            throw new CannotUnlockNotLockedUserException();
+        }
+
+        return $user->update([
             'status' => UserStatusEnum::active()->value,
             'ban_duration' => null,
             'banned_at' => null,

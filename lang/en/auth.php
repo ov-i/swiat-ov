@@ -21,4 +21,5 @@ return [
     'block_header' => 'Your account have been locked.',
     'block_reason' => 'Dear user, you\'ve been locked for reason of: :reason.',
     'invalid_block_history_record' => 'The user\'s block history cannot be added without ban duration',
+    'user_block_history_not_found' => 'Could not find a history record for a given user :user with ban duration of :duration'
 ];

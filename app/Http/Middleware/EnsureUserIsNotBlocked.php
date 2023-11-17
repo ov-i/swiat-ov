@@ -33,14 +33,16 @@ class EnsureUserIsNotBlocked
                     '<br /><strong class="text-red-500">%s</strong>',
                     $this->authRepository->blockedUntil($user)
                 );
-                
+
                 return redirect()
                     ->route('login')
-                    ->with('block',__('auth.blocked', [
+                    ->with('block', __(
+                        'auth.blocked',
+                        [
                                 'duration' => $duration,
                                 'user' => $user->name,
                             ]
-                        ));
+                    ));
             }
         }
 

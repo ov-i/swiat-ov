@@ -7,7 +7,7 @@ use App\Enums\Auth\RoleNamesEnum;
 use App\Exceptions\UserNotFoundException;
 use App\Models\User;
 use App\Repositories\Eloquent\Auth\AuthRepository;
-use App\Services\Auth\AuthService;
+use App\Services\Auth\UserLockService;
 use App\Services\Users\UserService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -18,7 +18,7 @@ class UsersFilterList extends Component
 {
     use WithPagination;
 
-    private AuthService $authService;
+    private UserLockService $userLockService;
 
     private AuthRepository $authRepository;
 
@@ -26,9 +26,9 @@ class UsersFilterList extends Component
 
     public string $duration;
 
-    public function mount(AuthService $authService, AuthRepository $authRepository): void
+    public function mount(UserLockService $userLockService, AuthRepository $authRepository): void
     {
-        $this->authService = $authService;
+        $this->userLockService = $userLockService;
         $this->authRepository = $authRepository;
     }
 
@@ -50,7 +50,7 @@ class UsersFilterList extends Component
         }
         $banDuration = BanDurationEnum::from($this->duration);
 
-        $this->authService->lockUser($user, $banDuration);
+        $this->userLockService->lockUser($user, $banDuration);
 
         /** @phpstan-ignore-next-line */
         return redirect()->with('blocked', __('auth.blocked', [

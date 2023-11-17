@@ -6,7 +6,7 @@ use App\Repositories\Eloquent\Tickets\TicketRepository;
 use Illuminate\Support\Str;
 
 describe('Tickets system', function () {
-    beforeEach(function() {        
+    beforeEach(function () {
         $ticketModel = mock(Ticket::class);
 
         $ticketModel->shouldReceive('getAttribute')

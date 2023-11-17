@@ -20,5 +20,6 @@ return [
     'block_header' => 'Twoje konto zostało zablokowane.',
     'blocked' => 'Użytkownik :user został zablokowany przez: :duration.',
     'block_reason' => 'Drogi użytkowniku, zostałeś zablokowany z powodu: :reason.',
-    'invalid_block_history_record' => 'Nie można zapisać historii z blokadą użytkownika bez czasu trwania.'
+    'invalid_block_history_record' => 'Nie można zapisać historii z blokadą użytkownika bez czasu trwania.',
+    'user_block_history_not_found' => 'Nie odnaleziono wpisu w historii blokowań użytkownika :user z czasem trwania :duration'
 ];

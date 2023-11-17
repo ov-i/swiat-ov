@@ -29,7 +29,7 @@ describe('Gets users with roles', function () {
             ->once()
             ->with(['roles'])
             ->andReturnSelf();
-        
+
         $user->shouldReceive('paginate')
             ->with(ItemsPerPageEnum::DEFAULT)
             ->andReturn($this->paginatorMock);

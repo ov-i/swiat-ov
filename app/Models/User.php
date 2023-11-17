@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Auth\BanDurationEnum;
 use App\Enums\Auth\RoleNamesEnum;
 use App\Enums\Auth\UserStatusEnum;
 use Coderflex\LaravelTicket\Concerns\HasTickets;
@@ -143,6 +144,18 @@ class User extends Authenticatable implements CanUseTickets
     public function isBlocked(): bool
     {
         return UserStatusEnum::banned()->value === $this->status;
+    }
+
+    /**
+     * Checks if user can be unlocked.
+     *
+     * @return bool Returns true, if user is blocked and duration is not permament.
+     */
+    public function canBeUnlocked(): bool
+    {
+        return
+            $this->isBlocked() &&
+            BanDurationEnum::forever()->value !== $this->ban_duration;
     }
 
     public function isActive(): bool
