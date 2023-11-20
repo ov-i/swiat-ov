@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Services\Auth;
 
 use App\Enums\Auth\BanDurationEnum;
-use App\Events\Auth\UserLocked;
+use App\Enums\Auth\LockReasonEnum;
+use App\Enums\Auth\UserBlockHistoryActionEnum;
 use App\Events\Auth\UserUnlocked;
 use App\Exceptions\AdminIsNotBlockableException;
 use App\Exceptions\UserBlockHistoryRecordNotFoundException;
+use App\Lib\Auth\LockOption;
 use App\Models\User;
 use App\Notifications\NotifyUserAboutRisingLockDuration;
 use App\Repositories\Eloquent\Auth\AuthRepository;
@@ -20,27 +22,26 @@ class UserLockService
     public function __construct(
         private readonly UserBlockHistoryRepository $userBlockHistoryRepository,
         private readonly AuthRepository $authRepository
-    ) {}
+    ) {
+    }
 
     /**
      * Locks an user's account for a certain time.
      *
      * @param User& $user User that get's a ban
-     * @param BanDurationEnum $duration Ban time
+     * @param LockOption $lockOption Lock option for duratio and reason
      *
      * @return bool
      * @throws AdminIsNotBlockableException if someone would try to lock a admin user
      */
-    public function lockUser(User &$user, BanDurationEnum $duration): bool
+    public function lockUser(User &$user, LockOption $lockOption): bool
     {
         if (true === $user->isAdmin()) {
             throw new AdminIsNotBlockableException($user);
         }
 
         if (false === $this->isMonthlyLockingSuspect($user)) {
-            event(new UserLocked($user, $duration));
-
-            return $this->authRepository->lockUser($user, $duration);
+            return $this->authRepository->lockUser($user, $lockOption);
         }
 
         return $this->mothlyLocking($user);
@@ -78,39 +79,36 @@ class UserLockService
         return
             $user->isBlocked() &&
             $time->isPast() &&
-            BanDurationEnum::forever()->value !== $user->ban_duration;
+            $user->canBeUnlocked();
     }
 
     /**
      * Monthly locking algorithm. See docs to read more about this method
      *
-     * @param User& $user Referenced user
+     * @param User &$user Referenced user
      *
      * @return bool
      * @throws UserBlockHistoryRecordNotFoundException
      */
     public function mothlyLocking(User &$user): bool
     {
-        if (true === $user->isBlocked()) {
+        $lockReason = LockReasonEnum::monthlyLocking()->value;
+        if (false === $this->isMonthlyLockingSuspect($user)) {
             return false;
         }
 
-        $blocksCount = $this->userBlockHistoryRepository
-            ->getCount($user, null, BanDurationEnum::oneMonth());
+        $oneMonthCount = $this->getLockCount($user, BanDurationEnum::oneMonth());
+        $yearlyMonthCount = $this->getLockCount($user, BanDurationEnum::oneYear());
 
-        if (null === $blocksCount) {
-            throw new UserBlockHistoryRecordNotFoundException(__('auth.user_block_history_not_found', [
-                'user' => $user->name,
-                'duration' => BanDurationEnum::oneMonth()->label,
-            ]));
-        }
-
-        $lockDuration = $this->determinateLockDuration($blocksCount);
-        if (BanDurationEnum::oneMonth() === $lockDuration) {
+        if ($oneMonthCount === 2 && $yearlyMonthCount === 0) {
             $user->notify(new NotifyUserAboutRisingLockDuration($user));
         }
 
-        return $this->authRepository->lockUser($user, $lockDuration);
+        $lockOption = $yearlyMonthCount === 1 ?
+            new LockOption(BanDurationEnum::forever(), $lockReason) :
+            new LockOption(BanDurationEnum::oneYear(), $lockReason);
+
+        return $this->authRepository->lockUser($user, $lockOption);
     }
 
     /**
@@ -122,29 +120,20 @@ class UserLockService
      */
     public function isMonthlyLockingSuspect(User &$user): bool
     {
-        $blocksCount = $this->userBlockHistoryRepository
-            ->getCount($user, null, BanDurationEnum::oneMonth());
+        $monthHistory = $this->getLockCount($user, BanDurationEnum::oneMonth());
 
-        return $blocksCount > 1;
+        return $monthHistory < 3 && $monthHistory > 1;
     }
 
     /**
-     * Calculates the lock duration, based on algorithm of monthly locking
+     * Gets user locks count history from the given duration.
      *
-     * @param int $lockDuration A predefined lock duration
-     *
-     * @return BanDurationEnum
+     * @param User &$user
+     * @param BanDurationEnum $duration
      */
-    private function determinateLockDuration(int $lockDuration): BanDurationEnum
+    public function getLockCount(User &$user, BanDurationEnum $duration): int
     {
-        if ($lockDuration === 1) {
-            $duration = BanDurationEnum::oneMonth();
-        } elseif ($lockDuration < 3) {
-            $duration = BanDurationEnum::oneYear();
-        } else {
-            $duration = BanDurationEnum::forever();
-        }
-
-        return $duration;
+        return $this->userBlockHistoryRepository
+            ->getCount($user, UserBlockHistoryActionEnum::locked(), $duration);
     }
 }

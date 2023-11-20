@@ -8,10 +8,11 @@ use App\Events\Auth\UserLocked;
 use App\Notifications\NotifyAboutLock;
 use App\Repositories\Eloquent\Auth\AuthRepository;
 use App\Repositories\Eloquent\UserBlockHistory\UserBlockHistoryRepository;
+use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class SendLockNotification implements ShouldQueue
+class SendLockNotification implements ShouldQueue, ShouldDispatchAfterCommit
 {
     use InteractsWithQueue;
 

@@ -7,13 +7,9 @@ namespace App\Listeners\Auth;
 use App\Enums\Auth\UserBlockHistoryActionEnum;
 use App\Events\Auth\UserUnlocked;
 use App\Repositories\Eloquent\UserBlockHistory\UserBlockHistoryRepository;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 
-class SaveUnlockToHistory implements ShouldQueue
+class SaveUnlockToHistory
 {
-    use InteractsWithQueue;
-
     /**
      * Create the event listener.
      */
@@ -27,8 +23,7 @@ class SaveUnlockToHistory implements ShouldQueue
      */
     public function handle(UserUnlocked $event): void
     {
-        if (false === $event->isUnlocked()) {
-
+        if (true === $event->isUnlocked()) {
             $this->blockRepository->addHistoryFrom(
                 $event->user,
                 UserBlockHistoryActionEnum::unlocked()

@@ -4,11 +4,12 @@ namespace App\Notifications;
 
 use App\Models\User;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NotifyUserAboutRisingLockDuration extends Notification implements ShouldQueue
+class NotifyUserAboutRisingLockDuration extends Notification implements ShouldQueue, ShouldDispatchAfterCommit
 {
     use Queueable;
 

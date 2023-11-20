@@ -38,8 +38,8 @@ class NotifyAboutLock extends Notification implements ShouldQueue
         return (new MailMessage())
                 ->subject('Your account has been locked')
                 ->line("Hi {$this->user->email}! Your account has been locked")
-                ->markdown('emails.block_reason', ['user' => $this->user])
-                ->attach(storage_path().'app/public/terms_of_usage.pdf', [
+                ->markdown('emails.lock_reason', ['user' => $this->user])
+                ->attach(storage_path().'/app/public/terms_of_usage.pdf', [
                     'as' => 'terms_of_usage.pdf',
                     'mime' => 'application/pdf',
                 ])

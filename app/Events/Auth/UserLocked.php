@@ -2,7 +2,7 @@
 
 namespace App\Events\Auth;
 
-use App\Enums\Auth\BanDurationEnum;
+use App\Lib\Auth\LockOption;
 use App\Models\User;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -19,7 +19,7 @@ class UserLocked
      */
     public function __construct(
         public readonly User $user,
-        public BanDurationEnum $duration,
+        public LockOption $lockOption,
     ) {
     }
 

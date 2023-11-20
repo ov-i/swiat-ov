@@ -7,13 +7,9 @@ namespace App\Listeners\Auth;
 use App\Enums\Auth\UserBlockHistoryActionEnum;
 use App\Events\Auth\UserLocked;
 use App\Repositories\Eloquent\UserBlockHistory\UserBlockHistoryRepository;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 
-class SaveLockToHistory implements ShouldQueue
+class SaveLockToHistory
 {
-    use InteractsWithQueue;
-
     /**
      * Create the event listener.
      */
@@ -34,7 +30,7 @@ class SaveLockToHistory implements ShouldQueue
         $this->blockRepository->addHistoryFrom(
             $event->user,
             UserBlockHistoryActionEnum::locked(),
-            $event->duration
+            $event->lockOption->getDuration()
         );
     }
 }

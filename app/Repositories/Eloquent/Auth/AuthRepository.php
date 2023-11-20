@@ -3,12 +3,13 @@
 namespace App\Repositories\Eloquent\Auth;
 
 use App\Data\Auth\RegisterRequestData;
-use App\Enums\Auth\BanDurationEnum;
 use App\Enums\Auth\UserStatusEnum;
+use App\Events\Auth\UserLocked;
 use App\Exceptions\AdminIsNotBlockableException;
 use App\Exceptions\CannotLockAlreadyLockedUserException;
 use App\Exceptions\CannotUnlockNotLockedUserException;
 use App\Exceptions\CannotUnlockPermamentLockException;
+use App\Lib\Auth\LockOption;
 use App\Models\User;
 use App\Repositories\Eloquent\BaseRepository;
 use Illuminate\Support\Carbon;
@@ -52,18 +53,20 @@ class AuthRepository extends BaseRepository
     /**
      * @throws AdminIsNotBlockableException
      */
-    public function lockUser(User &$user, BanDurationEnum $duration): bool
+    public function lockUser(User &$user, LockOption $lockOption): bool
     {
         if (true === $user->isBlocked()) {
             throw new CannotLockAlreadyLockedUserException();
-        }        
+        }
 
         $locked = false === $user->isBlocked() && $user->update([
             'status' => UserStatusEnum::banned()->value,
-            'ban_duration' => $duration->value,
+            'ban_duration' => $lockOption->getDuration(),
             'banned_at' => now(),
+            'lock_reason' => $lockOption->getReason()
         ]);
 
+        event(new UserLocked($user, $lockOption));
         return $locked;
     }
 
@@ -72,7 +75,7 @@ class AuthRepository extends BaseRepository
         if (false === $user->canBeUnlocked()) {
             throw new CannotUnlockPermamentLockException();
         }
-        
+
         if (false === $user->isBlocked()) {
             throw new CannotUnlockNotLockedUserException();
         }
@@ -81,6 +84,7 @@ class AuthRepository extends BaseRepository
             'status' => UserStatusEnum::active()->value,
             'ban_duration' => null,
             'banned_at' => null,
+            'lock_reason' => null,
         ]);
     }
 }

@@ -31,7 +31,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property UserStatusEnum|string $status
  * @property ?DateTime $last_login_at
  * @property ?DateTime $banned_at
- * @property ?string $ban_duration
+ * @property ?BanDurationEnum $ban_duration
  */
 class User extends Authenticatable implements CanUseTickets
 {

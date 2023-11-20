@@ -87,11 +87,11 @@ class UserBlockHistoryRepository extends BaseRepository
     public function getCount(
         User &$user,
         ?UserBlockHistoryActionEnum $action,
-        BanDurationEnum $duration
-    ): ?int {
+        ?BanDurationEnum $duration = null
+    ): int {
         $historyRecords = $this->getBlockHistoryRecords($user, $action, $duration);
         if (null === $historyRecords) {
-            return null;
+            return 0;
         }
 
         return $historyRecords->count();
@@ -99,11 +99,6 @@ class UserBlockHistoryRepository extends BaseRepository
 
     /**
      * Adds history record for locked user based on user reference and duration.
-     *
-     * @param User& $user
-     * @param BanDurationEnum|null $duration
-     *
-     * @return UserBlockHistory|null
      */
     public function addHistoryFrom(
         User &$user,

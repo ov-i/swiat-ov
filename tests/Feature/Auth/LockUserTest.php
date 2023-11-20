@@ -10,14 +10,14 @@ use App\Services\Auth\UserLockService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 
-uses (RefreshDatabase::class, WithFaker::class);
+uses(RefreshDatabase::class, WithFaker::class);
 
 describe('User blocking system', function () {
     beforeEach(function () {
         $user = mock(User::class);
         $blockHistoryRepository = mock(UserBlockHistoryRepository::class);
         $blockHistoryRepository->shouldReceive('getCount');
-        
+
         $this->authRepository = new AuthRepository($user);
         $this->userLockService = new UserLockService($blockHistoryRepository, $this->authRepository);
     });
@@ -60,8 +60,8 @@ describe('User blocking system', function () {
 
         expect($blockedUntil)->toBeNull();
     });
-    
-    it('should lock user by increasing lock duration', function(User $user, BanDurationEnum $duration) {
+
+    it('should lock user by increasing lock duration', function (User $user, BanDurationEnum $duration) {
         UserBlockHistory::factory()->for($user)->create([
             'action' => UserBlockHistoryActionEnum::locked()->value,
             'ban_duration' => $duration
@@ -72,7 +72,7 @@ describe('User blocking system', function () {
         expect($locked)->toBeTrue();
         expect($user->ban_duration)->toBeString(BanDurationEnum::oneMonth()->value);
     })->with([
-        [fn() => User::factory()->create([
+        [fn () => User::factory()->create([
             'name' => fake()->userName(),
             'email' => fake()->safeEmail(),
             'password' => fake()->password()
