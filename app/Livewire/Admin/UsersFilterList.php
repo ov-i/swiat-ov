@@ -6,7 +6,7 @@ use App\Enums\Auth\BanDurationEnum;
 use App\Enums\Auth\RoleNamesEnum;
 use App\Exceptions\UserNotFoundException;
 use App\Models\User;
-use App\Repositories\Eloquent\Auth\AuthRepository;
+use App\Repositories\Eloquent\Auth\UserLockRepository;
 use App\Services\Auth\UserLockService;
 use App\Services\Users\UserService;
 use Illuminate\Contracts\View\View;
@@ -20,16 +20,16 @@ class UsersFilterList extends Component
 
     private UserLockService $userLockService;
 
-    private AuthRepository $authRepository;
+    private UserLockRepository $userLockRepository;
 
     public int $userId;
 
     public string $duration;
 
-    public function mount(UserLockService $userLockService, AuthRepository $authRepository): void
+    public function mount(UserLockService $userLockService, UserLockRepository $userLockRepository): void
     {
         $this->userLockService = $userLockService;
-        $this->authRepository = $authRepository;
+        $this->userLockRepository = $userLockRepository;
     }
 
     public function render(
@@ -44,18 +44,19 @@ class UsersFilterList extends Component
     public function lockUser(): RedirectResponse
     {
         /** @var ?User $user */
-        $user = $this->authRepository->getModel()->find($this->userId);
+        $user = $this->userLockRepository->getModel()->find($this->userId);
         if (null === $user) {
             throw new UserNotFoundException("User with id: {$this->userId} was not found.");
         }
+        
         $banDuration = BanDurationEnum::from($this->duration);
 
-        $this->userLockService->lockUser($user, $banDuration);
+        // $this->userLockService->lockUser($user, $banDuration);
 
         /** @phpstan-ignore-next-line */
         return redirect()->with('blocked', __('auth.blocked', [
             'user' => $user->name,
-            'duration' => $this->authRepository->blockedUntil($user),
+            'duration' => $this->userLockRepository->blockedUntil($user),
         ]));
     }
 }

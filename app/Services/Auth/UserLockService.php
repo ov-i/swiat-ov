@@ -13,7 +13,7 @@ use App\Exceptions\UserBlockHistoryRecordNotFoundException;
 use App\Lib\Auth\LockOption;
 use App\Models\User;
 use App\Notifications\NotifyUserAboutRisingLockDuration;
-use App\Repositories\Eloquent\Auth\AuthRepository;
+use App\Repositories\Eloquent\Auth\UserLockRepository;
 use App\Repositories\Eloquent\UserBlockHistory\UserBlockHistoryRepository;
 use Illuminate\Support\Carbon;
 
@@ -21,7 +21,7 @@ class UserLockService
 {
     public function __construct(
         private readonly UserBlockHistoryRepository $userBlockHistoryRepository,
-        private readonly AuthRepository $authRepository
+        private readonly UserLockRepository $userLockRepository
     ) {
     }
 
@@ -41,7 +41,7 @@ class UserLockService
         }
 
         if (false === $this->isMonthlyLockingSuspect($user)) {
-            return $this->authRepository->lockUser($user, $lockOption);
+            return $this->userLockRepository->lockUser($user, $lockOption);
         }
 
         return $this->mothlyLocking($user);
@@ -56,7 +56,7 @@ class UserLockService
      */
     public function unlockUser(User &$user): bool
     {
-        if (true === $this->authRepository->unlockUser($user)) {
+        if (true === $this->userLockRepository->unlockUser($user)) {
             event(new UserUnlocked($user));
 
             return true;
@@ -74,7 +74,7 @@ class UserLockService
      */
     public function isLockDurationOver(User &$user): bool
     {
-        $time = Carbon::parse($this->authRepository->blockedUntil($user));
+        $time = Carbon::parse($this->userLockRepository->blockedUntil($user));
 
         return
             $user->isBlocked() &&
@@ -108,7 +108,7 @@ class UserLockService
             new LockOption(BanDurationEnum::forever(), $lockReason) :
             new LockOption(BanDurationEnum::oneYear(), $lockReason);
 
-        return $this->authRepository->lockUser($user, $lockOption);
+        return $this->userLockRepository->lockUser($user, $lockOption);
     }
 
     /**

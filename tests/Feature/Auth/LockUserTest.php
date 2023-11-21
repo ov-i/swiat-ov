@@ -1,10 +1,12 @@
 <?php
 
 use App\Enums\Auth\BanDurationEnum;
+use App\Enums\Auth\LockReasonEnum;
 use App\Enums\Auth\UserBlockHistoryActionEnum;
+use App\Lib\Auth\LockOption;
 use App\Models\User;
 use App\Models\UserBlockHistory;
-use App\Repositories\Eloquent\Auth\AuthRepository;
+use App\Repositories\Eloquent\Auth\UserLockRepository;
 use App\Repositories\Eloquent\UserBlockHistory\UserBlockHistoryRepository;
 use App\Services\Auth\UserLockService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -18,16 +20,16 @@ describe('User blocking system', function () {
         $blockHistoryRepository = mock(UserBlockHistoryRepository::class);
         $blockHistoryRepository->shouldReceive('getCount');
 
-        $this->authRepository = new AuthRepository($user);
+        $this->authRepository = new UserLockRepository($user);
         $this->userLockService = new UserLockService($blockHistoryRepository, $this->authRepository);
     });
 
-    it('should be able to lock user\'s account', function (string $banDuration) {
+    it('should be able to lock user\'s account', function (BanDurationEnum $banDuration) {
         $this->actingAs($user = User::factory()->create()->fresh());
 
-        $banDuration = BanDurationEnum::from($banDuration);
+        $lockOption = new LockOption($banDuration, LockReasonEnum::highFraudScore());
 
-        $locked = $this->userLockService->lockUser($user, $banDuration);
+        $locked = $this->userLockService->lockUser($user, $lockOption);
 
         expect($locked)->toBeTrue();
         expect($user->isBlocked())->toBeTrue();
@@ -67,10 +69,12 @@ describe('User blocking system', function () {
             'ban_duration' => $duration
         ]);
 
-        $locked = $this->userLockService->lockUser($user, $duration);
+        $lockOption = new LockOption($duration, LockReasonEnum::monthlyLocking()->value);
+
+        $locked = $this->userLockService->lockUser($user, $lockOption);
 
         expect($locked)->toBeTrue();
-        expect($user->ban_duration)->toBeString(BanDurationEnum::oneMonth()->value);
+        expect($user->ban_duration->value)->toBeString(BanDurationEnum::oneMonth()->value);
     })->with([
         [fn () => User::factory()->create([
             'name' => fake()->userName(),

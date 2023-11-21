@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\User;
-use App\Repositories\Eloquent\Auth\AuthRepository;
+use App\Repositories\Eloquent\Auth\UserLockRepository;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 class EnsureUserIsNotBlocked
 {
     public function __construct(
-        private readonly AuthRepository $authRepository,
+        private readonly UserLockRepository $userLockRepository,
     ) {
     }
 
@@ -29,23 +29,27 @@ class EnsureUserIsNotBlocked
             if (true === $user->isBlocked()) {
                 auth()->guard('web')->logout();
 
-                $duration = sprintf(
-                    '<br /><strong class="text-red-500">%s</strong>',
-                    $this->authRepository->blockedUntil($user)
-                );
+                $duration = $this->getDurationString();
 
                 return redirect()
                     ->route('login')
                     ->with('block', __(
-                        'auth.blocked',
-                        [
-                                'duration' => $duration,
-                                'user' => $user->name,
-                            ]
+                        'auth.blocked', [
+                            'duration' => $duration,
+                            'user' => $user->name,
+                        ]
                     ));
             }
         }
 
         return $next($request);
+    }
+
+    private function getDurationString(): string
+    {
+        return sprintf(
+            '<br /><strong class="text-red-500">%s</strong>',
+            $this->userLockRepository->blockedUntil($user)
+        );
     }
 }
