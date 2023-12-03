@@ -48,7 +48,7 @@ class UsersFilterList extends Component
         if (null === $user) {
             throw new UserNotFoundException("User with id: {$this->userId} was not found.");
         }
-        
+
         $banDuration = BanDurationEnum::from($this->duration);
 
         // $this->userLockService->lockUser($user, $banDuration);

@@ -2,6 +2,7 @@
 
 return [
     'dashboard' => [
+        'search' => 'Wyszukaj',
         'title' => 'Panel administracyjny',
         'welcome' => 'Witaj, :name!',
         'users' => 'Użytkownicy',
@@ -10,6 +11,7 @@ return [
         'settings' => 'Ustawienia',
     ],
     'users' => [
+        'Users list' => 'lista użytkowników',
         'title' => 'Użytkownicy',
         'id' => 'ID',
         'name' => 'Nazwa',

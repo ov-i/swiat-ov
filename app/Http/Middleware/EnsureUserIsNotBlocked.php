@@ -34,7 +34,8 @@ class EnsureUserIsNotBlocked
                 return redirect()
                     ->route('login')
                     ->with('block', __(
-                        'auth.blocked', [
+                        'auth.blocked',
+                        [
                             'duration' => $duration,
                             'user' => $user->name,
                         ]

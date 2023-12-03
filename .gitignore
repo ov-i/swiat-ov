@@ -26,3 +26,4 @@ docker/mysql/keys/private.pem
 docker/mysql/logs/*.json
 tests/database.sqlite
 storage/pail
+**/.DS_Store

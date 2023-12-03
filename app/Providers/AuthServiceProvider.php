@@ -2,9 +2,12 @@
 
 namespace App\Providers;
 
+use App\Enums\Auth\RoleNamesEnum;
+use App\Models\Posts\Post;
 use App\Models\Tickets\Ticket;
 use App\Models\User;
 use App\Policies\ApiTokenPolicy;
+use App\Policies\PostPolicy;
 use App\Policies\TicketPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -21,7 +24,8 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         PersonalAccessToken::class => ApiTokenPolicy::class,
         Ticket::class => TicketPolicy::class,
-        User::class => UserPolicy::class
+        User::class => UserPolicy::class,
+        Post::class => PostPolicy::class
     ];
 
     /**
@@ -31,7 +35,16 @@ class AuthServiceProvider extends ServiceProvider
     {
         Gate::define('create-token', [ApiTokenPolicy::class, 'create']);
 
-        Gate::define('view-admin-panel', fn (User $user) => $user->isAdmin() || $user->isModerator());
+        Gate::define('viewAdmin', fn (User $user) => $user->isAdmin() || $user->isModerator());
+
+        Gate::define('writePost', [PostPolicy::class, 'create']);
+
+        Gate::define('canEditPost', function(User $user, Post $post) {
+            return Gate::allows('viewAdmin', ['user' => $user]) || (
+                $user->hasRole(RoleNamesEnum::vipMember()->value) &&
+                $user->isPostAuthor($post)
+            );
+        });
 
         Gate::define('read-ticket', function (User $user, Ticket $ticket) {
             return $user->isAdmin() ||

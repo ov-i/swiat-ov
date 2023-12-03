@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Cashier\Billable;
@@ -43,6 +44,7 @@ class User extends Authenticatable implements CanUseTickets
     use Billable;
     use HasRoles;
     use HasTickets;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -115,6 +117,16 @@ class User extends Authenticatable implements CanUseTickets
         return $this->hasMany(UserBlockHistory::class, 'user_id', 'id');
     }
 
+    public function sessions(): HasMany
+    {
+        return $this->hasMany(Session::class);
+    }
+
+    public function accountHistories(): HasMany
+    {
+        return $this->hasMany(UserAccountHistory::class);
+    }
+
     /**
      * @return Factory<self>
      */
@@ -161,5 +173,10 @@ class User extends Authenticatable implements CanUseTickets
     public function isActive(): bool
     {
         return UserStatusEnum::banned()->value === $this->status;
+    }
+
+    public function isPostAuthor(Post $post): bool
+    {
+        return $post->user()->getParentKey() === $this->getKey();
     }
 }

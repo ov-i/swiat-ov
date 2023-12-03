@@ -34,4 +34,9 @@ class UserService
 
         return $users;
     }
+
+    public function deleteUser(User $user): void
+    {
+        // $user->notify()
+    }
 }
