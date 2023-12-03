@@ -19,10 +19,10 @@ class UserAccountHistoryRepository extends BaseRepository
 
     /**
      * Saves history from user details with an action type.
-     * 
+     *
      * @param User &$user Referenced user
      * @param UserAccountHistoryEnum $action
-     * 
+     *
      * @return UserAccountHistory|null
      */
     public function saveHistory(User &$user, UserAccountHistoryEnum $action): ?UserAccountHistory

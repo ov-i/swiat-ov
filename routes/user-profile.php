@@ -13,7 +13,7 @@ Route::middleware($profileMiddlewares)->group(function () {
     Route::get('/profile', [UserProfileController::class, 'show'])
         ->name('profile.show');
 
-    Route::get('/posts', function() {echo 'ddd'; })
+    Route::get('/posts', function () {echo 'ddd'; })
         ->name('user.posts')
       ->middleware('can:writePost');
 });

@@ -32,37 +32,55 @@
         <div class="min-h-screen flex flex-row">
             <aside class="bg-dark h-screen flex flex-col w-72 items-center">
                 <!-- Top Icon -->
-                <div class="p-4">
+                <section class="p-4 application-mark-wrapper">
                     <x-application-mark  />
-                </div>
+                </section>
 
-                <!-- Navigation Items -->
-                <div class="flex flex-col items-center space-y-3 text-center">
-                    <section class="single-item flex flex-col">
-                        <x.admin-nav-section content="Dashboards" />
-                        <x-iconed-link 
-                            link="{{ route('admin.dashboard') }}"
-                            icon="dashboard"
-                            content="Ddashboard" />
-                    </section>
-                    <section class="single-item flex-flex-col">
-                        <x.admin-nav-section content="support" />
-                        <x-iconed-link
-                            link="{{ route('admin.users') }}"
-                            icon="person"
-                            content="Users" />
-                    </section>
-                    <div class="flex flex-col items-center">
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <span class="material-icons">admin_panel_settings</span>
-                        <span>Roles</span>
-                    </div>
-                </div>
+                <section class="navigation-links w-full flex flex-col pl-4">
+                    <!-- single link -->
+                    <article class="navigation-links__item my-2 mx-3">
+                        <h2 class="text-lg resource-header text-gray-500">{{ __('Panels') }}</h2>
+
+                        <x-nav-section route='dashboard' icon='dashboard' content='Main' />
+                    </article>
+
+                    <!-- single link -->
+                    <article class="navigation-links__item my-2 mx-3">
+                        <h2 class="resource-header text-lg text-gray-500">{{ __('Resources') }} </h2>
+
+                        <section class="resources">
+                            <!-- sub resource -->
+                            <article class="sub-resources pt-4">
+                                <h3 class="sub-resource-header text-md text-gray-500">{{ __('Support') }}</h3>
+
+                                <x-nav-section route='users' icon="person" />
+                                <x-nav-section route='roles' icon='key' />
+                            </article>
+
+                            <article class="sub-resources py-4">
+                                <h3 class="sub-resource-header text-md text-gray-500">{{ __('Posts system') }}</h3>
+
+                                <x-nav-section route='comments' icon="chat" />
+                                <x-nav-section route='posts' icon='edit_note' />
+                                <x-nav-section route='categories' icon='category' />
+                                <x-nav-section route='tags' icon='tag' />
+                                <x-nav-section route='attachments' icon='cloud_upload' />
+                            </article>
+                            
+                            <!-- sub resource -->
+                            <article class="sub-resources">
+                                <h3 class="sub-resource-header text-md text-gray-500">{{ __('Tickets system') }}</h3>
+
+                                <x-nav-section route='tickets' icon='confirmation_number' />
+                                <x-nav-section route='tickets.messages' content='messages' icon='mail' />
+                            </article>
+                        </section>
+                    </article>
+                </section>
             </aside>
 
             <!-- Page Content -->
-            <main class="w-10/12 lg:w-8/12 2xl:w-7/12 mx-auto py-4">
+            <main class="w-10/12 lg:w-8/12 2xl:w-7/12 mx-auto p-4 lg:p-0 lg:py-4">
                 <nav class="top-navbar" aria-label="top-navbar fixed top-0">
                     <section class="top-navbar__search flex flex-rop justify-between items-center">
                         <article class="search-input flex items-center space-x-2">

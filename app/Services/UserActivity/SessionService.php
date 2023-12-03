@@ -11,9 +11,9 @@ class SessionService
 {
     /**
      * Gets the session information from user primary key value.
-     * 
+     *
      * @param User $user Referenced user.
-     * 
+     *
      * @return Session|null Returns null, if session record was not found.
      */
     public function getSessionFromUser(User &$user): ?Session

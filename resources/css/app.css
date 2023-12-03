@@ -5,3 +5,8 @@
 [x-cloak] {
     display: none;
 }
+
+/* Admin layout classes */
+.sub-resource {
+    @apply py-2 last:py-0 last:pt-2 hover:text-white transition-colors duration-100;
+}

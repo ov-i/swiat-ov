@@ -10,6 +10,12 @@ use App\Livewire\Admin\Resources\Posts\Category;
 use App\Livewire\Admin\Resources\Posts\Comment;
 use App\Livewire\Admin\Resources\Posts\Post;
 use App\Livewire\Admin\Resources\Posts\Tag;
+use App\Livewire\Admin\Resources\Tickets\Message;
+use App\Livewire\Admin\Resources\Tickets\MessageEdit;
+use App\Livewire\Admin\Resources\Tickets\MessageShow;
+use App\Livewire\Admin\Resources\Tickets\TagEdit;
+use App\Livewire\Admin\Resources\Tickets\TagShow;
+use App\Livewire\Admin\Resources\Tickets\Ticket;
 
 $middlewares = [
     config('jetstream.auth_session'),
@@ -23,18 +29,29 @@ Route::prefix('admin')->middleware($middlewares)->group(function () {
         Route::get('/', Main::class)->name('admin.dashboard');
     });
 
-    Route::prefix('resources/posts')->group(function () {
-        Route::get('/posts', Post::class)->name('admin.posts');
+    Route::prefix('resource/posts')->group(function () {
+        Route::get('/', Post::class)->name('admin.posts');
         Route::get('/categories', Category::class)->name('admin.categories');
         Route::get('/comments', Comment::class)->name('admin.comments');
         Route::get('/tags', Tag::class)->name('admin.tags');
         Route::get('/attachments', Attachment::class)->name('admin.attachments');
     });
 
-    Route::prefix('resources/support')->group(function () {
+    Route::prefix('resource/support')->group(function () {
         Route::get('/users', User::class)->name('admin.users');
         Route::get('/users/edit/{user}', UserEdit::class)->name('admin.users.edit');
         Route::get('/users/show/{user}', UserShow::class)->name('admin.users.show');
         Route::get('/roles', Role::class)->name('admin.roles');
+    });
+
+    Route::prefix('resource/tickets')->group(function () {
+        Route::get('/', Ticket::class)->name('admin.tickets');
+        Route::get('/edit/{ticket}', Ticket::class)->name('admin.tickets.edit');
+        Route::get('/show/{ticket}', Ticket::class)->name('admin.tickets.show');
+        Route::get('/messages', Message::class)->name('admin.tickets.messages');
+        Route::get('/messages/edit/{message}', MessageEdit::class)->name('admin.tickets.messages.edit');
+        Route::get('/messages/show/{message}', MessageShow::class)->name('admin.tickets.messages.show');
+        Route::get('/tags', TagEdit::class)->name('admin.tickets.tags.edit');
+        Route::get('/tags', TagShow::class)->name('admin.tickets.tags.show');
     });
 });

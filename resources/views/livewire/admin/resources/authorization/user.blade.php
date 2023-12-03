@@ -100,7 +100,7 @@
                 <img class="w-10 h-10 rounded-full" src="{{ $user->profile_photo_url }}" alt="Jese image">
                 <div class="ps-3">
                     <div class="text-base font-semibold">
-                        <a href="{{ route('admin.users.edit', ['user' => $user]) }}" class="hover:text-gray-600 transition duration-100">
+                        <a href="{{ route('admin.users.show', ['user' => $user]) }}" class="hover:text-gray-600 transition duration-100">
                           {{ $user->name }}
                         </a>
                     </div>
@@ -140,7 +140,7 @@
                         <x-iconed-link 
                           content="Edit user" 
                           icon="edit" 
-                          link="{{ route('admin.users.show', ['user' => $user]) }}" />
+                          link="{{ route('admin.users.edit', ['user' => $user]) }}" />
                       </li> <!-- end item -->
 
                       <!-- single list item -->

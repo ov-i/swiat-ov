@@ -35,7 +35,7 @@ class NotifyAboutUserAccountDeletion extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
+        return (new MailMessage())
                     ->subject(__('user.account_deletion_request'))
                     ->markdown('emails.user.account_deletion', ['user' => $this->user])
                     ->salutation(__('Thank you for being with us!'));

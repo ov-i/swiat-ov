@@ -7,7 +7,6 @@ use App\Models\User as UserModel;
 use App\Repositories\Eloquent\Users\UserRepository;
 use App\Services\UserActivity\UserActivityService;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -28,7 +27,7 @@ class User extends Component
 
         event(new UserDeleted($user));
 
-        if ($user->isAdmin() || $user->isModerator()){
+        if ($user->isAdmin() || $user->isModerator()) {
             return;
         }
 

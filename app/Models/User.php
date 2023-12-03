@@ -11,6 +11,7 @@ use Database\Factories\UserFactory;
 use App\Models\License\License;
 use App\Models\Posts\Post;
 use DateTime;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -34,7 +35,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property ?DateTime $banned_at
  * @property ?BanDurationEnum $ban_duration
  */
-class User extends Authenticatable implements CanUseTickets
+class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
 {
     use HasApiTokens;
     use HasFactory;
