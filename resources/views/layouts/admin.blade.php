@@ -33,7 +33,9 @@
             <aside class="bg-dark h-screen flex flex-col w-72 items-center">
                 <!-- Top Icon -->
                 <section class="p-4 application-mark-wrapper">
-                    <x-application-mark  />
+                    <a href="{{ route('dashboard') }}">
+                        <x-application-mark class="w-3/4 mx-auto" />
+                    </a>
                 </section>
 
                 <section class="navigation-links w-full flex flex-col pl-4">

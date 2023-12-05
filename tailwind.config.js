@@ -26,7 +26,7 @@ export default {
 
             screens: {
                 'v-large': '2100px'
-            }
+            },
         },
     },
 

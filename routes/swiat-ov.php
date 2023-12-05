@@ -1,21 +1,21 @@
 <?php
 
 use App\Livewire\Admin\Dashboards\Main;
-use App\Livewire\Admin\Resources\Authorization\Role;
-use App\Livewire\Admin\Resources\Authorization\User;
-use App\Livewire\Admin\Resources\Authorization\UserEdit;
-use App\Livewire\Admin\Resources\Authorization\UserShow;
-use App\Livewire\Admin\Resources\Posts\Attachment;
-use App\Livewire\Admin\Resources\Posts\Category;
-use App\Livewire\Admin\Resources\Posts\Comment;
-use App\Livewire\Admin\Resources\Posts\Post;
-use App\Livewire\Admin\Resources\Posts\Tag;
-use App\Livewire\Admin\Resources\Tickets\Message;
-use App\Livewire\Admin\Resources\Tickets\MessageEdit;
-use App\Livewire\Admin\Resources\Tickets\MessageShow;
-use App\Livewire\Admin\Resources\Tickets\TagEdit;
-use App\Livewire\Admin\Resources\Tickets\TagShow;
-use App\Livewire\Admin\Resources\Tickets\Ticket;
+use App\Livewire\Admin\Posts\Attachment;
+use App\Livewire\Admin\Posts\Category;
+use App\Livewire\Admin\Posts\Comment;
+use App\Livewire\Admin\Posts\Post;
+use App\Livewire\Admin\Posts\Tag;
+use App\Livewire\Admin\Tickets\Message;
+use App\Livewire\Admin\Tickets\MessageEdit;
+use App\Livewire\Admin\Tickets\MessageShow;
+use App\Livewire\Admin\Tickets\TagEdit;
+use App\Livewire\Admin\Tickets\TagShow;
+use App\Livewire\Admin\Tickets\Ticket;
+use App\Livewire\Admin\Users\Role;
+use App\Livewire\Admin\Users\User;
+use App\Livewire\Admin\Users\UserEdit;
+use App\Livewire\Admin\Users\UserShow;
 
 $middlewares = [
     config('jetstream.auth_session'),

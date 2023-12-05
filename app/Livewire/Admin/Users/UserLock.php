@@ -1,52 +1,36 @@
 <?php
 
-namespace App\Livewire\Admin\Resources\Authorization;
+namespace App\Livewire\Admin\Users;
 
 use App\Enums\Auth\BanDurationEnum;
-use App\Exceptions\UserNotFoundException;
 use App\Lib\Auth\LockOption;
 use App\Livewire\Forms\LockForm;
 use App\Models\User;
 use App\Services\Auth\UserLockService;
 use Illuminate\Contracts\View\View;
-use Livewire\Attributes\Computed;
-use Livewire\Attributes\Layout;
-use Livewire\Attributes\Locked;
-use Livewire\Attributes\Url;
 use Livewire\Component;
 
-class UserShow extends Component
+class UserLock extends Component
 {
-    #[Locked, Url]
-    public int $userId = 0;
+    public User $user;
+
+    public bool $userLockModalOpened = false;
 
     public const REASON_MIN_CHARS = 50;
-    
-    public bool $userLockModalOpened = false;
-    
+
     public LockForm $lockForm;
 
-    private UserLockService $userLockService;
+    protected UserLockService $userLockService;
 
-    public function mount(): void
-    {
-        $this->userId = request('user');
+    public function boot(
+        UserLockService $userLockService
+    ): void {
+        $this->authorize('viewAdmin', $this->user);
+
+        $this->userLockService = $userLockService;
     }
 
-    #[Computed(persist: true)]
-    public function user(): User
-    {
-        /** @var ?User $user */
-        $user = User::query()->find($this->userId);
-
-        if (null === $user) {
-            throw new UserNotFoundException("User with id o {$this->userId} was not found");
-        }
-
-        return $user;
-    }
-
-    public function openLockingModal(): void
+     public function openLockingModal(): void
     {
         if (true === $this->userLockModalOpened) {
             $this->userLockModalOpened = false;
@@ -66,7 +50,7 @@ class UserShow extends Component
         $this->lockForm->validate();
 
         /** @var User $user */
-        $user = $this->user();
+        $user = $this->user;
 
         $reasonLength = strlen($this->lockForm->reason);
 
@@ -78,33 +62,31 @@ class UserShow extends Component
         $lockDuration = BanDurationEnum::from($this->lockForm->lockDuration);
         $reason = $this->lockForm->reason;
 
-        $this->userLockService = app(UserLockService::class);
         $this->userLockService->lockUser($user, new LockOption(lockDuration: $lockDuration, reason: $reason));
 
         session()->flash('userLocked', __("User [{$user->name}] has been locked successfully"));
 
         $this->closeLockingModal();
 
-        unset($this->user);
+        $this->redirectRoute('admin.users.show', ['user' => $user], true, true);
     }
 
     public function unlockUser(): void
     {
         /** @var User $user */
-        $user = $this->user();
-
-        $this->userLockService = app(UserLockService::class);
+        $user = $this->user;
 
         $this->userLockService->unlockUser($user);
 
         session()->flash('userUnlocked', __("User {$user->name} has been successully unlocked"));
-
-        unset($this->user);
+        
+        $this->redirectRoute('admin.users.show', ['user' => $user], true, true);
     }
 
-    #[Layout('layouts.admin')]
     public function render(): View
     {
-        return view('livewire.admin.resources.authorization.user-show');
+        return view('livewire.admin.users.user-lock', [
+            'lockDurations' => BanDurationEnum::cases()
+        ]);
     }
 }

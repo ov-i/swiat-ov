@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Admin\Resources\Tickets;
+namespace App\Livewire\Admin\Tickets;
 
 use Livewire\Component;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Admin\Resources\Posts;
+namespace App\Livewire\Admin\Tickets;
 
 use Livewire\Component;
 
@@ -8,6 +8,6 @@ class Tag extends Component
 {
     public function render()
     {
-        return view('livewire.admin.resources.posts.tag');
+        return view('livewire.admin.resources.tickets.tag');
     }
 }
