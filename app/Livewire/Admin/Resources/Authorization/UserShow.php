@@ -3,15 +3,16 @@
 namespace App\Livewire\Admin\Resources\Authorization;
 
 use App\Enums\Auth\BanDurationEnum;
+use App\Exceptions\UserNotFoundException;
 use App\Lib\Auth\LockOption;
+use App\Livewire\Forms\LockForm;
 use App\Models\User;
 use App\Services\Auth\UserLockService;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Url;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class UserShow extends Component
@@ -19,29 +20,30 @@ class UserShow extends Component
     #[Locked, Url]
     public int $userId = 0;
 
-    #[Validate('required')]
-    public string $lockDuration = '';
-
-    #[Validate('required', 'min:50')]
-    public string $reason = '';
-
     public const REASON_MIN_CHARS = 50;
-
+    
     public bool $userLockModalOpened = false;
+    
+    public LockForm $lockForm;
 
     private UserLockService $userLockService;
 
-    public function mount(
-    ) {
+    public function mount(): void
+    {
         $this->userId = request('user');
     }
 
     #[Computed(persist: true)]
-    public function user()
+    public function user(): User
     {
+        /** @var ?User $user */
         $user = User::query()->find($this->userId);
 
-        return Cache::remember($user->id, 3600, fn () => $user); // TODO: Need to be changed, since after update shows same result
+        if (null === $user) {
+            throw new UserNotFoundException("User with id o {$this->userId} was not found");
+        }
+
+        return $user;
     }
 
     public function openLockingModal(): void
@@ -59,33 +61,50 @@ class UserShow extends Component
         $this->userLockModalOpened = false;
     }
 
-    public function lockUser()
+    public function lockUser(): void
     {
-        $this->validate();
+        $this->lockForm->validate();
 
         /** @var User $user */
         $user = $this->user();
 
-        $reasonLength = strlen($this->reason);
+        $reasonLength = strlen($this->lockForm->reason);
 
         if (self::REASON_MIN_CHARS > $reasonLength) {
             session()->flash('notEnoughCars', __('Please provide min. 50 chars'));
             return;
         }
 
-        $lockDuration = BanDurationEnum::from($this->lockDuration);
+        $lockDuration = BanDurationEnum::from($this->lockForm->lockDuration);
+        $reason = $this->lockForm->reason;
 
         $this->userLockService = app(UserLockService::class);
-        $this->userLockService->lockUser($user, new LockOption(lockDuration: $lockDuration, reason: $this->reason));
+        $this->userLockService->lockUser($user, new LockOption(lockDuration: $lockDuration, reason: $reason));
 
         session()->flash('userLocked', __("User [{$user->name}] has been locked successfully"));
 
-        return $this->redirect(route('admin.users.show', ['user' => $user]), true);
+        $this->closeLockingModal();
+
+        unset($this->user);
+    }
+
+    public function unlockUser(): void
+    {
+        /** @var User $user */
+        $user = $this->user();
+
+        $this->userLockService = app(UserLockService::class);
+
+        $this->userLockService->unlockUser($user);
+
+        session()->flash('userUnlocked', __("User {$user->name} has been successully unlocked"));
+
+        unset($this->user);
     }
 
     #[Layout('layouts.admin')]
-    public function render(
-    ) {
+    public function render(): View
+    {
         return view('livewire.admin.resources.authorization.user-show');
     }
 }
