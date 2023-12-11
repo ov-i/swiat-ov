@@ -43,7 +43,7 @@ class User extends Component
     ) {
         $users = $userRepository->getAllUsers();
 
-        return view('livewire.admin.resources.authorization.user', [
+        return view('livewire.admin.users.user', [
             'users' => $users,
             'activityService' => $activityService,
         ]);

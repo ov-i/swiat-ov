@@ -40,6 +40,7 @@ RUN docker-php-ext-configure intl
 RUN docker-php-ext-configure gd --with-jpeg --with-freetype
 
 RUN docker-php-ext-install \
+    intl \
     gd -j $(nproc) \
     pdo_sqlite \
     pdo_mysql \

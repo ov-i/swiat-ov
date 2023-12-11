@@ -29,7 +29,7 @@
 
                 @if (
                     Laravel\Jetstream\Jetstream::hasApiFeatures() &&
-                    Route::has('resources.api-tokensOLi')
+                    Route::has('resources.api-tokens')
                 )
                     <x-responsive-nav-link href="{{ route('resources.api-tokens') }}" :active="request()->routeIs('api-tokens.index')">
                         {{ __('API Tokens') }}

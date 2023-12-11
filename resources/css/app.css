@@ -10,3 +10,19 @@
 .sub-resource {
     @apply py-2 last:py-0 last:pt-2 hover:text-white transition-colors duration-100;
 }
+
+.flash-alert {
+    @apply text-white p-3 rounded-md shadow w-11/12 mx-auto text-center;
+}
+
+.button-outlined {
+    @apply border border-gray-500 rounded p-2 hover:bg-gray-500 hover:text-white dark:bg-gray-500 dark:hover:bg-gray-300 dark:hover:text-white transition-colors duration-75 active:bg-gray-700 active:text-white;
+}
+
+.show-wrapper {
+    @apply bg-white font-secondary rounded-md w-full xl:w-10/12 v-large:w-7/12 shadow p-3;
+}
+
+.show-wrapper .show-card {
+    @apply flex flex-row space-x-10 p-3 items-start justify-around w-full lg:text-center;
+}

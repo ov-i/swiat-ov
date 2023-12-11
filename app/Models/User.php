@@ -61,6 +61,7 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
         'last_login_at',
         'banned_at',
         'ban_duration',
+        'reason'
     ];
 
     /**

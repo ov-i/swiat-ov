@@ -5,12 +5,14 @@ namespace App\Providers;
 use App\Events\Auth\UserDeleted;
 use App\Events\Auth\UserLocked;
 use App\Events\Auth\UserUnlocked;
+use App\Events\User\UserProfileImageDeleted;
 use App\Listeners\Auth\SaveLockToHistory;
 use App\Listeners\Auth\SaveUnlockToHistory;
 use App\Listeners\Auth\SendAccountDeletionNotification;
 use App\Listeners\Auth\SendLockNotification;
 use App\Listeners\Auth\SendUnlockNotification;
 use App\Listeners\Auth\SaveUserAccountDeletionToHistory;
+use App\Listeners\User\SendDeletedImageNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -37,7 +39,10 @@ class EventServiceProvider extends ServiceProvider
         UserDeleted::class => [
             SendAccountDeletionNotification::class,
             SaveUserAccountDeletionToHistory::class
-        ]
+        ],
+        UserProfileImageDeleted::class => [
+            SendDeletedImageNotification::class,
+        ],
     ];
 
     /**

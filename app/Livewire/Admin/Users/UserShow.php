@@ -2,9 +2,10 @@
 
 namespace App\Livewire\Admin\Users;
 
-use App\Exceptions\UserNotFoundException;
+use App\Events\User\UserProfileImageDeleted;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\Response;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
@@ -28,13 +29,25 @@ class UserShow extends Component
         $user = User::query()->find($this->userId);
 
         if (null === $user) {
-            throw new UserNotFoundException("User with id o {$this->userId} was not found");
+            abort(Response::HTTP_NOT_FOUND);
         }
 
         return $user;
     }
 
-    #[Layout('layouts.admin')]
+    public function deleteImage(): void
+    {
+        /** @var User $user */
+        $user = $this->user;
+
+        $user->deleteProfilePhoto();
+
+        session()->flash('User image has been deleted');
+
+        event(new UserProfileImageDeleted($user));
+    }
+
+    #[Layout('layouts.admin-view')]
     public function render(): View
     {
         return view('livewire.admin.users.user-show');
