@@ -15,6 +15,17 @@ export default {
         extend: {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                primary: 'Nunito Sans',
+                secondary: 'Open Sans'
+            },
+            
+            colors: {
+                dark: '#323232',
+                gray_accent: '#C1C1C1',
+            },
+
+            screens: {
+                'v-large': '2100px'
             },
         },
     },

@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('telescope:prune')->daily();
         $schedule->command('horizon:snapshot')->hourly();
+        $schedule->job(new \App\Jobs\ClearUserBlock())->hourly();
     }
 
     /**

@@ -9,6 +9,6 @@ use Spatie\Enum\Enum;
  * @method static self archived()
  * @method static self in_trash()
  */
-class CommentStatusEnum extends Enum
+final class CommentStatusEnum extends Enum
 {
 }

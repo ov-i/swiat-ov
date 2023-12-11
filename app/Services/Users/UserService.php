@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services\Users;
 
+use App\Enums\ItemsPerPageEnum;
 use App\Models\User;
 use App\Repositories\Eloquent\Users\UserRepository;
-use Coderflex\LaravelTicket\Models\Ticket;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Collection;
 
-final class UserService
+class UserService
 {
     public function __construct(
         private readonly UserRepository $userRepository,
@@ -18,32 +17,21 @@ final class UserService
     }
 
     /**
-     * Gets all tickets that belong to a User, and paginates them.
-     *
-     * @param User $user
-     *
-     * @return LengthAwarePaginator<Ticket>|null Returns null, if user was not found.
+     * @return ?LengthAwarePaginator<User>
      */
-    public function getUserTickets(User $user): ?LengthAwarePaginator
+    public function getUsersWithRoles(): ?LengthAwarePaginator
     {
-        if (false === $this->hasAnyTickets($user)) {
+        $users = $this->userRepository
+            ->getModel()
+            ->query()
+            ->orderBy('id')
+            ->with(['roles'])
+            ->paginate(ItemsPerPageEnum::DEFAULT);
+
+        if (true === $users->isEmpty()) {
             return null;
         }
 
-        return $user->tickets()
-            ->orderByDesc('priority')
-            ->paginate(10);
-    }
-
-    /**
-     * Checks if user has any tickets.
-     *
-     * @param User $user
-     *
-     * @return bool
-     */
-    public function hasAnyTickets(User $user): bool
-    {
-        return 0 === count($user->tickets()->get());
+        return $users;
     }
 }

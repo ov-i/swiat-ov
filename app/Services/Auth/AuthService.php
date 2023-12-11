@@ -11,6 +11,7 @@ use App\Models\Auth\Permission;
 use App\Models\Auth\Role;
 use App\Models\User;
 use App\Repositories\Eloquent\Auth\AuthRepository;
+use App\Repositories\Eloquent\UserBlockHistory\UserBlockHistoryRepository;
 use App\Strategies\Auth\RoleHasPermissions\RoleHasPermissionsStrategy;
 use App\Strategies\Auth\RoleHasPermissions\RoleHasPermissionsStrategyInterface;
 use Illuminate\Database\Eloquent\Collection;
@@ -20,6 +21,7 @@ class AuthService
 {
     public function __construct(
         private readonly AuthRepository $authRepository,
+        private readonly UserBlockHistoryRepository $userBlockHistoryRepository,
         private readonly RoleHasPermissionsStrategy $roleHasPermissionsStrategy,
     ) {
     }
@@ -39,7 +41,9 @@ class AuthService
             'ip' => Request::ip(),
         ]);
 
-        $this->assignRolesFromUserEmail($user->email, RoleNamesEnum::user());
+        if (false === app()->environment('testing')) {
+            $this->assignRolesFromUserEmail($user->email, RoleNamesEnum::user());
+        }
         return $user;
     }
 

@@ -18,5 +18,4 @@ return [
     'throttled' => 'Proszę chwilę poczekać.',
     'token' => 'Podany token resetu hasła jest nieprawidłowy.',
     'user' => "Podany adres mailowy nie istnieje.",
-
 ];

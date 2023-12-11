@@ -111,7 +111,7 @@ use Spatie\Enum\Enum;
  * @method static self postAttachmentRestore()
  * @method static self postAttachmentForceDelete()
  */
-class PermissionsEnum extends Enum
+final class PermissionsEnum extends Enum
 {
     /**
      * Gets all permissions without some exceptions.

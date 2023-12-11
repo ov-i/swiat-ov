@@ -54,7 +54,7 @@ use Spatie\LaravelData\Mappers\SnakeCaseMapper;
         ]
     )
 ]
-class RegisterRequestData extends Data
+final class RegisterRequestData extends Data
 {
     public function __construct(
         #[Max(255)]

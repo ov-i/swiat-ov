@@ -9,13 +9,13 @@ use Spatie\LaravelData\Data;
 abstract class EloquentRepository
 {
     protected function __construct(
-        protected readonly Model $model,
+        private readonly Model $model,
     ) {
     }
 
     /**
      * Gets all models from database
-     * 
+     *
      * @return LengthAwarePaginator<Model>|null;
      */
     abstract protected function all(): ?LengthAwarePaginator;

@@ -20,14 +20,14 @@ use Database\Factories\Tickets\TicketFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @property string $uuid
  * @property int $user_id
- * @property int $title
+ * @property ?string $uuid
+ * @property string $title
  * @property ?string $message
- * @property string $priority
- * @property string $status
- * @property bool $is_resolved
- * @property bool $is_locked
+ * @property ?string $priority
+ * @property ?string $status
+ * @property ?bool $is_resolved
+ * @property ?bool $is_locked
  * @property ?int $assigned_to
  * @property ?DateTime $deleted_at
  */
