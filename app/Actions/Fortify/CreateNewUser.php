@@ -4,16 +4,21 @@ namespace App\Actions\Fortify;
 
 use App\Data\Auth\RegisterRequestData;
 use App\Models\User;
-use App\Notifications\VerifyEmail;
+use App\Repositories\Eloquent\Users\UserRepository;
 use App\Services\Auth\AuthService;
+use App\Services\Auth\UserLockService;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
+use Symfony\Component\HttpFoundation\IpUtils;
 
 class CreateNewUser implements CreatesNewUsers
 {
     public function __construct(
         private readonly AuthService $authService,
+        private readonly UserRepository $userRepository,
+        private readonly UserLockService $userLockService,
     ) {
     }
 
@@ -28,10 +33,12 @@ class CreateNewUser implements CreatesNewUsers
     {
         $input = RegisterRequestData::from([
             ...$input,
-            'ip' => Request::ip(),
+            'ip' => IpUtils::anonymize(Request::ip()) // GDPR compl.
         ]);
+
         $user = $this->authService->create($input);
-        $user->notify(new VerifyEmail());
+        
+        event(new Registered($user));
 
         return $user;
     }

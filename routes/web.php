@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Laravel\Fortify\Http\Controllers\RegisteredUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +36,7 @@ $profileMiddlewares = array_filter([$authMiddleware, $authSessionMiddleware]);
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+
 
 require_once('swiat-ov.php');
 require_once('user-profile.php');

@@ -15,7 +15,7 @@ class NotifyUserAboutProfileImageDeletion extends Notification
      * Create a new notification instance.
      */
     public function __construct(
-        private readonly User $user, 
+        private readonly User $user,
     ) {
     }
 
@@ -34,7 +34,7 @@ class NotifyUserAboutProfileImageDeletion extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
+        return (new MailMessage())
                     ->subject('Profile image has been deleted')
                     ->line("Hi {$this->user->name}! We're sorry to inform you, that your profile image has been deleted")
                     ->line('Reason: Unproper image content')

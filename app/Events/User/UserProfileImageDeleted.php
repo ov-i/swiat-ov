@@ -19,5 +19,6 @@ class UserProfileImageDeleted
     public function __construct(
         public readonly User $user,
         public string $reason = ''
-    ) {}
+    ) {
+    }
 }

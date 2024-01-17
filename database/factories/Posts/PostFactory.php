@@ -47,4 +47,18 @@ class PostFactory extends Factory
             'published_at' => $archived ? null : $published_at,
         ];
     }
+
+    public function unpublished(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => PostStatusEnum::unpublished(),
+        ]);
+    }
+
+    public function published(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => PostStatusEnum::published(),
+        ]);
+    }
 }

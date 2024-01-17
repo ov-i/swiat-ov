@@ -45,11 +45,11 @@ class DatabaseSeeder extends Seeder
         Category::factory()->count(count(CategoryFactory::$categories))->create();
         Post::factory()
             ->has(User::factory())
-            ->has(Attachment::factory()->count(3))
             ->has(LangPost::factory()->count(3))
             ->has(Tag::factory()->count(3))
             ->has(Comment::factory()->count(10))
             ->create();
+        Attachment::factory()->count(3);
     }
 
     private function loadAuthRelatedFactories(): void

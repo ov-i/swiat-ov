@@ -30,7 +30,7 @@ class UserLock extends Component
         $this->userLockService = $userLockService;
     }
 
-     public function openLockingModal(): void
+    public function openLockingModal(): void
     {
         if (true === $this->userLockModalOpened) {
             $this->userLockModalOpened = false;
@@ -79,7 +79,7 @@ class UserLock extends Component
         $this->userLockService->unlockUser($user);
 
         session()->flash('userUnlocked', __("User {$user->name} has been successully unlocked"));
-        
+
         $this->redirectRoute('admin.users.show', ['user' => $user], true, true);
     }
 

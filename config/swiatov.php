@@ -34,4 +34,28 @@ return [
     |
     */
     'storage_disk' => env('SWIAT_OV_ADMIN_STORAGE_DISK', 'public'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Swiat ov max file size upload
+    |--------------------------------------------------------------------------
+    |
+    | This configuration option allows you to define the max upload file size.
+    | Currently, it's set to 10MB. Remember, that this option relates
+    | to the application layer. If changed, nginx config also.
+    |
+    */
+    'max_file_size' => 10_000_000,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Swiat ov file hashing algo
+    |--------------------------------------------------------------------------
+    |
+    | This configuration option allows you to define the default file hashing
+    | algo, that is used for creating attachment and upload files as
+    | a whole.
+    |
+    */
+    'file_hash_algo' => 'sha256',
 ];

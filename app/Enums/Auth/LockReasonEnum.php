@@ -9,8 +9,9 @@ use Spatie\Enum\Enum;
 /**
  * @method static self monthlyLocking()
  * @method static self verbalAbuse()
- * @method static self hackingAttemp()
+ * @method static self hackingAttempt()
  * @method static self highFraudScore()
+ * @method static self multiAccountDetected()
  */
 final class LockReasonEnum extends Enum
 {

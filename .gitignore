@@ -27,3 +27,4 @@ docker/mysql/logs/*.json
 tests/database.sqlite
 storage/pail
 **/.DS_Store
+dumps/prod/**/*.sql

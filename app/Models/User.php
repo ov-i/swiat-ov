@@ -5,11 +5,13 @@ namespace App\Models;
 use App\Enums\Auth\BanDurationEnum;
 use App\Enums\Auth\RoleNamesEnum;
 use App\Enums\Auth\UserStatusEnum;
+use App\Traits\CanFollow;
 use Coderflex\LaravelTicket\Concerns\HasTickets;
 use Coderflex\LaravelTicket\Contracts\CanUseTickets;
 use Database\Factories\UserFactory;
 use App\Models\License\License;
 use App\Models\Posts\Post;
+use App\Models\Posts\UserPostFollow;
 use DateTime;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -46,6 +48,7 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
     use HasRoles;
     use HasTickets;
     use SoftDeletes;
+    use CanFollow;
 
     /**
      * The attributes that are mass assignable.
@@ -127,6 +130,16 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
     public function accountHistories(): HasMany
     {
         return $this->hasMany(UserAccountHistory::class);
+    }
+
+    public function postHistories(): HasMany
+    {
+        return $this->hasMany(PostHistory::class);
+    }
+
+    public function postFollows(): HasMany
+    {
+        return $this->hasMany(UserPostFollow::class);
     }
 
     /**

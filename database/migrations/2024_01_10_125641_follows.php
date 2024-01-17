@@ -8,11 +8,8 @@ return new class () extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::table('attachments', function (Blueprint $table) {
-            $table->foreignId('post_id')->constrained('posts');
-        });
+    public function up(): void {
+        
     }
 
     /**
@@ -20,8 +17,6 @@ return new class () extends Migration {
      */
     public function down(): void
     {
-        Schema::table('attachments', function (Blueprint $table) {
-            $table->dropForeign('post_id');
-        });
+        //
     }
 };

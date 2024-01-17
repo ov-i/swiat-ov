@@ -39,7 +39,7 @@ class UserBlockHistoryRepository extends BaseRepository
 
         $userBlockHistories = $this->getModel()
             ->query()
-            ->where(['user_id' => $user->id, 'action' => $action->value])
+            ->where(['user_id' => $user->getKey(), 'action' => $action->value])
             ->orderBy('created_at')
             ->paginate(ItemsPerPageEnum::DEFAULT);
 
