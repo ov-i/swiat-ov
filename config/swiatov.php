@@ -58,4 +58,26 @@ return [
     |
     */
     'file_hash_algo' => 'sha256',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Swiat ov recaptcha secret key
+    |--------------------------------------------------------------------------
+    |
+    | This configuration option allows you to define the default secret key
+    | for google's recaptcha antibot / spam / fraud system.
+    |
+    */
+    'google_recaptcha_secret_key' => env('GOOGLE_RECAPTCHA_SECRET_KEY', ''),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Swiat ov recaptcha site key
+    |--------------------------------------------------------------------------
+    |
+    | This configuration option allows you to define the default site key
+    | for google's recaptcha antibot / spam / fraud system.
+    |
+    */
+    'google_recaptcha_site_key' => env('GOOGLE_RECAPTCHA_SITE_KEY', ''),
 ];

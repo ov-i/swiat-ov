@@ -4,9 +4,7 @@ namespace App\Actions\Fortify;
 
 use App\Data\Auth\RegisterRequestData;
 use App\Models\User;
-use App\Repositories\Eloquent\Users\UserRepository;
 use App\Services\Auth\AuthService;
-use App\Services\Auth\UserLockService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\ValidationException;
@@ -17,8 +15,6 @@ class CreateNewUser implements CreatesNewUsers
 {
     public function __construct(
         private readonly AuthService $authService,
-        private readonly UserRepository $userRepository,
-        private readonly UserLockService $userLockService,
     ) {
     }
 
@@ -31,7 +27,7 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
-        $input = RegisterRequestData::from([
+        $input = RegisterRequestData::validateAndCreate([
             ...$input,
             'ip' => IpUtils::anonymize(Request::ip()) // GDPR compl.
         ]);
