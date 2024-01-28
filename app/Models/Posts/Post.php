@@ -2,9 +2,9 @@
 
 namespace App\Models\Posts;
 
+use App\Contracts\Followable;
 use App\Enums\Post\PostStatusEnum;
 use App\Enums\Post\PostTypeEnum;
-use App\Models\Followable;
 use App\Models\PostHistory;
 use Database\Factories\Posts\PostFactory;
 use App\Models\User;
@@ -12,12 +12,14 @@ use Date;
 use DateTime;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Post extends Followable
+class Post extends Model implements Followable
 {
     use SoftDeletes;
     use HasFactory;
@@ -26,6 +28,7 @@ class Post extends Followable
         'user_id',
         'category_id',
         'title',
+        'slug',
         'type',
         'thumbnail_path',
         'content',
@@ -40,6 +43,11 @@ class Post extends Followable
     public function getTitle(): string
     {
         return $this->title;
+    }
+
+    public function getSlug(): string
+    {
+        return $this->slug;
     }
 
     public function getType(): string
@@ -144,11 +152,6 @@ class Post extends Followable
         return $this->hasMany(LangPost::class);
     }
 
-    public function follows(): HasMany
-    {
-        return $this->hasMany(UserPostFollow::class);
-    }
-
     /**
      * @return Factory<self>
      */
@@ -175,5 +178,10 @@ class Post extends Followable
     public function isDelayed(): bool
     {
         return null !== $this->getPublishableDate();
+    }
+
+    public function followers(): MorphToMany
+    {
+        return $this->morphToMany(User::class, 'followable', 'user_follows')->withTimestamps();
     }
 }

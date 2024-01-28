@@ -33,7 +33,7 @@ class CreateNewUser implements CreatesNewUsers
         ]);
 
         $user = $this->authService->create($input);
-        
+
         event(new Registered($user));
 
         return $user;

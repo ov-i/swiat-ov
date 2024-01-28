@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Follow extends Model
@@ -11,10 +12,9 @@ class Follow extends Model
     use HasFactory;
 
     protected $fillable = [
+        'follower_id',
         'followable_id',
         'followable_type',
-        'follower_id',
-        'followable_type'
     ];
 
     public function followable(): MorphTo
@@ -22,8 +22,8 @@ class Follow extends Model
         return $this->morphTo();
     }
 
-    public function follower(): MorphTo
+    public function follower(): BelongsTo
     {
-        return $this->morphTo();
+        return $this->belongsTo(User::class);
     }
 }

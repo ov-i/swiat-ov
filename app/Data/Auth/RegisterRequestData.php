@@ -67,7 +67,7 @@ final class RegisterRequestData extends Data
         public readonly string $password,
         #[IPv4]
         public readonly string $ip,
-        #[MapName('g-recaptcha-response'), Rule(new ReCaptcha)]
+        #[MapName('g-recaptcha-response'), Rule(new ReCaptcha())]
         public readonly string $gRecaptchaResponse,
         public readonly bool $remember = false,
     ) {

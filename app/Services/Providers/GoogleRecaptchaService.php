@@ -13,9 +13,9 @@ class GoogleRecaptchaService
 
     /**
      * Veiryfies the user's token, send by recaptcha api.
-     * 
+     *
      * @param string $token User's token send by api
-     * 
+     *
      * @return bool Returns false, if check was not successful.
      */
     public function verify(string $token): bool

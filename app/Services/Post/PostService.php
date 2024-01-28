@@ -15,6 +15,7 @@ use App\Repositories\Eloquent\Posts\AttachmentRepository;
 use App\Repositories\Eloquent\Posts\PostHistoryRepository;
 use App\Repositories\Eloquent\Posts\PostRepository;
 use Illuminate\Http\Response;
+use Illuminate\Support\Str;
 
 class PostService
 {
@@ -39,7 +40,8 @@ class PostService
 
         $post = $this->postRepository->createPost([
             ...$request->toArray(),
-            'status' => PostStatusEnum::unpublished()
+            'status' => PostStatusEnum::unpublished(),
+            'slug' => Str::slug($request->title)
         ]);
 
         $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::created());
@@ -64,6 +66,10 @@ class PostService
     public function closePost(Post &$post): void
     {
         abort_if(true === $post->isClosed(), Response::HTTP_BAD_REQUEST);
+
+        if (true === $post->followedBy()->with('users')->count() > 0) {
+
+        }
 
         $this->postRepository->setStatus($post, PostStatusEnum::closed());
     }
