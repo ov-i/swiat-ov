@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Enums\Auth\BanDurationEnum;
 use App\Enums\Auth\RoleNamesEnum;
 use App\Enums\Auth\UserStatusEnum;
-use App\Traits\CanFollow;
 use Coderflex\LaravelTicket\Concerns\HasTickets;
 use Coderflex\LaravelTicket\Contracts\CanUseTickets;
 use Database\Factories\UserFactory;
@@ -18,6 +17,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -48,7 +48,6 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
     use HasRoles;
     use HasTickets;
     use SoftDeletes;
-    use CanFollow;
 
     /**
      * The attributes that are mass assignable.
@@ -98,6 +97,31 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
         'profile_photo_url',
     ];
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function getIp(): string
+    {
+        return $this->ip;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status->value;
+    }
+
+    public function getLastLoginTZ(): ?DateTime
+    {
+        return $this->last_login_at;
+    }
+    
     /**
      * @return HasMany<Post>
      */
@@ -193,5 +217,10 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
     public function isPostAuthor(Post $post): bool
     {
         return $post->user()->getParentKey() === $this->getKey();
+    }
+
+    public function followedPosts(): MorphToMany
+    {
+        return $this->morphedByMany(Post::class, 'followable', 'user_follows');
     }
 }

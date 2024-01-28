@@ -8,8 +8,11 @@ return new class () extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void {
-        
+    public function up(): void
+    {
+        Schema::table('posts', function (Blueprint $table) {
+            $table->string('slug')->unique();
+        });
     }
 
     /**
@@ -17,6 +20,8 @@ return new class () extends Migration {
      */
     public function down(): void
     {
-        //
+        Schema::table('posts', function (Blueprint $table) {
+            $table->dropColumn('slug');
+        });
     }
 };
