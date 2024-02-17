@@ -58,15 +58,15 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('create-ticket', [TicketPolicy::class, 'create']);
 
-        Gate::define('can-follow', function(User $user, Followable $followable) {
+        Gate::define('can-follow', function (User $user, Followable $followable) {
             if (false === Auth::check() || $user->isBlocked()) {
                 return false;
             }
 
             $isPost = true === $followable instanceof Post;
-            
+
             if ($isPost && (
-                PostStatusEnum::published()->value !== $followable->getStatus() && 
+                PostStatusEnum::published()->value !== $followable->getStatus() &&
                 false === Gate::allows('viewAdmin', [$user])
             )) {
                 return false;

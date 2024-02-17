@@ -6,6 +6,7 @@ namespace App\Services\Users;
 
 use App\Contracts\Followable;
 use App\Exceptions\AlreadyFollowedEntity;
+use App\Exceptions\SelfFollowedException;
 use App\Models\User;
 
 class UserFollowService
@@ -20,6 +21,11 @@ class UserFollowService
      */
     public function follow(User &$user, Followable $followable): bool
     {
+        if($user->isFollowedBy($followable)) {
+            info("User [{$user->getName()}] tried to follow himself.");
+            throw new SelfFollowedException('Cannot follow yourself!');
+        }
+
         if (true === $this->alreadyFollowed($user, $followable)) {
             $followableType = $followable::class;
             throw new AlreadyFollowedEntity(
@@ -32,7 +38,26 @@ class UserFollowService
         return true;
     }
 
-    public function alreadyFollowed(User &$user, Followable $followable): bool
+    public function unFollow(User &$user, Followable $followable): bool
+    {
+        if (false === $this->alreadyFollowed($user, $followable)) {
+            return false;
+        }
+
+        $followable->followers()->detach($user->getKey());
+
+        return true;
+    }
+
+    /**
+     * CHecks if passed followable entity is already followed
+     *
+     * @param User $user
+     * @param Followable $followable
+     *
+     * @return bool
+     */
+    private function alreadyFollowed(User &$user, Followable $followable): bool
     {
         return $followable->followers()->wherePivot('user_id', $user->getKey())->exists();
     }

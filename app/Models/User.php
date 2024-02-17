@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\Followable;
 use App\Enums\Auth\BanDurationEnum;
 use App\Enums\Auth\RoleNamesEnum;
 use App\Enums\Auth\UserStatusEnum;
@@ -10,7 +11,6 @@ use Coderflex\LaravelTicket\Contracts\CanUseTickets;
 use Database\Factories\UserFactory;
 use App\Models\License\License;
 use App\Models\Posts\Post;
-use App\Models\Posts\UserPostFollow;
 use DateTime;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -37,7 +37,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property ?DateTime $banned_at
  * @property ?BanDurationEnum $ban_duration
  */
-class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
+class User extends Authenticatable implements CanUseTickets, MustVerifyEmail, Followable
 {
     use HasApiTokens;
     use HasFactory;
@@ -48,6 +48,7 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
     use HasRoles;
     use HasTickets;
     use SoftDeletes;
+    use \App\Traits\Followable;
 
     /**
      * The attributes that are mass assignable.
@@ -121,7 +122,7 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
     {
         return $this->last_login_at;
     }
-    
+
     /**
      * @return HasMany<Post>
      */
@@ -159,11 +160,6 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
     public function postHistories(): HasMany
     {
         return $this->hasMany(PostHistory::class);
-    }
-
-    public function postFollows(): HasMany
-    {
-        return $this->hasMany(UserPostFollow::class);
     }
 
     /**
@@ -222,5 +218,10 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
     public function followedPosts(): MorphToMany
     {
         return $this->morphedByMany(Post::class, 'followable', 'user_follows');
+    }
+
+    public function isFollowedBy(Followable $followable): bool
+    {
+        return $followable instanceof User && $this->getKey() === $followable->getKey();
     }
 }

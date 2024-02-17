@@ -104,7 +104,11 @@ return [
     |
     */
 
-    'middleware' => ['web', DenyRegisterForForbiddenMails::class, ValidateRegisterReCaptcha::class],
+    'middleware' => [
+        'web',
+        DenyRegisterForForbiddenMails::class,
+        ValidateRegisterReCaptcha::class,
+    ],
 
     /*
     |--------------------------------------------------------------------------
