@@ -9,7 +9,6 @@ use Spatie\Enum\Enum;
 /**
  * @method static self created()
  * @method static self delayed()
- * @method static self changedDelay()
  * @method static self updated()
  * @method static self savedAsDraft()
  * @method static self archived()

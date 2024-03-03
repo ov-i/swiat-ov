@@ -6,7 +6,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeEncrypted;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
@@ -23,7 +22,7 @@ class StoreNewAttachmentJob implements ShouldQueue, ShouldBeEncrypted
      */
     public function __construct(
         private readonly string $disk,
-        private readonly UploadedFile $file,
+        private readonly string $file,
         private readonly string $dirPath,
         private readonly string $fileName
     ) {

@@ -5,6 +5,8 @@ use App\Livewire\Admin\Posts\Attachment;
 use App\Livewire\Admin\Posts\Category;
 use App\Livewire\Admin\Posts\Comment;
 use App\Livewire\Admin\Posts\Post;
+use App\Livewire\Admin\Posts\PostCreate;
+use App\Livewire\Admin\Posts\PostEdit;
 use App\Livewire\Admin\Posts\Tag;
 use App\Livewire\Admin\Tickets\Message;
 use App\Livewire\Admin\Tickets\MessageEdit;
@@ -31,6 +33,9 @@ Route::prefix('admin')->middleware($middlewares)->group(function () {
 
     Route::prefix('resource/posts')->group(function () {
         Route::get('/', Post::class)->name('admin.posts');
+        Route::get('/create', PostCreate::class)->name('admin.posts.create');
+        Route::get('/edit/{post:slug}', PostEdit::class)->name('admin.posts.edit');
+        // Route::get('/post/{post:slug}', Post::class)->name('admin.posts');
         Route::get('/categories', Category::class)->name('admin.categories');
         Route::get('/comments', Comment::class)->name('admin.comments');
         Route::get('/tags', Tag::class)->name('admin.tags');

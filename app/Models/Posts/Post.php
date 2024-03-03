@@ -37,7 +37,7 @@ class Post extends Model implements Followable
         'archived_at',
         'published_at',
         'should_be_published_at',
-        'description'
+        'excerpt'
     ];
 
     public function getTitle(): string
@@ -67,7 +67,7 @@ class Post extends Model implements Followable
 
     public function getStatus(): string
     {
-        return $this->status->value;
+        return $this->status;
     }
 
     public function isArchived(): bool
@@ -89,7 +89,7 @@ class Post extends Model implements Followable
         return $this->published_at;
     }
 
-    public function getPublishableDate(): ?DateTime
+    public function getPublishableDate(): ?string
     {
         return $this->should_be_published_at;
     }
@@ -136,7 +136,7 @@ class Post extends Model implements Followable
      */
     public function attachments(): BelongsToMany
     {
-        return $this->belongsToMany(Attachment::class);
+        return $this->belongsToMany(Attachment::class)->withTimestamps();
     }
 
     public function postHistories(): HasMany

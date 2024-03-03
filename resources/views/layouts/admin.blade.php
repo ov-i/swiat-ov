@@ -123,7 +123,7 @@
                     </section>
                 </nav>
 
-                <section class="main-content mt-10">
+                <section class="main-content mt-10 font-primary">
                     {{ $slot }}
                 </section>
             </main>
@@ -132,5 +132,6 @@
         @stack('modals')
 
         @livewireScripts
+
     </body>
 </html>

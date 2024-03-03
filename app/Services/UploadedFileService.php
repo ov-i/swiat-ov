@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Enums\Post\AttachmentAllowedMimeTypesEnum;
+use App\Enums\Post\ThumbnailAllowedMimeTypesEnum;
 use App\Exceptions\FileOverSizedException;
 use App\Exceptions\ForbiddenFileTypeException;
 use App\Jobs\StoreNewAttachmentJob;
@@ -14,14 +15,16 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Number;
+use Ramsey\Uuid\Uuid;
 
 abstract class UploadedFileService implements Arrayable
 {
-    private readonly string $storageResourcePath;
+    protected readonly FileSystem $fileSystem;
 
-    private readonly FileSystem $fileSystem;
+    private string $uploadDir;
+
+    private readonly string $storageResourcePath;
 
     private ?UploadedFile $file = null;
 
@@ -73,7 +76,8 @@ abstract class UploadedFileService implements Arrayable
     public function setFile(UploadedFile $file): self
     {
         $this->file = $file;
-        $hash = $this->fileSystem->hash($file, config('swiatov.file_hash_algo'));
+
+        $hash = $this->fileSystem->hash($file->getRealPath(), config('swiatov.file_hash_algo'));
 
         $this->setChecksum($hash);
         $this->setMimeType($file->getMimeType());
@@ -82,11 +86,6 @@ abstract class UploadedFileService implements Arrayable
         $this->setFileExtension($file->getExtension());
 
         return $this;
-    }
-
-    public function getRelativeStorePath(): string
-    {
-        return sprintf('%s', $this->getResource());
     }
 
     /**
@@ -105,17 +104,10 @@ abstract class UploadedFileService implements Arrayable
         return sprintf(
             '%s/%s/%s/%s',
             $this->getStoragePath(),
-            $this->getRelativeStorePath(),
+            $this->getResource(),
             $byDate,
             $this->getFileName()
         );
-    }
-
-    public function getRelativeLocation(): string
-    {
-        $storePath = "{$this->getStoragePath()}/{$this->getRelativeStorePath()}";
-
-        return sprintf('%s/%s', $storePath, $this->getCurrentDate());
     }
 
     /**
@@ -126,9 +118,8 @@ abstract class UploadedFileService implements Arrayable
     public function createFileName(): self
     {
         $originalName = $this->getOriginalName();
-        $checksum = $this->getChecksum();
 
-        $fileName = sprintf('%s_%s_%s', $this->getCurrentDate(), $checksum, $originalName);
+        $fileName = sprintf('%s_%s_%s', $this->getCurrentDate(), Uuid::uuid4(), $originalName);
 
         $this->setFileName($fileName);
 
@@ -139,17 +130,17 @@ abstract class UploadedFileService implements Arrayable
      * Stores a new file with file size and mime type constraints on selected disk.
      * Moreover, any uploaded file, is going to be saved as base64.
      *
+     * @param ?string $uploadDir stores file in Resource folder if null, uploadDir otherwise.
      * @param string $disk Default: public
      *
      * @return void
      */
     public function storeOnDisk(string $disk = 'public'): void
     {
-        $this->makeUploadDirWithDate();
         $mimeType = $this->getFileMimeType();
         $fileName = $this->createFileName()->getFileName();
 
-        $dirPath = sprintf('%s/%s/', $this->getRelativeStorePath(), $this->getCurrentDate());
+        $dirPath = $this->getUploadDir();
 
         if (false === $this->mimeTypeAllowed($mimeType)) {
             throw new ForbiddenFileTypeException("MimeType of {$mimeType} is forbidden.");
@@ -165,11 +156,7 @@ abstract class UploadedFileService implements Arrayable
 
         $file = $this->getContent();
 
-        if (false === app()->environment('testing')) {
-            dispatch(new StoreNewAttachmentJob($disk, $file, $dirPath, $fileName));
-        }
-
-        Storage::disk($disk)->putFileAs($dirPath, $file, $fileName);
+        dispatch(new StoreNewAttachmentJob($disk, $file->getRealPath(), $dirPath, $fileName));
     }
 
     /**
@@ -191,7 +178,9 @@ abstract class UploadedFileService implements Arrayable
 
     public function mimeTypeAllowed(string $mimeType): bool
     {
-        return in_array($mimeType, AttachmentAllowedMimeTypesEnum::toValues());
+        return
+            in_array($mimeType, AttachmentAllowedMimeTypesEnum::toValues()) ||
+            in_array($mimeType, ThumbnailAllowedMimeTypesEnum::toValues());
     }
 
     public function getStoragePath(): string
@@ -249,6 +238,17 @@ abstract class UploadedFileService implements Arrayable
         return $this->fileSystem->exists($path);
     }
 
+    public function getPublicUrl(): string
+    {
+        return asset("storage/{$this->getUploadDir()}/{$this->getFileName()}");
+    }
+
+    final public function setUploadDir(string $uploadDir): self
+    {
+        $this->uploadDir = $uploadDir;
+
+        return $this;
+    }
 
     public function toArray(): array
     {
@@ -259,7 +259,16 @@ abstract class UploadedFileService implements Arrayable
             'mimetype' => $this->getFileMimeType(),
             'original_name' => $this->getOriginalName(),
             'size' => $this->getFileSize(),
+            'public_url' => $this->getPublicUrl()
         ];
+    }
+
+    /**
+     * Gets upload dir with Resource path
+     */
+    final protected function getUploadDir(): string
+    {
+        return sprintf('%s/%s', $this->getResource(), $this->uploadDir);
     }
 
     /**
@@ -270,7 +279,7 @@ abstract class UploadedFileService implements Arrayable
      *
      * @return void
      */
-    protected function makeUploadDirWithDate(int $mode = 0755): void
+    final protected function makeUploadDir(int $mode = 0755): void
     {
         $dirPath = $this->getRelativeLocation();
 
@@ -279,9 +288,14 @@ abstract class UploadedFileService implements Arrayable
         }
     }
 
-    protected function fileOverSized(): bool
+    final protected function fileOverSized(): bool
     {
         return $this->getFileSize() > config('swiatov.max_file_size');
+    }
+
+    protected function getRelativeLocation(): string
+    {
+        return "{$this->getStoragePath()}/{$this->getResource()}";
     }
 
     protected function setFileName(string $fileName): self

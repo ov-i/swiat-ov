@@ -2,8 +2,10 @@
 
 namespace App\Jobs;
 
+use App\Enums\Post\PostHistoryActionEnum;
 use App\Enums\Post\PostStatusEnum;
 use App\Models\Posts\Post;
+use App\Repositories\Eloquent\Posts\PostHistoryRepository;
 use App\Repositories\Eloquent\Posts\PostRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeEncrypted;
@@ -23,7 +25,7 @@ class PublishPost implements ShouldQueue, ShouldBeEncrypted
      * Create a new job instance.
      */
     public function __construct(
-        private readonly Post $post
+        private readonly Post $post,
     ) {
     }
 
@@ -35,6 +37,10 @@ class PublishPost implements ShouldQueue, ShouldBeEncrypted
         /** @var PostRepository $postRepository */
         $postRepository = app(PostRepository::class);
 
+        /** @var PostHistoryRepository $postHistoryRepository */
+        $postHistoryRepository = app(PostHistoryRepository::class);
+
         $postRepository->setStatus($this->post, PostStatusEnum::published());
+        $postHistoryRepository->addHistory($this->post, PostHistoryActionEnum::published());
     }
 }

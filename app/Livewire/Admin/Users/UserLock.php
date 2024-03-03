@@ -55,14 +55,14 @@ class UserLock extends Component
         $reasonLength = strlen($this->lockForm->reason);
 
         if (self::REASON_MIN_CHARS > $reasonLength) {
-            session()->flash('notEnoughCars', __('Please provide min. 50 chars'));
+            session()->flash('notEnoughChars', __('Please provide min. 50 chars'));
             return;
         }
 
         $lockDuration = BanDurationEnum::from($this->lockForm->lockDuration);
         $reason = $this->lockForm->reason;
 
-        $this->userLockService->lockUser($user, new LockOption(lockDuration: $lockDuration, reason: $reason));
+        $this->userLockService->lockUser($user, new LockOption($lockDuration, $reason));
 
         session()->flash('userLocked', __("User [{$user->name}] has been locked successfully"));
 

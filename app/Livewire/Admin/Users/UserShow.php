@@ -4,6 +4,7 @@ namespace App\Livewire\Admin\Users;
 
 use App\Events\User\UserProfileImageDeleted;
 use App\Models\User;
+use App\Repositories\Eloquent\Users\UserRepository;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Response;
 use Livewire\Attributes\Computed;
@@ -15,30 +16,31 @@ use Livewire\Component;
 class UserShow extends Component
 {
     #[Locked, Url]
-    public int $userId = 0;
+    public int $userId;
 
-    public function mount(): void
-    {
+    private UserRepository $userRepository;
+
+    public function boot(
+        UserRepository $userRepository
+    ): void {
+        $this->userRepository = $userRepository;
+
         $this->userId = request('user');
     }
 
     #[Computed]
     public function user(): User
     {
-        /** @var ?User $user */
-        $user = User::query()->find($this->userId);
+        $user = $this->userRepository->findUserById($this->userId);
 
-        if (null === $user) {
-            abort(Response::HTTP_NOT_FOUND);
-        }
+        abort_if(blank($user), Response::HTTP_NOT_FOUND);
 
         return $user;
     }
 
     public function deleteImage(): void
     {
-        /** @var User $user */
-        $user = $this->user;
+        $user = $this->user();
 
         $user->deleteProfilePhoto();
 

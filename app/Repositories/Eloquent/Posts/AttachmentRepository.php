@@ -16,12 +16,16 @@ class AttachmentRepository extends BaseRepository
         parent::__construct($attachment);
     }
 
-    public function createAttachment(array $attachmentData): Attachment
+    public function createAttachment(array $attachmentData): Attachment|bool
     {
+        if (filled($this->findAttachmentViaChecksum($attachmentData['checksum']))) {
+            return $this->update(['checksum' => $attachmentData['checksum']]);
+        }
+
         return $this->create($attachmentData);
     }
 
-    public function deleteAttachment(Attachment $attachment): bool
+    public function deleteAttachment(Attachment &$attachment, bool $forceDelete = false): bool
     {
         $attachmentExists = $this->find($attachment->getKey());
 
@@ -29,14 +33,12 @@ class AttachmentRepository extends BaseRepository
             throw new AttachmentNotFound();
         }
 
-        return $attachment->delete();
+        return $this->delete($attachment, $forceDelete);
     }
 
     public function findAttachmentViaChecksum(string $checksum): ?Attachment
     {
-        return $this->getModel()->query()
-            ->where('checksum', $checksum)
-            ->first();
+        return $this->findBy('checksum', $checksum);
     }
 
     public function rename(string $newName): bool

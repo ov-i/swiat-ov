@@ -29,7 +29,7 @@ class PostHistoryRepository extends BaseRepository
 
         return $this->create([
             'post_id' => $post->getKey(),
-            'user' => $user->getParentKey(),
+            'user_id' => $user->getParentKey(),
             'action' => $action
         ]);
     }

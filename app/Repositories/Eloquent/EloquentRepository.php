@@ -4,6 +4,8 @@ namespace App\Repositories\Eloquent;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Schema;
 use Spatie\LaravelData\Data;
 
 abstract class EloquentRepository
@@ -39,5 +41,17 @@ abstract class EloquentRepository
     public function getModel(): Model
     {
         return $this->model;
+    }
+
+    protected function isSoftDeleteable(Model $model): bool
+    {
+        return
+            in_array(SoftDeletes::class, class_uses_recursive($model)) &&
+            $this->hasColumn('deleted_at');
+    }
+
+    protected function hasColumn(string $column): bool
+    {
+        return Schema::hasColumn($this->getModel()->getTable(), $column);
     }
 }

@@ -29,7 +29,7 @@ class EnsureUserIsNotBlocked
             if (true === $user->isBlocked()) {
                 auth()->guard('web')->logout();
 
-                $duration = $this->getDurationString();
+                $duration = $this->getDurationString($user);
 
                 return redirect()
                     ->route('login')
@@ -46,7 +46,7 @@ class EnsureUserIsNotBlocked
         return $next($request);
     }
 
-    private function getDurationString(): string
+    private function getDurationString(User &$user): string
     {
         return sprintf(
             '<br /><strong class="text-red-500">%s</strong>',

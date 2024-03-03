@@ -14,22 +14,22 @@ class User extends Component
 {
     use WithPagination;
 
-    public bool $userLocked = false;
-
     public function delete(int $userId): void
     {
         /** @var UserModel $user */
         $user = UserModel::find($userId);
 
+        $this->authorize('delete', $user);
+
         if (null === $user) {
             return;
         }
 
-        event(new UserDeleted($user));
-
         if ($user->isAdmin() || $user->isModerator()) {
             return;
         }
+
+        event(new UserDeleted($user));
 
         $user->delete();
 

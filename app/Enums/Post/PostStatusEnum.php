@@ -10,6 +10,7 @@ use Spatie\Enum\Enum;
  * @method static self unpublished()
  * @method static self delayed()
  * @method static self closed()
+ * @method static self draft()
  */
 final class PostStatusEnum extends Enum
 {

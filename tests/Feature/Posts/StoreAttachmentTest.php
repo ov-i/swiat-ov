@@ -78,7 +78,7 @@ describe('Store attachment test', function () {
         $fileService = $this->attachmentService->setFile($file)
             ->createFileName();
 
-        $fileService->storeOnDisk();
+        $fileService->storeOnDisk(uploadDir: $fileService->getCurrentDate());
 
         expect($fileService->getFileName())->not()->toBeNull();
         expect($fileService->getChecksum())->toBeString();
@@ -92,7 +92,7 @@ describe('Store attachment test', function () {
             ->createFileName();
 
         $request = new CreateAttachmentRequest($file);
-        $attachment = $fileService->createAttachment($request->toArray());
+        $attachment = $fileService->createAttachment($request);
 
         expect($attachment)->not()->toBeNull();
     });

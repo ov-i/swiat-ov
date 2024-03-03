@@ -15,7 +15,8 @@ use App\Repositories\Eloquent\Posts\AttachmentRepository;
 use App\Repositories\Eloquent\Posts\PostHistoryRepository;
 use App\Repositories\Eloquent\Posts\PostRepository;
 use Illuminate\Http\Response;
-use Illuminate\Support\Str;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Carbon;
 
 class PostService
 {
@@ -28,22 +29,13 @@ class PostService
     }
 
     /**
-     * @param array<array-key, mixed> $data Referenced data object
+     * @param CreatePostRequest $request Referenced data object
      */
     public function createPost(CreatePostRequest $request): Post
     {
-        $existingPost = $this->postRepository->findPostViaTitle($request->title);
+        throw_if($this->postRepository->postExists($request->title), PostAlreadyExistsException::class);
 
-        if (null !== $existingPost) {
-            throw new PostAlreadyExistsException(__("Post {$request->title} already exists"));
-        }
-
-        $post = $this->postRepository->createPost([
-            ...$request->toArray(),
-            'status' => PostStatusEnum::unpublished(),
-            'slug' => Str::slug($request->title)
-        ]);
-
+        $post = $this->postRepository->createPost($request->toArray());
         $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::created());
 
         $this->syncTags($post, $request);
@@ -56,10 +48,20 @@ class PostService
     {
         abort_if(true === $post->isPublished(), Response::HTTP_BAD_REQUEST);
 
-        if (null === $post->getPublishableDate()) {
+        if($post->isEvent() && $this->postRepository->isAnyEventPublished()) {
+            return;
+        } // only one event per time.
+
+        if (blank($post->getPublishableDate())) {
             $this->postRepository->setStatus($post, PostStatusEnum::published());
+            $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::published());
         } else {
-            PublishPost::dispatch($post)->delay($post->getPublishableDate());
+            $this->postRepository->setStatus($post, PostStatusEnum::delayed());
+            $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::delayed());
+
+            $delayDiff = Carbon::parse($post->getPublishableDate(), config('app.timezone'))->diffInSeconds();
+
+            PublishPost::dispatch($post)->delay($delayDiff);
         }
     }
 
@@ -67,11 +69,8 @@ class PostService
     {
         abort_if(true === $post->isClosed(), Response::HTTP_BAD_REQUEST);
 
-        if (true === $post->followedBy()->with('users')->count() > 0) {
-
-        }
-
         $this->postRepository->setStatus($post, PostStatusEnum::closed());
+        $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::closed());
     }
 
     public function editPost(Post &$post, UpdatePostRequest $updateData): bool
@@ -79,23 +78,43 @@ class PostService
         abort_if($post->isClosed(), Response::HTTP_BAD_REQUEST, __("Post [{$post->getKey()}] is closed and cannot be edited."));
 
         if (null !== $updateData->type) {
-            return $this->postRepository->editPost($post, $updateData->exceptWhen('thumbnail_path', !empty($post->getThumbnailPath))->toArray());
+            return $this->postRepository->editPost(
+                $post,
+                $updateData->exceptWhen('thumbnail_path', !empty($post->getThumbnailPath))->toArray()
+            );
         }
 
-        return $this->postRepository->editPost($post, $updateData->toArray());
+        $editedPost = $this->postRepository->editPost($post, $updateData->toArray());
+        $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::updated());
+
+        return $editedPost;
+    }
+
+    /**
+     * Deletes post by using eather soft delete or by using force delete.
+     */
+    public function deletePost(Post &$post, bool $softDelete = true): bool
+    {
+        $postExists = $this->postRepository->findBy('title', $post->getSlug());
+        if (!filled($postExists)) {
+            return false;
+        }
+
+        $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::deleted());
+        return true === $softDelete ? $post->delete() : $post->forceDelete();
     }
 
     /**
      * Checks if tags property exist in request. If so, syncs'em with post
      *
      * @param Post $post Referenced post
-     * @param CreatePostRequest Referenced data object
+     * @param array|CreatePostRequest Referenced data object
      */
     private function syncTags(Post &$post, CreatePostRequest &$data): void
     {
         $tags = $data->tags;
 
-        if (null === $tags || empty($tags)) {
+        if (blank($tags)) {
             return;
         }
 
@@ -110,16 +129,17 @@ class PostService
      */
     private function syncAttachments(Post &$post, CreatePostRequest &$data): void
     {
+        /** @var UploadedFile[]|null $attachments */
         $attachments = $data->attachments;
-        if (null === $attachments || empty($attachments)) {
+        if (blank($attachments)) {
             return;
         }
 
         foreach ($attachments as $attachment) {
-            $file = $this->attachmentService->setFile($attachment->attachment);
+            $file = $this->attachmentService->setFile($attachment);
             $existingAttachment = $this->attachmentRepository->findAttachmentViaChecksum($file->getChecksum());
 
-            if (null !== $existingAttachment) {
+            if (!blank($existingAttachment)) {
                 $post->attachments()->syncWithoutDetaching($existingAttachment->getKey());
             } else {
                 $fileName = $file->getFileName();

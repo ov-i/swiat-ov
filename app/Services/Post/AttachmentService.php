@@ -22,34 +22,34 @@ class AttachmentService extends UploadedFileService
         return 'attachments';
     }
 
-    public function createAttachment(CreateAttachmentRequest $request): Attachment|false
+    public function storeOnDisk($disk = 'public'): void
     {
-        $this->makeUploadDirWithDate();
-        $this->setFile($request->attachment)
-            ->createFileName()
+        $this->setUploadDir($this->getCurrentDate());
+
+        parent::storeOnDisk($disk);
+    }
+
+    public function createAttachment(CreateAttachmentRequest $request): Attachment|bool
+    {
+        $this->makeUploadDir();
+        $file = $this->setFile($request->attachment);
+
+        $file->setUploadDir($this->getCurrentDate())
             ->storeOnDisk();
 
-        $attachment = $this->attachmentRepository->findAttachmentViaChecksum($this->getChecksum());
-        if (true === $this->checksumExists($this->getChecksum())) {
-            $this->setChecksum($attachment->checksum);
-        }
-
-        $attachment = $this->attachmentRepository->createAttachment([
-            ...$this->toArray(),
-            'public_url' => $this->getPublicUrl(),
-        ]);
+        $attachment = $this->attachmentRepository->createAttachment($this->toArray());
 
         return $attachment;
     }
 
     /**
-     * Unlinks the
+     * Unlinks attachment from storage and deletes it from database
      */
-    public function deleteAttachment(Attachment &$attachment): bool
+    public function deleteAttachment(Attachment &$attachment, bool $forceDelete = false): bool
     {
         $this->unlinkFile($attachment->getFileName());
 
-        return $this->attachmentRepository->deleteAttachment($attachment);
+        return $this->attachmentRepository->deleteAttachment($attachment, $forceDelete);
     }
 
     public function getPublicUrl(): string
@@ -70,4 +70,12 @@ class AttachmentService extends UploadedFileService
 
         return null !== $attachment;
     }
+
+    protected function getRelativeLocation(): string
+    {
+        $resourceDir = parent::getRelativeLocation();
+
+        return sprintf('%s/%s', $resourceDir, $this->getCurrentDate());
+    }
+
 }

@@ -38,7 +38,7 @@
         "pestphp/pest-plugin-laravel": "^2.0",
         "spatie/laravel-ignition": "^2.0",
         "barryvdh/laravel-ide-helper": "^2.13",
-        "nunomaduro/larastan": "^2.6",
+        "larastan/larastan": "^2.6",
         "phpstan/phpstan": "^1.10",
         "predis/predis": "^2.2",
         "psalm/plugin-laravel": "^2.8",
