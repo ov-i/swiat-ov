@@ -3,6 +3,7 @@
 namespace App\Repositories\Eloquent;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Schema;
@@ -18,9 +19,9 @@ abstract class EloquentRepository
     /**
      * Gets all models from database
      *
-     * @return LengthAwarePaginator<Model>|null;
+     * @return LengthAwarePaginator<Model>|Collection<Model>|null;
      */
-    abstract protected function all(): ?LengthAwarePaginator;
+    abstract protected function all(): null|LengthAwarePaginator|Collection;
 
     /**
      * Finds the result based on id

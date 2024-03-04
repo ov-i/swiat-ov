@@ -2,77 +2,49 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Enums\ItemsPerPageEnum;
+use App\Exceptions\NotSearchableModelException;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Expression;
+use Laravel\Scout\Searchable;
 use Spatie\LaravelData\Data;
 
 class BaseRepository extends EloquentRepository
 {
     /**
-     * @return null|Collection<Model>
-     */
-    public function get(): ?Collection
-    {
-        return $this->getModel()->query()->get();
-    }
-
-    /**
      * @inheritDoc
      */
-    protected function all(): ?LengthAwarePaginator
-    {
+    public function all(
+        bool $paginate = true,
+        ?int $perPage = null,
+        string $orderBy = 'asc',
+        string $orderByColumn = 'id'
+    ): null|LengthAwarePaginator|Collection {
         $models = $this->getModel()
             ->query()
-            ->orderBy("id", "desc")
-            ->paginate(10);
+            ->orderBy($orderByColumn, $orderBy);
 
-        if (false === $models->isNotEmpty()) {
-            return null;
-        }
-
-        return $models;
+        return $paginate ? $this->toPaginated($models) : $models->get();
     }
 
-    protected function find(string|int $id): ?Model
+    public function searchBy(string $query, bool $paginate = true, ?int $perPage = null, ?callable $callback = null): Collection|LengthAwarePaginator
+    {
+        $classModel = $this->getModel()::class;
+        if (false === in_array(Searchable::class, class_uses_recursive($classModel))) {
+            throw new NotSearchableModelException("The $classModel model is not searchable");
+        }
+
+        $searched = $this->getModel()->search($query, $callback);
+
+        return $paginate ? $this->toPaginated($searched) : $searched->get();
+    }
+
+    public function find(string|int $id): ?Model
     {
         return $this->getModel()->query()->find($id);
-    }
-
-    /**
-     * @param Data|array<array-key, scalar> $data
-     */
-    protected function create(Data|array $data): ?Model
-    {
-        if (is_array($data)) {
-            return $this->getModel()->query()->create($data);
-        }
-
-        return $this->getModel()->query()->create($data->toArray());
-    }
-
-    /**
-     * @param Data|array<array-key, scalar> $data
-     */
-    protected function update(Data|array $data): bool
-    {
-        return $this->getModel()->query()->update($data);
-    }
-
-    /**
-     * Force delete works only for soft deleteable models.
-     */
-    protected function delete(Model &$model, bool $forceDelete = false): bool
-    {
-        if (true === $this->isSoftDeleteable($model) && $forceDelete) {
-            $forceDelete = true;
-
-            return $model->forceDelete();
-        }
-
-        return $model->delete();
     }
 
     /**
@@ -111,5 +83,52 @@ class BaseRepository extends EloquentRepository
     ): Builder {
         return $this->getModel()->query()
             ->where($params, $operator, $value, $boolean);
+    }
+
+    /**
+     * @param Data|array<array-key, scalar> $data
+     */
+    protected function create(Data|array $data): ?Model
+    {
+        if (is_array($data)) {
+            return $this->getModel()->query()->create($data);
+        }
+
+        return $this->getModel()->query()->create($data->toArray());
+    }
+
+    /**
+     * @param Data|array<array-key, scalar> $data
+     */
+    protected function update(Data|array $data): bool
+    {
+        return $this->getModel()->query()->update($data);
+    }
+
+    /**
+     * Force delete works only for soft deleteable models.
+     */
+    protected function delete(Model &$model, bool $forceDelete = false): bool
+    {
+        if (true === $this->isSoftDeleteable($model) && $forceDelete) {
+            $forceDelete = true;
+
+            return $model->forceDelete();
+        }
+
+        return $model->delete();
+    }
+
+    /**
+     * Paginates collection. If perPage is null, it sets perPage value to 10.
+     * 
+     * @param Builder $builder
+     * @param ?int $perPage Default: 10
+     */
+    protected function toPaginated(Builder &$builder, ?int $perPage = null)
+    {
+        $perPage = blank($perPage) ? ItemsPerPageEnum::DEFAULT : $perPage;
+
+        return $builder->paginate($perPage);
     }
 }
