@@ -17,12 +17,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Scout\Searchable;
+use Stringable;
 
-class Post extends Model implements Followable
+class Post extends Model implements Followable, Stringable
 {
     use SoftDeletes;
     use HasFactory;
     use \App\Traits\Followable;
+    use Searchable;
 
     protected $fillable = [
         'user_id',
@@ -40,6 +43,11 @@ class Post extends Model implements Followable
         'excerpt'
     ];
 
+    public function __toString(): string
+    {
+        return sprintf('[%s] %s', $this->getStatus(), $this->getTitle());
+    }
+
     public function getTitle(): string
     {
         return $this->title;
@@ -52,7 +60,7 @@ class Post extends Model implements Followable
 
     public function getType(): string
     {
-        return $this->type->value;
+        return $this->type;
     }
 
     public function getThumbnailPath(): ?string
@@ -81,7 +89,10 @@ class Post extends Model implements Followable
             return null;
         }
 
-        return $this->archived_at;
+        /** @var ?Date $archivedAt */
+        $archivedAt = $this->archived_at;
+
+        return $archivedAt;
     }
 
     public function getPublishedAt(): ?DateTime
@@ -178,5 +189,17 @@ class Post extends Model implements Followable
     public function isDelayed(): bool
     {
         return null !== $this->getPublishableDate();
+    }
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'title' => $this->getTitle(),
+            'slug' => $this->getSlug(),
+            'type' => $this->getType(),
+            'status' => $this->getStatus(),
+            'user' => $this->user()->first(),
+            'category' => $this->category()->first()
+        ];
     }
 }

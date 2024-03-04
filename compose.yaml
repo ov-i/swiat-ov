@@ -103,6 +103,18 @@ services:
       MH_MAILDIR_PATH: /home/mailpit
     networks:
       - blog-net
+  meilisearch:
+    image: getmeili/meilisearch:v1.6.2
+    tty: false
+    container_name: meilisearch
+    ports:
+      - "7700:7700"
+    volumes:
+      - ./docker/meilisearch/meili_data:/meili_data:rw
+    environment:
+      MEILI_MASTER_KEY: ${MEILISEARCH_KEY}
+    networks:
+      - blog-net
   grafana:
     image: grafana/grafana-oss
     container_name: grafana

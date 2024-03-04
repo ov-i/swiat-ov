@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Contracts\Followable;
 use App\Enums\Auth\BanDurationEnum;
 use App\Enums\Auth\RoleNamesEnum;
 use App\Enums\Auth\UserStatusEnum;
@@ -25,6 +24,7 @@ use Laravel\Cashier\Billable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Scout\Searchable;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -37,7 +37,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property ?DateTime $banned_at
  * @property ?BanDurationEnum $ban_duration
  */
-class User extends Authenticatable implements CanUseTickets, MustVerifyEmail, Followable
+class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
 {
     use HasApiTokens;
     use HasFactory;
@@ -45,10 +45,10 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail, Fo
     use Notifiable;
     use TwoFactorAuthenticatable;
     use Billable;
+    use Searchable;
     use HasRoles;
     use HasTickets;
     use SoftDeletes;
-    use \App\Traits\Followable;
 
     /**
      * The attributes that are mass assignable.
@@ -218,10 +218,5 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail, Fo
     public function followedPosts(): MorphToMany
     {
         return $this->morphedByMany(Post::class, 'followable', 'user_follows');
-    }
-
-    public function isFollowedBy(Followable $followable): bool
-    {
-        return $followable instanceof User && $this->getKey() === $followable->getKey();
     }
 }
