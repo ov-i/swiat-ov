@@ -9,6 +9,7 @@ use Spatie\Enum\Enum;
  * @method static self archived()
  * @method static self unpublished()
  * @method static self delayed()
+ * @method static self inTrash()
  * @method static self closed()
  * @method static self draft()
  */

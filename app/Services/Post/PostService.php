@@ -91,17 +91,23 @@ class PostService
     }
 
     /**
-     * Deletes post by using eather soft delete or by using force delete.
+     * Deletes post and saves history.
      */
-    public function deletePost(Post &$post, bool $softDelete = true): bool
+    public function deletePost(Post &$post, bool $forceDelete = false): bool
     {
-        $postExists = $this->postRepository->findBy('title', $post->getSlug());
+        $postExists = $this->postRepository->findBy('title', $post->getTitle());
         if (!filled($postExists)) {
             return false;
         }
 
-        $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::deleted());
-        return true === $softDelete ? $post->delete() : $post->forceDelete();
+        $deleted = $this->postRepository->deletePost($post, $forceDelete);
+        $historyAction = $forceDelete ? 
+            PostHistoryActionEnum::forceDeleted() : 
+            PostHistoryActionEnum::deleted();
+
+        $this->postHistoryRepository->addHistory($post, $historyAction);
+        
+        return $deleted;
     }
 
     /**

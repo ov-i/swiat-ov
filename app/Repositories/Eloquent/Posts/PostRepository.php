@@ -81,6 +81,15 @@ class PostRepository extends BaseRepository
         return $this->update(['thumbnail_path' => $path]);
     }
 
+    public function deletePost(Post &$post, bool $forceDelete = false): bool
+    {
+        $deleted = $this->delete($post, $forceDelete);
+
+        $this->setStatus($post, PostStatusEnum::inTrash());
+
+        return $deleted;
+    }
+
     /**
      * Tries to find any already published event or delayed and not published yet.
      */

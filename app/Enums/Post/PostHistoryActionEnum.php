@@ -13,6 +13,7 @@ use Spatie\Enum\Enum;
  * @method static self savedAsDraft()
  * @method static self archived()
  * @method static self deleted()
+ * @method static self forceDeleted()
  * @method static self unpublished()
  * @method static self published()
  * @method static self closed()

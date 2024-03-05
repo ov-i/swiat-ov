@@ -8,6 +8,7 @@ use App\Contracts\Followable;
 use App\Exceptions\AlreadyFollowedEntity;
 use App\Exceptions\SelfFollowedException;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 
 class UserFollowService
 {
@@ -21,7 +22,7 @@ class UserFollowService
      */
     public function follow(User &$user, Followable $followable): bool
     {
-        if($user->isFollowedBy($followable)) {
+        if(in_array(Followable::class, class_implements($user)) && $user->isFollowedBy($followable)) {
             info("User [{$user->getName()}] tried to follow himself.");
             throw new SelfFollowedException('Cannot follow yourself!');
         }

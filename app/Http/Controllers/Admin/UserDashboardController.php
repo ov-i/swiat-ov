@@ -19,7 +19,7 @@ class UserDashboardController extends Controller
      */
     public function index(Request $request): View
     {
-        $users = $this->userRepository->getAllUsers();
+        $users = $this->userRepository->all();
 
         return view('admin.users.index', compact('users'));
     }

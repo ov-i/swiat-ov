@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin\Posts;
 
 use App\Models\Posts\Post;
+use App\Repositories\Eloquent\Posts\PostRepository;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Url;
@@ -21,9 +22,9 @@ class PostEdit extends Component
         $this->post = request('post');
     }
 
-    public function render(): View
-    {
+    public function render(
+        PostRepository $postRepository,
+    ): View {
         return view('livewire.admin.posts.post-edit');
     }
-
 }

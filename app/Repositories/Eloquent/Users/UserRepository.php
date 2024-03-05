@@ -5,7 +5,6 @@ namespace App\Repositories\Eloquent\Users;
 use App\Enums\Auth\UserStatusEnum;
 use App\Models\User;
 use App\Repositories\Eloquent\BaseRepository;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
 class UserRepository extends BaseRepository
@@ -18,14 +17,6 @@ class UserRepository extends BaseRepository
         User $user
     ) {
         parent::__construct($user);
-    }
-
-    /**
-     * @return LengthAwarePaginator<User>|null
-     */
-    public function getAllUsers(): ?LengthAwarePaginator
-    {
-        return $this->all();
     }
 
     /**
@@ -42,11 +33,11 @@ class UserRepository extends BaseRepository
      */
     public function getUsersByStatus(UserStatusEnum $status): Collection
     {
-        return $this->getModel()->where("status", $status)->get();
+        return $this->findAllBy('status', $status);
     }
 
-    public function getUserStatus(User &$user): string
+    public function deleteUser(User &$user, bool $forceDelete = false): void
     {
-        return $user->status;
+        $this->delete($user, $forceDelete);
     }
 }

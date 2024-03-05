@@ -2,10 +2,9 @@
 
 namespace App\Livewire\Admin\Users;
 
-use App\Events\Auth\UserDeleted;
-use App\Models\User as UserModel;
 use App\Repositories\Eloquent\Users\UserRepository;
 use App\Services\UserActivity\UserActivityService;
+use App\Services\Users\UserService;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -14,34 +13,38 @@ class User extends Component
 {
     use WithPagination;
 
+    private UserService $userService;
+
+    private UserRepository $userRepository;
+
+    public function boot(
+        UserService $userService,
+        UserRepository $userRepository
+    ): void {
+        $this->userService = $userService;
+        $this->userRepository = $userRepository;
+    }
+
     public function delete(int $userId): void
     {
-        /** @var UserModel $user */
-        $user = UserModel::find($userId);
+        $user = $this->userRepository->find($userId);
 
         $this->authorize('delete', $user);
 
-        if (null === $user) {
+        if (blank($user) || ($user->isAdmin() || $user->isModerator())) {
             return;
         }
 
-        if ($user->isAdmin() || $user->isModerator()) {
-            return;
-        }
-
-        event(new UserDeleted($user));
-
-        $user->delete();
+        $this->userService->deleteUser($user);
 
         session()->flash('user-deleted', "User with id [{$userId}] has been deleted.");
     }
 
     #[Layout('layouts.admin')]
     public function render(
-        UserRepository $userRepository,
         UserActivityService $activityService,
     ) {
-        $users = $userRepository->getAllUsers();
+        $users = $this->userRepository->all();
 
         return view('livewire.admin.users.user', [
             'users' => $users,

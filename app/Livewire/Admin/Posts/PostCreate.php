@@ -58,8 +58,8 @@ class PostCreate extends Component
     #[Layout('layouts.admin')]
     public function render(): View
     {
-        $categories = $this->categoryRepository->get();
-        $tags = $this->tagRepository->get();
+        $categories = $this->categoryRepository->all(paginate: false);
+        $tags = $this->tagRepository->all(paginate: false);
 
         return view('livewire.admin.posts.post-create', ['categories' => $categories, 'tags' => $tags]);
     }
@@ -112,10 +112,9 @@ class PostCreate extends Component
         return AttachmentAllowedMimeTypesEnum::toValues();
     }
 
-    #[Computed]
-    public function canBePublished(): bool
+    public function cantBePublished(): bool
     {
-        return !$this->isEvent() && $this->postRepository->isAnyEventPublished();
+        return $this->isEvent() && $this->postRepository->isAnyEventPublished();
     }
 
     private function saveThumbnailFile(Post &$post): void
@@ -161,7 +160,7 @@ class PostCreate extends Component
 
         $request = CreatePostRequest::from($formContent);
 
-        if (!$this->canBePublished()) {
+        if ($this->cantBePublished()) {
             return $this->postService->createPost($request);
         }
 

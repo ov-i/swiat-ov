@@ -4,8 +4,8 @@ namespace App\Repositories\Eloquent;
 
 use App\Enums\ItemsPerPageEnum;
 use App\Exceptions\NotSearchableModelException;
-use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Expression;
@@ -30,8 +30,11 @@ class BaseRepository extends EloquentRepository
         return $paginate ? $this->toPaginated($models) : $models->get();
     }
 
-    public function searchBy(string $query, bool $paginate = true, ?int $perPage = null, ?callable $callback = null): Collection|LengthAwarePaginator
-    {
+    public function searchBy(
+        string $query, 
+        bool $paginate = true, 
+        callable $callback = null
+    ): Collection|LengthAwarePaginator {
         $classModel = $this->getModel()::class;
         if (false === in_array(Searchable::class, class_uses_recursive($classModel))) {
             throw new NotSearchableModelException("The $classModel model is not searchable");
