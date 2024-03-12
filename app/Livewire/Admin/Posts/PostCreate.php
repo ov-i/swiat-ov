@@ -67,7 +67,13 @@ class PostCreate extends Component
     public function save(): void
     {
         $this->authorize('writePost');
-        $this->createPostForm->validate();
+
+        $validated = $this->createPostForm->validate();
+        if ($this->postRepository->postExists($validated['title'])) {
+            $this->createPostForm->addError('title', __('The title has already been taken.'));
+
+            return;
+        }
 
         $this->saveAttachments();
 
@@ -130,7 +136,7 @@ class PostCreate extends Component
 
         $thumbnailFile->storeOnDisk();
 
-        $this->postRepository->updateThumbnailPath(path: $thumbnailFile->getPublicUrl());
+        $this->postRepository->updateThumbnailPath($post, path: $thumbnailFile->getPublicUrl());
     }
 
     /**

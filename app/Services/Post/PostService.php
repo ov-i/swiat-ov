@@ -14,12 +14,16 @@ use App\Models\Posts\Post;
 use App\Repositories\Eloquent\Posts\AttachmentRepository;
 use App\Repositories\Eloquent\Posts\PostHistoryRepository;
 use App\Repositories\Eloquent\Posts\PostRepository;
+use App\Traits\IntersectsArray;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 class PostService
 {
+    use IntersectsArray;
+
     public function __construct(
         private readonly PostRepository $postRepository,
         private readonly AttachmentRepository $attachmentRepository,
@@ -42,6 +46,30 @@ class PostService
         $this->syncAttachments($post, $request);
 
         return $post;
+    }
+
+    public function editPost(Post &$post, array $updateData): bool
+    {
+        $request =  UpdatePostRequest::from($updateData);
+        $requestTitle = $request->title;
+
+        if ($this->postRepository->postExists($requestTitle) && $requestTitle !== $post->getTitle()) {
+            throw new PostAlreadyExistsException("Post [{$requestTitle}] already exists.");
+        }
+
+        if ($requestTitle !== $post->getTitle()) {
+            $newSlug = Str::slug($requestTitle);
+
+            return $this->postRepository->editPost($post, [...$request->toArray(), 'slug' => $newSlug]);
+        }
+
+        $this->syncTags($post, $request);
+        $this->syncAttachments($post, $request);
+
+        $editedPost = $this->postRepository->editPost($post, $request->toArray());
+        $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::updated());
+
+        return $editedPost;
     }
 
     public function publishPost(Post &$post): void
@@ -73,23 +101,6 @@ class PostService
         $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::closed());
     }
 
-    public function editPost(Post &$post, UpdatePostRequest $updateData): bool
-    {
-        abort_if($post->isClosed(), Response::HTTP_BAD_REQUEST, __("Post [{$post->getKey()}] is closed and cannot be edited."));
-
-        if (null !== $updateData->type) {
-            return $this->postRepository->editPost(
-                $post,
-                $updateData->exceptWhen('thumbnail_path', !empty($post->getThumbnailPath))->toArray()
-            );
-        }
-
-        $editedPost = $this->postRepository->editPost($post, $updateData->toArray());
-        $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::updated());
-
-        return $editedPost;
-    }
-
     /**
      * Deletes post and saves history.
      */
@@ -101,12 +112,12 @@ class PostService
         }
 
         $deleted = $this->postRepository->deletePost($post, $forceDelete);
-        $historyAction = $forceDelete ? 
-            PostHistoryActionEnum::forceDeleted() : 
+        $historyAction = $forceDelete ?
+            PostHistoryActionEnum::forceDeleted() :
             PostHistoryActionEnum::deleted();
 
         $this->postHistoryRepository->addHistory($post, $historyAction);
-        
+
         return $deleted;
     }
 
@@ -116,7 +127,7 @@ class PostService
      * @param Post $post Referenced post
      * @param array|CreatePostRequest Referenced data object
      */
-    private function syncTags(Post &$post, CreatePostRequest &$data): void
+    private function syncTags(Post &$post, CreatePostRequest|UpdatePostRequest &$data): void
     {
         $tags = $data->tags;
 
@@ -133,7 +144,7 @@ class PostService
      * @param Post $post Referenced post
      * @param CreatePostRequest Referenced data object
      */
-    private function syncAttachments(Post &$post, CreatePostRequest &$data): void
+    private function syncAttachments(Post &$post, CreatePostRequest|UpdatePostRequest &$data): void
     {
         /** @var UploadedFile[]|null $attachments */
         $attachments = $data->attachments;

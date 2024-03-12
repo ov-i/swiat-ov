@@ -22,8 +22,12 @@ class PostRepository extends BaseRepository
     /**
      * @param array<array-key, scalar> $postData
      */
-    public function createPost(array $postData): Post
+    public function createPost(array $postData): Post|false
     {
+        if($this->postExists((string) $postData['title'])) {
+            return false;
+        }
+
         return $this->create([
             ...$postData,
             'user_id' => auth()->id(),
@@ -33,9 +37,13 @@ class PostRepository extends BaseRepository
         ]);
     }
 
-    public function editPost(Post &$post, array $postData): bool
+    public function editPost(Post &$post, array $requestData): bool
     {
-        return $post->update($postData);
+        if ($this->postExists($requestData['title']) || $post->isClosed()) {
+            return false;
+        }
+
+        return $this->update(model: $post, data: $requestData);
     }
 
     public function setStatus(Post &$post, PostStatusEnum $status): self
@@ -68,17 +76,16 @@ class PostRepository extends BaseRepository
         return $this->findBy('title', $title);
     }
 
-
     public function postExists(string $title): bool
     {
-        $existingPost = $this->findPostViaTitle($title);
+        $post = $this->findPostViaTitle($title);
 
-        return filled($existingPost);
+        return filled($post) || $this->isTitleDuplicated($title);
     }
 
-    public function updateThumbnailPath(string $path): bool
+    public function updateThumbnailPath(Post &$post, string $path): bool
     {
-        return $this->update(['thumbnail_path' => $path]);
+        return $this->update($post, ['thumbnail_path' => $path]);
     }
 
     public function deletePost(Post &$post, bool $forceDelete = false): bool
@@ -88,6 +95,16 @@ class PostRepository extends BaseRepository
         $this->setStatus($post, PostStatusEnum::inTrash());
 
         return $deleted;
+    }
+
+    /**
+     * Checks if title exists by converting it to sluggable.
+     */
+    private function isTitleDuplicated(string $requestTitle): bool
+    {
+        $slug = $this->findBy('slug', Str::slug($requestTitle));
+
+        return filled($slug);
     }
 
     /**

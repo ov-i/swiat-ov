@@ -42,13 +42,7 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('writePost', [PostPolicy::class, 'create']);
 
-        Gate::define('canEditPost', function (User $user, Post $post) {
-            return Gate::allows('viewAdmin', ['user' => $user]) || (
-                $user->hasRole(RoleNamesEnum::vipMember()->value) &&
-                $user->isPostAuthor($post) &&
-                !$post->isEvent()
-            );
-        });
+        Gate::define('canEditPost', [PostPolicy::class, 'update']);
 
         Gate::define('read-ticket', function (User $user, Ticket $ticket) {
             return $user->isAdmin() ||

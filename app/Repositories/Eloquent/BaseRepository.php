@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Expression;
+use Laravel\Scout\Builder as ScoutBuilder;
 use Laravel\Scout\Searchable;
 use Spatie\LaravelData\Data;
 
@@ -103,10 +104,11 @@ class BaseRepository extends EloquentRepository
     /**
      * @param Data|array<array-key, scalar> $data
      */
-    protected function update(Data|array $data): bool
+    protected function update(Model &$model, Data|array $data): bool
     {
-        return $this->getModel()->query()->update($data);
+        return $model->update($data);
     }
+    
 
     /**
      * Force delete works only for soft deleteable models.
@@ -115,6 +117,10 @@ class BaseRepository extends EloquentRepository
     {
         if (true === $this->isSoftDeleteable($model) && $forceDelete) {
             $forceDelete = true;
+
+            foreach ($model->getRelations() as $relation) {
+                // TODO: sprawzić na podstawie model:show czy model ma jakieś relacje
+            }
 
             return $model->forceDelete();
         }
@@ -128,7 +134,7 @@ class BaseRepository extends EloquentRepository
      * @param Builder $builder
      * @param ?int $perPage Default: 10
      */
-    protected function toPaginated(Builder &$builder, ?int $perPage = null)
+    protected function toPaginated(Builder|ScoutBuilder &$builder, ?int $perPage = null)
     {
         $perPage = blank($perPage) ? ItemsPerPageEnum::DEFAULT : $perPage;
 

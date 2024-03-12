@@ -3,6 +3,7 @@
 namespace App\Models\Posts;
 
 use App\Contracts\Followable;
+use App\Contracts\Sluggable;
 use App\Enums\Post\PostStatusEnum;
 use App\Enums\Post\PostTypeEnum;
 use App\Models\PostHistory;
@@ -17,10 +18,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 use Laravel\Scout\Searchable;
 use Stringable;
 
-class Post extends Model implements Followable, Stringable
+class Post extends Model implements Followable, Stringable, Sluggable
 {
     use SoftDeletes;
     use HasFactory;
@@ -45,7 +47,12 @@ class Post extends Model implements Followable, Stringable
 
     public function __toString(): string
     {
-        return sprintf('[%s] %s', $this->getStatus(), $this->getTitle());
+        return sprintf('[%s] %s', ucfirst($this->getStatus()), $this->getTitle());
+    }
+
+    public function toSlug(): string
+    {
+        return Str::slug($this->getTitle());
     }
 
     public function getTitle(): string
@@ -71,6 +78,11 @@ class Post extends Model implements Followable, Stringable
     public function getContent(): string
     {
         return $this->content;
+    }
+
+    public function getExcerpt(): string
+    {
+        return $this->excerpt;
     }
 
     public function getStatus(): string
@@ -173,12 +185,12 @@ class Post extends Model implements Followable, Stringable
 
     public function isPublished(): bool
     {
-        return $this->getStatus() === PostStatusEnum::published();
+        return $this->getStatus() === PostStatusEnum::published()->value;
     }
 
     public function isClosed(): bool
     {
-        return $this->getStatus() === PostStatusEnum::closed();
+        return $this->getStatus() === PostStatusEnum::closed()->value;
     }
 
     public function isEvent(): bool

@@ -38,7 +38,10 @@ class PostPolicy
      */
     public function update(User $user, Post $post): bool
     {
-        return Gate::allows('viewAdmin', [$user]) || $user->isPostAuthor($post);
+        return Gate::allows('viewAdmin', [$user]) || (
+            $user->isPostAuthor($post) &&
+            !$post->isEvent()
+        );
     }
 
     /**
