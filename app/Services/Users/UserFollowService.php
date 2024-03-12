@@ -8,7 +8,6 @@ use App\Contracts\Followable;
 use App\Exceptions\AlreadyFollowedEntity;
 use App\Exceptions\SelfFollowedException;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
 
 class UserFollowService
 {

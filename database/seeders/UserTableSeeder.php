@@ -16,7 +16,7 @@ class UserTableSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create();        
+        User::factory()->create();
         Permission::factory()->count(count(PermissionsEnum::toValues()))->create();
         Role::factory()->count(RoleNamesEnum::count())->create();
 

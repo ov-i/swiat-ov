@@ -22,7 +22,7 @@ class PostRepository extends BaseRepository
     /**
      * @param array<array-key, scalar> $postData
      */
-    public function createPost(array $postData): Post|false
+    public function createPost($postData): Post|false
     {
         if($this->postExists((string) $postData['title'])) {
             return false;
