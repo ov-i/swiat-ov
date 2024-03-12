@@ -24,7 +24,6 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
         ])->validateWithBag('updateProfileInformation');
 
         if (isset($input['photo'])) {
-            /** @phpstan-ignore-next-line */
             $user->updateProfilePhoto($input['photo']);
         }
 

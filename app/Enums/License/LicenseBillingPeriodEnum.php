@@ -8,6 +8,6 @@ use Spatie\Enum\Enum;
  * @method static self montly()
  * @method static self annually()
  */
-final class LicenseBillingPeriodEnum extends Enum
+class LicenseBillingPeriodEnum extends Enum
 {
 }

@@ -41,7 +41,7 @@ class CreateTicketRequestData extends Data
         #[Max(255)]
         public readonly string $title,
         #[Min(30), Nullable()]
-        public readonly string $message = '',
+        public readonly string $message,
     ) {
     }
 }

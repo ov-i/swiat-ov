@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\Tickets;
 
-use App\Exceptions\InvalidOperatorAssignmentException;
 use App\Models\Tickets\Ticket;
 use App\Models\User;
 
@@ -13,20 +12,16 @@ class TicketService
     /**
      * Picks an operator for current ticket
      *
-     * @param User& $operator A user with role moderator / admin.
-     * @param Ticket& $ticket Already existing ticket
+     * @param Ticket $ticket Already existing ticket
+     * @param User $operator A user with role moderator / admin.
      *
-     * @return bool
-     * @throws InvalidOperatorAssignmentException If user is a ticket
+     * @return Ticket
      */
-    public function pickOperator(User &$operator, Ticket &$ticket): bool
+    public function pickOperator(Ticket $ticket, User $operator): Ticket
     {
-        if ($ticket->user_id === $operator->id) {
-            throw new InvalidOperatorAssignmentException(__('ticket.invalid_operator'));
-        }
+        $ticket->assigned_to = $operator->id;
+        $ticket->update();
 
-        return $ticket->update([
-            'assigned_to' => $operator->id,
-        ]);
+        return $ticket;
     }
 }

@@ -5,6 +5,7 @@ namespace App\Repositories\Eloquent\Auth;
 use App\Data\Auth\RegisterRequestData;
 use App\Models\User;
 use App\Repositories\Eloquent\BaseRepository;
+use Illuminate\Database\Eloquent\Model;
 
 class AuthRepository extends BaseRepository
 {
@@ -17,9 +18,9 @@ class AuthRepository extends BaseRepository
      * @param array<string, string>|RegisterRequestData $requestData
      * @return User|null
      */
-    public function createUser(array|RegisterRequestData $requestData): ?User
+    public function createUser(array|RegisterRequestData $requestData): ?Model
     {
-        /** @phpstan-ignore-next-line */
+        /** @var User $user */
         return $this->create($requestData);
     }
 }

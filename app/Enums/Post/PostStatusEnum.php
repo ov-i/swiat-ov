@@ -8,11 +8,8 @@ use Spatie\Enum\Enum;
  * @method static self published()
  * @method static self archived()
  * @method static self unpublished()
- * @method static self delayed()
- * @method static self inTrash()
  * @method static self closed()
- * @method static self draft()
  */
-final class PostStatusEnum extends Enum
+class PostStatusEnum extends Enum
 {
 }

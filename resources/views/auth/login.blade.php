@@ -1,21 +1,5 @@
 <x-guest-layout>
     <x-authentication-card>
-        @if (session('block'))
-            <div class="container mb-3">
-                <div class="row">
-                    <div class="col-md-12 text-center">
-                        <h2 class="text-xl mb-3">
-                            You are 
-                            <strong class="text-red-500">blocked!</strong>
-                        </h2>
-                        <p class="text-sm text-gray-500">
-                            {!! session('block') !!}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        @endif
-
         <x-slot name="logo">
             <x-authentication-card-logo />
         </x-slot>

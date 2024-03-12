@@ -29,6 +29,7 @@ class AttachmentFactory extends Factory
         $filename = sprintf('%s.%s', fake()->slug(2), fake()->fileExtension());
 
         return [
+            'post_id' => PostFactory::new()->create()->id,
             'original_name' => $filename,
             'filename' => sprintf('%s%s', fake()->uuid(), $filename),
             'checksum' => fake()->uuid(),

@@ -6,9 +6,6 @@ use App\Enums\Auth\PermissionsEnum;
 
 class SubAuthorHasPermissionsStrategy implements RoleHasPermissionsStrategyInterface
 {
-    /**
-     * @inheritDoc
-     */
     public function boot(): array
     {
         return [

@@ -2,8 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Enums\Auth\BanDurationEnum;
-use App\Enums\Auth\UserStatusEnum;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -27,19 +25,18 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        $adminPass = 'password';
-        if (false === app()->environment('testing')) {
-            $adminPass = config('app.admin_pass');
+        if (app()->environment('production')) {
+            return [
+                'name' => 'ov',
+                'email' => 'ov@swiat-ov.pl',
+                'profile_photo_path' => fake()->imageUrl(640, 480, 'user'), // TODO: upload real photo profile
+                'email_verified_at' => now(),
+                'password' => bcrypt(config('admin_pass')),
+                'remember_token' => Str::random(10),
+            ];
         }
 
-        return [
-            'name' => 'ov',
-            'email' => 'ov@swiat-ov.pl',
-            'ip' => fake()->ipv4(),
-            'email_verified_at' => now(),
-            'password' => bcrypt($adminPass),
-            'remember_token' => Str::random(10),
-        ];
+        return $this->generateFakeUsers();
     }
 
     /**
@@ -52,12 +49,17 @@ class UserFactory extends Factory
         ]);
     }
 
-    public function locked(): static
+    private function generateFakeUsers(): array
     {
-        return $this->state(fn (array $attributes) => [
-            'status' => UserStatusEnum::banned(),
-            'banned_at' => now(),
-            'ban_duration' => BanDurationEnum::oneDay()->value
-        ]);
+        $userEmailNumber = fake()->unique()->numberBetween(1, 4);
+        return [
+            'name' => fake()->unique()->userName(),
+            'ip' => fake()->ipv4(),
+            'email' => "user@example{$userEmailNumber}.com",
+            'profile_photo_path' => fake()->imageUrl(640, 480, 'user'),
+            'email_verified_at' => now(),
+            'password' => bcrypt('password'),
+            'remember_token' => Str::random(10),
+        ];
     }
 }

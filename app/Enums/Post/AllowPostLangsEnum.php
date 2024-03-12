@@ -14,6 +14,6 @@ use Spatie\Enum\Enum;
  * @method static self sp()
  * @method static self fr()
  */
-final class AllowPostLangsEnum extends Enum
+class AllowPostLangsEnum extends Enum
 {
 }

@@ -16,10 +16,5 @@ return [
     'failed' => 'Podane dane nie istnieją w naszej bazie',
     'password' => 'Hasło jest niepoprawne',
     'throttle' => 'Wykryto zbyt wiele prób logowania. Prosimy spróbować za :seconds sekund.',
-    'invalid_role_assignment' => "Rola 'Vip Member' nie może być używana samodzielnie.",
-    'block_header' => 'Twoje konto zostało zablokowane.',
-    'blocked' => 'Użytkownik :user został zablokowany przez: :duration.',
-    'block_reason' => 'Drogi użytkowniku, zostałeś zablokowany z powodu: :reason.',
-    'invalid_block_history_record' => 'Nie można zapisać historii z blokadą użytkownika bez czasu trwania.',
-    'user_block_history_not_found' => 'Nie odnaleziono wpisu w historii blokowań użytkownika :user z czasem trwania :duration'
+    'invalid_role_assignment' => "Rola 'Vip Member' nie może być używana samodzielnie."
 ];

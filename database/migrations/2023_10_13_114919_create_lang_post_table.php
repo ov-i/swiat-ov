@@ -14,12 +14,7 @@ return new class () extends Migration {
         Schema::create('lang_post', function (Blueprint $table) {
             $table->id();
             $table->foreignId('post_id')->constrained('posts');
-
-            if (config('database.default') === 'mysql') {
-                $table->set('langs', AllowPostLangsEnum::toValues());
-            } else {
-                $table->enum('langs', AllowPostLangsEnum::cases());
-            }
+            $table->set('langs', AllowPostLangsEnum::toValues());
             $table->timestamps();
         });
     }

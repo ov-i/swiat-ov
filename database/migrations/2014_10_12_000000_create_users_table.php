@@ -1,7 +1,5 @@
 <?php
 
-use App\Enums\Auth\BanDurationEnum;
-use App\Enums\Auth\UserStatusEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -21,12 +19,8 @@ return new class () extends Migration {
             $table->ipAddress('ip');
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable();
-            $table->enum('status', UserStatusEnum::toValues())->default(UserStatusEnum::active()->value);
-            $table->timestamp('last_login_at')->nullable();
-            $table->enum('ban_duration', BanDurationEnum::toValues())->nullable();
-            $table->timestamp('banned_at')->nullable();
             $table->string('profile_photo_path', 2048)->nullable();
-            $table->timestampsTz();
+            $table->timestamps();
         });
     }
 

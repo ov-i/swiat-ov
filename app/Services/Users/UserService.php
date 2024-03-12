@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\Users;
 
-use App\Enums\ItemsPerPageEnum;
-use App\Events\Auth\UserDeleted;
 use App\Models\User;
 use App\Repositories\Eloquent\Users\UserRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -18,28 +16,32 @@ class UserService
     }
 
     /**
-     * @return ?LengthAwarePaginator<User>
+     * Gets all tickets that belong to a User, and paginates them.
+     *
+     * @param User $user
+     *
+     * @return LengthAwarePaginator|null Returns null, if user was not found.
      */
-    public function getUsersWithRoles(): ?LengthAwarePaginator
+    public function getUserTickets(User $user): ?LengthAwarePaginator
     {
-        $users = $this->userRepository
-            ->getModel()
-            ->query()
-            ->orderBy('id')
-            ->with(['roles'])
-            ->paginate(ItemsPerPageEnum::DEFAULT);
-
-        if (true === $users->isEmpty()) {
+        if (false === $this->hasAnyTickets($user)) {
             return null;
         }
 
-        return $users;
+        return $user->tickets()
+            ->orderByDesc('priority')
+            ->paginate(10);
     }
 
-    public function deleteUser(User &$user, bool $forceDelete = false): void
+    /**
+     * Checks if user has any tickets.
+     *
+     * @param User $user
+     *
+     * @return bool
+     */
+    public function hasAnyTickets(User $user): bool
     {
-        $this->userRepository->deleteUser($user, $forceDelete);
-
-        event(new UserDeleted($user));        
+        return 0 === count($user->tickets()->get());
     }
 }

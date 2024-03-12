@@ -11,7 +11,7 @@ use Spatie\Enum\Enum;
  * @method static self subAuthor()
  * @method static self vipMember()
  */
-final class RoleNamesEnum extends Enum
+class RoleNamesEnum extends Enum
 {
     public static function count(): int
     {

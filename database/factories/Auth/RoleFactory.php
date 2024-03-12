@@ -31,7 +31,7 @@ class RoleFactory extends Factory
 
         return [
             'name' => $role,
-            'guard_name' => 'web',
+            'guard_name' => $role === RoleNamesEnum::subAuthor()->value ? 'api' : 'web',
         ];
     }
 }

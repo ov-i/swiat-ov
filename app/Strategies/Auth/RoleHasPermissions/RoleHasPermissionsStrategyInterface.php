@@ -5,7 +5,7 @@ namespace App\Strategies\Auth\RoleHasPermissions;
 interface RoleHasPermissionsStrategyInterface
 {
     /**
-     * @return array<int|string, int|string>
+     * @return array<string>
      */
     public function boot(): array;
 }

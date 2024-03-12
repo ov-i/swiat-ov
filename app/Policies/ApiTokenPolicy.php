@@ -13,7 +13,6 @@ class ApiTokenPolicy
      */
     public function viewAny(User $user): bool
     {
-        /** @phpstan-ignore-next-line */
         return $user->can(PermissionsEnum::tokenIndex()->value);
     }
 
@@ -22,7 +21,6 @@ class ApiTokenPolicy
      */
     public function view(User $user): bool
     {
-        /** @phpstan-ignore-next-line */
         return $user->can(PermissionsEnum::tokenRead()->value);
     }
 

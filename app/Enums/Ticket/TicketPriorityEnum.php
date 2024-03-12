@@ -9,6 +9,6 @@ use Spatie\Enum\Enum;
  * @method static self medium()
  * @method static self urgent()
  */
-final class TicketPriorityEnum extends Enum
+class TicketPriorityEnum extends Enum
 {
 }

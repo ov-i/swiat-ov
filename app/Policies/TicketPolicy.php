@@ -15,7 +15,7 @@ class TicketPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can((string) PermissionsEnum::ticketIndex()->value);
+        return $user->can(PermissionsEnum::ticketIndex()->value);
     }
 
     /**
@@ -31,7 +31,8 @@ class TicketPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasRole(RoleNamesEnum::vipMember()->value);
+        return true;
+        // return $user->hasRole(RoleNamesEnum::vipMember()->value);
     }
 
     /**
@@ -39,7 +40,7 @@ class TicketPolicy
      */
     public function update(User $user): bool
     {
-        return $user->can((string) PermissionsEnum::ticketUpdate()->value);
+        return $user->can(PermissionsEnum::ticketUpdate()->value);
     }
 
     /**
@@ -47,7 +48,7 @@ class TicketPolicy
      */
     public function delete(User $user, Ticket $ticket): bool
     {
-        return $user->can((string) PermissionsEnum::ticketDelete()->value) ||
+        return $user->can(PermissionsEnum::ticketDelete()->value) ||
             $ticket->assigned_to === $user->id;
     }
 

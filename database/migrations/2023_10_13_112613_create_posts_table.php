@@ -18,7 +18,7 @@ return new class () extends Migration {
             $table->foreignId('category_id')->constrained('categories');
             $table->string('title', 120)->unique();
             $table->enum('type', PostTypeEnum::toValues());
-            $table->string('thumbnail_path')->nullable();
+            $table->string('thumbnail_path');
             $table->longText('content');
             $table->enum('status', PostStatusEnum::toValues());
             $table->boolean('archived')->default(false);

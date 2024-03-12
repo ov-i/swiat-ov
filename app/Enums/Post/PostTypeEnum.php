@@ -9,6 +9,6 @@ use Spatie\Enum\Enum;
  * @method static self event()
  * @method static self vip()
  */
-final class PostTypeEnum extends Enum
+class PostTypeEnum extends Enum
 {
 }

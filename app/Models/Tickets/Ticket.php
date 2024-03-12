@@ -4,7 +4,6 @@ namespace App\Models\Tickets;
 
 use App\Enums\Ticket\TicketPriorityEnum;
 use App\Enums\Ticket\TicketStatusEnum;
-use App\Models\User;
 use Coderflex\LaravelTicket\Models\Label;
 use Coderflex\LaravelTicket\Models\Message;
 use Coderflex\LaravelTicket\Scopes\TicketScope;
@@ -20,14 +19,14 @@ use Database\Factories\Tickets\TicketFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
+ * @property string $uuid
  * @property int $user_id
- * @property ?string $uuid
- * @property string $title
+ * @property int $title
  * @property ?string $message
- * @property ?string $priority
- * @property ?string $status
- * @property ?bool $is_resolved
- * @property ?bool $is_locked
+ * @property string $priority
+ * @property string $status
+ * @property bool $is_resolved
+ * @property bool $is_locked
  * @property ?int $assigned_to
  * @property ?DateTime $deleted_at
  */
@@ -47,17 +46,11 @@ class Ticket extends Model
         'status' => TicketStatusEnum::class
     ];
 
-    /**
-     * @return BelongsTo<User, self>
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(config('auth.providers.users.model'));
     }
 
-    /**
-     * @return BelongsTo<User, self>
-     */
     public function assignedToUser(): BelongsTo
     {
         return $this->belongsTo(config('auth.providers.users.model'), 'assigned_to');
@@ -65,8 +58,6 @@ class Ticket extends Model
 
     /**
      * Get Messages RelationShip
-     *
-     * @return HasMany<Message>
      */
     public function messages(): HasMany
     {
@@ -78,9 +69,6 @@ class Ticket extends Model
         );
     }
 
-    /**
-     * @return BelongsToMany<Label>
-     */
     public function labels(): BelongsToMany
     {
         $table = config('laravel_ticket.table_names.label_ticket', 'label_ticket');
@@ -93,9 +81,6 @@ class Ticket extends Model
         );
     }
 
-    /**
-     * @return BelongsTo<Category, self>
-     */
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);

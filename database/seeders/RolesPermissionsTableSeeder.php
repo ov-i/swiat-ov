@@ -41,5 +41,10 @@ class RolesPermissionsTableSeeder extends Seeder
         $vipMember = $this->authService->getRoleByName(RoleNamesEnum::vipMember());
         $this->authService
             ->giveRolePermissions($vipMember, $this->vipMemberHasPermissionsStrategy);
+
+        // TODO: Fix seeder for api permissins
+        //        $subAuthor = $this->authService->getRoleByName(RoleNamesEnum::subAuthor());
+        //        $this->authService
+        //            ->giveRolePermissions($subAuthor, $this->subAuthorHasPermissionsStrategy);
     }
 }

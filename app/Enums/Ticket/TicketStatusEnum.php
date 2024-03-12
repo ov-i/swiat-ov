@@ -10,6 +10,6 @@ use Spatie\Enum\Enum;
  * @method static self declined()
  * @method static self resolved()
  */
-final class TicketStatusEnum extends Enum
+class TicketStatusEnum extends Enum
 {
 }
