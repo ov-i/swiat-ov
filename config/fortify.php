@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\DenyRegisterForForbiddenMails;
+use App\Http\Middleware\ValidateRegisterReCaptcha;
 use App\Providers\RouteServiceProvider;
 use Laravel\Fortify\Features;
 
@@ -102,7 +104,11 @@ return [
     |
     */
 
-    'middleware' => ['web'],
+    'middleware' => [
+        'web',
+        DenyRegisterForForbiddenMails::class,
+        ValidateRegisterReCaptcha::class,
+    ],
 
     /*
     |--------------------------------------------------------------------------

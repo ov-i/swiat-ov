@@ -5,3 +5,32 @@
 [x-cloak] {
     display: none;
 }
+
+/* Admin layout classes */
+.sub-resource {
+    @apply py-2 last:py-0 last:pt-2 hover:text-white transition-colors duration-100;
+}
+
+.flash-alert {
+    @apply text-white p-3 rounded-md shadow w-11/12 mx-auto text-center;
+}
+
+.button-outlined {
+    @apply border border-gray-500 rounded p-2 hover:bg-gray-500 hover:text-white dark:bg-gray-500 dark:hover:bg-gray-300 dark:hover:text-white transition-colors duration-75 active:bg-gray-700 active:text-white;
+}
+
+.button-info-outlined {
+    @apply border border-cyan-600 rounded p-2 bg-cyan-600 text-white dark:bg-cyan-800 transition-colors duration-75 active:bg-cyan-700 active:text-white hover:bg-cyan-500 hover:border-cyan-500;
+}
+
+.show-wrapper {
+    @apply bg-white font-secondary rounded-md w-full xl:w-10/12 v-large:w-7/12 shadow p-3;
+}
+
+.show-wrapper .show-card {
+    @apply flex flex-row space-x-10 p-3 items-start justify-around w-full lg:text-center;
+}
+
+.aside-card {
+    @apply bg-white font-primary p-6 rounded-md shadow-md my-4 first:mt-0 last:mb-0 text-xl;
+}

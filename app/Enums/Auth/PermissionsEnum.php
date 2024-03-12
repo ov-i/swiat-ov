@@ -111,18 +111,19 @@ use Spatie\Enum\Enum;
  * @method static self postAttachmentRestore()
  * @method static self postAttachmentForceDelete()
  */
-class PermissionsEnum extends Enum
+final class PermissionsEnum extends Enum
 {
     /**
      * Gets all permissions without some exceptions.
      *
-     * @param array<array-key, string> $basePermissions Base array permissions that should be filtered
-     * @param array<array-key, string> $excepts Excluded permissions
+     * @param array<int|string> $basePermissions Base array permissions that should be filtered
+     * @param array<int, int|string> $excepts Excluded permissions
      *
-     * @return array<array-key, string>
+     * @return array<int, int|string>
      */
     public static function getAllExcept(array $basePermissions, array $excepts): array
     {
+        /** @phpstan-ignore-next-line */
         return array_filter($basePermissions, function (string $permission) use ($excepts) {
             return !in_array($permission, $excepts, false);
         });
@@ -131,7 +132,7 @@ class PermissionsEnum extends Enum
     /**
      * Get base permissions as an user's permissions
      *
-     * @return array<array-key, string>
+     * @return array<int, int|string>
      */
     public static function userPermissions(): array
     {
@@ -155,7 +156,7 @@ class PermissionsEnum extends Enum
     /**
      * Gets all permissions
      *
-     * @return array<array-key, string>
+     * @return array<int|string>
      */
     public static function adminPermissions(): array
     {

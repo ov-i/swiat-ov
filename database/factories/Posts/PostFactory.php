@@ -38,6 +38,7 @@ class PostFactory extends Factory
             'user_id' => 1,
             'category_id' => fake()->numberBetween(1, count(CategoryFactory::$categories)),
             'title' => fake()->unique()->realText(30),
+            'slug' => fake()->unique()->slug(),
             'type' => fake()->randomElement(PostTypeEnum::toValues()),
             'thumbnail_path' => fake()->imageUrl(1024, 1024, fake()->randomElement(PostTypeEnum::toValues())),
             'content' => fake()->realText(1000),
@@ -46,5 +47,19 @@ class PostFactory extends Factory
             'archived_at' => $archived ? now()->toDateString() : null,
             'published_at' => $archived ? null : $published_at,
         ];
+    }
+
+    public function unpublished(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => PostStatusEnum::unpublished(),
+        ]);
+    }
+
+    public function published(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => PostStatusEnum::published(),
+        ]);
     }
 }

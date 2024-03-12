@@ -9,6 +9,9 @@ services:
       - "127.0.0.1:3306:3306"
     volumes:
       - db-storage:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/my.cnf
+      - ./docker/mysql/logs:/var/log
+      - ./docker/mysql/keys:/usr/local/mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_USER: ${DB_USERNAME}
@@ -21,7 +24,7 @@ services:
     image: phpmyadmin/phpmyadmin:latest
     container_name: db-panel
     ports:
-      - "8080:80"
+      - "8081:80"
     environment:
       PMA_HOST: database
       PMA_USER: root
@@ -49,12 +52,17 @@ services:
     tty: true
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./:/var/www
+      - ./storage:/var/www/storage:ro
+      - ./public:/var/www/public:ro
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./docker/nginx/conf.d:/etc/nginx/conf.d
       - ./docker/nginx/snippets:/etc/nginx/snippets
       - ./docker/nginx/logs:/var/log/nginx
+      - ./docker/ssl/swiat-ov.test.key:/etc/ssl/certs/swiat-ov.test.key
+      - ./docker/ssl/swiat-ov.test.crt:/etc/ssl/certs/swiat-ov.test.crt
     restart: unless-stopped
     networks:
       - blog-net
@@ -70,6 +78,8 @@ services:
       - ./docker/php/php.ini:/usr/local/etc/php/php.ini
       - ./docker/php/ini/local.ini:/usr/local/etc/php/conf.d/local.ini
       - ./docker/php/ini/opcache:/usr/local/etc/php/conf.d/opcache.ini
+      - ./docker/ssl/swiat-ov.test.key:/etc/ssl/certs/swiat-ov.test.key
+      - ./docker/ssl/swiat-ov.test.crt:/etc/ssl/certs/swiat-ov.test.crt
     tty: true
     restart: unless-stopped
     depends_on:
@@ -91,6 +101,18 @@ services:
     environment:
       MH_STORAGE: maildir
       MH_MAILDIR_PATH: /home/mailpit
+    networks:
+      - blog-net
+  meilisearch:
+    image: getmeili/meilisearch:v1.6.2
+    tty: false
+    container_name: meilisearch
+    ports:
+      - "7700:7700"
+    volumes:
+      - ./docker/meilisearch/meili_data:/meili_data:rw
+    environment:
+      MEILI_MASTER_KEY: ${MEILISEARCH_KEY}
     networks:
       - blog-net
   grafana:

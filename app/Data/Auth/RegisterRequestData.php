@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Data\Auth;
 
+use App\Rules\ReCaptcha;
 use OpenApi\Attributes\Property;
 use OpenApi\Attributes\Schema;
 use Spatie\LaravelData\Attributes\MapName;
@@ -11,6 +12,7 @@ use Spatie\LaravelData\Attributes\Validation\Email;
 use Spatie\LaravelData\Attributes\Validation\IPv4;
 use Spatie\LaravelData\Attributes\Validation\Max;
 use Spatie\LaravelData\Attributes\Validation\Password;
+use Spatie\LaravelData\Attributes\Validation\Rule;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Mappers\SnakeCaseMapper;
 
@@ -54,7 +56,7 @@ use Spatie\LaravelData\Mappers\SnakeCaseMapper;
         ]
     )
 ]
-class RegisterRequestData extends Data
+final class RegisterRequestData extends Data
 {
     public function __construct(
         #[Max(255)]
@@ -65,6 +67,8 @@ class RegisterRequestData extends Data
         public readonly string $password,
         #[IPv4]
         public readonly string $ip,
+        #[MapName('g-recaptcha-response'), Rule(new ReCaptcha())]
+        public readonly string $gRecaptchaResponse,
         public readonly bool $remember = false,
     ) {
     }

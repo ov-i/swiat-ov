@@ -70,7 +70,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Europe/Warsaw',
 
     /*
     |--------------------------------------------------------------------------
@@ -139,13 +139,13 @@ return [
     |
     */
 
+    'maintenance' => [
+        'driver' => 'cache',
+        'store'  => 'redis',
+    ],
+
     // Custom
     'admin_pass' => env('ADMIN_PASS', 'password'),
-
-    'maintenance' => [
-        'driver' => 'file',
-        // 'store'  => 'redis',
-    ],
 
     /*
     |--------------------------------------------------------------------------

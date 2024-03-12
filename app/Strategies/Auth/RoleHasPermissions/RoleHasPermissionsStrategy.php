@@ -11,13 +11,6 @@ class RoleHasPermissionsStrategy
      */
     private RoleHasPermissionsStrategyInterface $permission;
 
-    /**
-     * Available permissions for a role.
-     *
-     * @var array<array-key, string>
-     */
-    private array $permissionsList;
-
     public function setPermissionsInstance(RoleHasPermissionsStrategyInterface $permission): self
     {
         $this->permission = $permission;
@@ -25,6 +18,11 @@ class RoleHasPermissionsStrategy
         return $this;
     }
 
+    /**
+     * Returns the booted strategy
+     *
+     * @return array<int|string, int|string>
+     */
     public function register(): array
     {
         return $this->permission->boot();

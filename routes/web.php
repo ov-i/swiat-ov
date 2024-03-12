@@ -1,10 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\UserDashboardController;
-use App\Http\Controllers\TicketsController;
 use Illuminate\Support\Facades\Route;
-use Laravel\Jetstream\Http\Controllers\Livewire\ApiTokenController;
-use Laravel\Jetstream\Http\Controllers\Livewire\UserProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,47 +13,29 @@ use Laravel\Jetstream\Http\Controllers\Livewire\UserProfileController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-});
-
-$authMiddleware = config('jetstream.guard')
-    ? 'auth:'.config('jetstream.guard')
-    : 'auth';
 
 $authSessionMiddleware = config('jetstream.auth_session', false)
     ? config('jetstream.auth_session')
     : null;
 
-$middlewares = array_filter([$authMiddleware, $authSessionMiddleware]);
+$dashboardMiddlewares = array_filter([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'blocked',
+    'verified',
+]);
 
-Route::middleware($middlewares)->group(function () {
-    Route::get('/profile', [UserProfileController::class, 'show'])->name('profile.show');
-});
+$authMiddleware = config('jetstream.guard')
+    ? 'auth:' . config('jetstream.guard')
+    : 'auth';
 
-Route::middleware(['verified', 'can:view-admin-panel'])->prefix('admin')->group(function () {
-    Route::prefix('dashboard')->group(function () {
-        Route::get('/api-tokens', [ApiTokenController::class, 'index'])
-            ->name('admin.api-tokens.index');
+$profileMiddlewares = array_filter([$authMiddleware, $authSessionMiddleware]);
 
-        Route::get('/users', [UserDashboardController::class, 'index'])
-            ->name('admin.users.index');
-    });
-});
 
-Route::middleware([
-    'auth:sanctum', 'verified', 'can:create-ticket'
-])->prefix('tickets')->group(function () {
-    Route::get('/', [TicketsController::class, 'create'])->name('tickets.create');
-    Route::post('/', [TicketsController::class, 'store'])->name('tickets.store');
-});
+Route::get('/', function () {
+    return view('welcome');
+})->name('home');
+
+
+require_once('swiat-ov.php');
+require_once('user-profile.php');

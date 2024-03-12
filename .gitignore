@@ -21,3 +21,11 @@ yarn-error.log
 docker/**/*.log
 docker/mailpit/data
 docker/redis/data
+docker/ssl
+docker/mysql/keys/private.pem
+docker/mysql/logs/*.json
+docker/meilisearch/meili_data
+tests/database.sqlite
+storage/pail
+**/.DS_Store
+dumps/prod/**/*.sql

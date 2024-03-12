@@ -2,23 +2,29 @@
 
 namespace App\Models;
 
+use App\Enums\Auth\BanDurationEnum;
 use App\Enums\Auth\RoleNamesEnum;
+use App\Enums\Auth\UserStatusEnum;
 use Coderflex\LaravelTicket\Concerns\HasTickets;
 use Coderflex\LaravelTicket\Contracts\CanUseTickets;
 use Database\Factories\UserFactory;
 use App\Models\License\License;
 use App\Models\Posts\Post;
+use DateTime;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Request;
 use Laravel\Cashier\Billable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Scout\Searchable;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -26,8 +32,12 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $name
  * @property string $email
  * @property string $ip
+ * @property UserStatusEnum|string $status
+ * @property ?DateTime $last_login_at
+ * @property ?DateTime $banned_at
+ * @property ?BanDurationEnum $ban_duration
  */
-class User extends Authenticatable implements CanUseTickets
+class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
 {
     use HasApiTokens;
     use HasFactory;
@@ -35,8 +45,10 @@ class User extends Authenticatable implements CanUseTickets
     use Notifiable;
     use TwoFactorAuthenticatable;
     use Billable;
+    use Searchable;
     use HasRoles;
     use HasTickets;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -47,13 +59,13 @@ class User extends Authenticatable implements CanUseTickets
         'name',
         'email',
         'password',
-        'ip'
+        'ip',
+        'status',
+        'last_login_at',
+        'banned_at',
+        'ban_duration',
+        'reason'
     ];
-
-    public function ip(): string
-    {
-        return Request::ip();
-    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -86,6 +98,31 @@ class User extends Authenticatable implements CanUseTickets
         'profile_photo_url',
     ];
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function getIp(): string
+    {
+        return $this->ip;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status->value;
+    }
+
+    public function getLastLoginTZ(): ?DateTime
+    {
+        return $this->last_login_at;
+    }
+
     /**
      * @return HasMany<Post>
      */
@@ -95,19 +132,34 @@ class User extends Authenticatable implements CanUseTickets
     }
 
     /**
-     * @return HasMany<BlockUser>
-     */
-    public function blockUsers(): HasMany
-    {
-        return $this->hasMany(BlockUser::class);
-    }
-
-    /**
      * @return BelongsToMany<License>
      */
     public function licenses(): BelongsToMany
     {
         return $this->belongsToMany(License::class, 'license_user', 'license_id', 'user_id')->withTimestamps();
+    }
+
+    /**
+     * @return HasMany<UserBlockHistory>
+     */
+    public function userBlockHistories(): HasMany
+    {
+        return $this->hasMany(UserBlockHistory::class, 'user_id', 'id');
+    }
+
+    public function sessions(): HasMany
+    {
+        return $this->hasMany(Session::class);
+    }
+
+    public function accountHistories(): HasMany
+    {
+        return $this->hasMany(UserAccountHistory::class);
+    }
+
+    public function postHistories(): HasMany
+    {
+        return $this->hasMany(PostHistory::class);
     }
 
     /**
@@ -123,10 +175,6 @@ class User extends Authenticatable implements CanUseTickets
      */
     public function guardName(): string
     {
-        if ($this->roles()->where('name', RoleNamesEnum::subAuthor()->value)->first()) {
-            return 'api';
-        }
-
         return 'web';
     }
 
@@ -138,5 +186,37 @@ class User extends Authenticatable implements CanUseTickets
     public function isModerator(): bool
     {
         return $this->hasRole(RoleNamesEnum::moderator()->value);
+    }
+
+    public function isBlocked(): bool
+    {
+        return UserStatusEnum::banned()->value === $this->status;
+    }
+
+    /**
+     * Checks if user can be unlocked.
+     *
+     * @return bool Returns true, if user is blocked and duration is not permament.
+     */
+    public function canBeUnlocked(): bool
+    {
+        return
+            $this->isBlocked() &&
+            BanDurationEnum::forever()->value !== $this->ban_duration;
+    }
+
+    public function isActive(): bool
+    {
+        return UserStatusEnum::banned()->value === $this->status;
+    }
+
+    public function isPostAuthor(Post $post): bool
+    {
+        return $post->user()->getParentKey() === $this->getKey();
+    }
+
+    public function followedPosts(): MorphToMany
+    {
+        return $this->morphedByMany(Post::class, 'followable', 'user_follows');
     }
 }
