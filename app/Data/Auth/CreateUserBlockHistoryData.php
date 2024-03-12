@@ -8,10 +8,9 @@ use App\Enums\Auth\UserBlockHistoryActionEnum;
 use OpenApi\Attributes\Property;
 use OpenApi\Attributes\Schema;
 use Spatie\LaravelData\Attributes\MapName;
-use Spatie\LaravelData\Attributes\Validation\Enum;
 use Spatie\LaravelData\Attributes\Validation\Exists;
-use Spatie\LaravelData\Attributes\Validation\Nullable;
-use Spatie\LaravelData\Attributes\Validation\Required;
+use Spatie\LaravelData\Attributes\Validation\In;
+use Spatie\LaravelData\Attributes\Validation\RequiredIf;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Mappers\SnakeCaseMapper;
 
@@ -20,10 +19,10 @@ use Spatie\LaravelData\Mappers\SnakeCaseMapper;
     Schema(
         title: 'Create user block record',
         description: 'Creates new user block history record',
-        required: ['user_id', 'action'],
+        required: ['userId', 'action'],
         properties: [
             new Property(
-                property: 'user_id',
+                property: 'userId',
                 description: 'related user_id that exists',
                 type: 'integer',
             ),
@@ -41,15 +40,33 @@ use Spatie\LaravelData\Mappers\SnakeCaseMapper;
         ]
     )
 ]
-final class CreateUserBlockHistoryRequestData extends Data
+final class CreateUserBlockHistoryData extends Data
 {
     public function __construct(
-        #[Exists(table: 'users', column: 'id'), Required()]
-        public readonly string $user_id,
-        #[Enum(enum: UserBlockHistoryActionEnum::class), Required()]
-        public readonly string $action,
-        #[Nullable(), Required]
+        public readonly int $userId,
+        public readonly UserBlockHistoryActionEnum $action,
         public readonly ?string $banDuration = ''
     ) {
+    }
+
+    /**
+     * @return array<string, array<array-key, mixed>|mixed>
+     */
+    public static function rules()
+    {
+        return [
+            'userId' => [
+                new Exists(table: 'users', column: 'id'),
+                'required'
+            ],
+            'action' => [
+                new In(UserBlockHistoryActionEnum::toValues()),
+                'required',
+            ],
+            'banDuration' => [
+                'nullable',
+                new RequiredIf('action', UserBlockHistoryActionEnum::locked()->value),
+            ],
+        ];
     }
 }

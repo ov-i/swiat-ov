@@ -6,21 +6,23 @@ namespace App\Services\UserActivity;
 
 use App\Models\Session;
 use App\Models\User;
+use App\Repositories\Eloquent\Users\SessionRepository;
 
 class SessionService
 {
+    public function __construct(
+        private readonly SessionRepository $sessionRepository
+    ) {
+    }
+
     /**
      * Gets the session information from user primary key value.
      *
-     * @param User $user Referenced user.
-     *
      * @return Session|null Returns null, if session record was not found.
      */
-    public function getSessionFromUser(User &$user): ?Session
+    public function getSessionFromUser(User &$user)
     {
-        $session = $user->sessions()
-            ->where('user_id', $user->getKey())
-            ->first();
+        $session = $this->sessionRepository->findBy('user_id', $user->getKey());
 
         return $session;
     }

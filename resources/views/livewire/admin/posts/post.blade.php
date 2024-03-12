@@ -167,19 +167,6 @@
                                                 {{ __('Delete post') }}
                                             </div>
                                         </li> <!-- end item -->
-
-                                        <!-- single list item -->
-                                        <li>
-                                            <div class="flex cursor-pointer hover:text-gray-600 flex-row items-center text-md"
-                                                wire:click="forceDelete({{ $post->getKey() }})"
-                                                wire:confirm="Force delete this post?">
-                                                <span class="material-symbols-outlined text-sm mr-2">
-                                                    delete
-                                                </span>
-
-                                                {{ __('Force delete post') }}
-                                            </div>
-                                        </li> <!-- end item -->
                                     </ul> <!-- end actions list -->
                                 </x-slot>
                             </x-dropdown>

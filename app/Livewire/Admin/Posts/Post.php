@@ -5,6 +5,7 @@ namespace App\Livewire\Admin\Posts;
 use App\Repositories\Eloquent\Posts\PostRepository;
 use App\Services\Post\PostService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -35,7 +36,7 @@ class Post extends Component
         $posts = $this->postRepository->all(perPage: $this->perPage);
 
         if (filled($this->search)) {
-            $posts = $this->postRepository->searchBy(strtolower($this->search));
+            $posts = $this->postRepository->searchBy(Str::lower($this->search));
         }
 
         return view('livewire.admin.posts.post', ['posts' => $posts]);
@@ -47,13 +48,5 @@ class Post extends Component
         $this->authorize('delete', [$post]);
 
         $this->postService->deletePost($post);
-    }
-
-    public function forceDelete(int $postId): void
-    {
-        $post = $this->postRepository->find($postId);
-        $this->authorize('forceDelete', [auth()->user()]);
-
-        $this->postService->deletePost($post, forceDelete: true);
     }
 }

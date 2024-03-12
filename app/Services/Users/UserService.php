@@ -40,6 +40,6 @@ class UserService
     {
         $this->userRepository->deleteUser($user, $forceDelete);
 
-        event(new UserDeleted($user));        
+        event(new UserDeleted($user));
     }
 }

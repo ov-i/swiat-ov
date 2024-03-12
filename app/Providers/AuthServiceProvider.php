@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Contracts\Followable;
-use App\Enums\Auth\RoleNamesEnum;
 use App\Enums\Post\PostStatusEnum;
 use App\Models\Posts\Post;
 use App\Models\Tickets\Ticket;

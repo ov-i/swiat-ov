@@ -15,13 +15,22 @@ class UserBlockHistory extends Model
     protected $fillable = [
         'user_id',
         'action',
-        'ban_duration'
+        'ban_duration',
+        'operator_id'
     ];
 
     /**
      * @return BelongsTo<User, self>
      */
-    public function user(): BelongsTo
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * @return BelongsTo<User, self>
+     */
+    public function operator()
     {
         return $this->belongsTo(User::class);
     }

@@ -21,37 +21,54 @@ abstract class EloquentRepository
      *
      * @return LengthAwarePaginator<Model>|Collection<Model>|null;
      */
-    abstract protected function all(): null|LengthAwarePaginator|Collection;
+    abstract protected function all();
 
     /**
      * Finds the result based on id
      *
      * @param string|int $id Unique identifier
-     * @return Model|null
+     *
+     * @return \Illuminate\Database\Eloquent\Model|null
      */
-    abstract protected function find(string|int $id): ?Model;
+    abstract protected function find($id);
 
     /**
      * Creates new record with passed data
      *
-     * @param Data $data
-     * @return Model|null
+     * @param Data|array<array-key, scalar> $data
+     *
+     * @return \Illuminate\Database\Eloquent\Model|null
      */
-    abstract protected function create(Data $data): ?Model;
+    abstract protected function create($data);
 
-    public function getModel(): Model
+    /**
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function getModel()
     {
         return $this->model;
     }
 
-    protected function isSoftDeleteable(Model $model): bool
+    /**
+     * Determinates if passed model instance is soft deleteable.
+     *
+     * @param \Illuminate\Database\Eloquent\Model $model
+     *
+     * @return bool
+     */
+    protected function isSoftDeleteable(&$model)
     {
         return
             in_array(SoftDeletes::class, class_uses_recursive($model)) &&
             $this->hasColumn('deleted_at');
     }
 
-    protected function hasColumn(string $column): bool
+    /**
+     * @param string $column
+     *
+     * @return bool
+     */
+    protected function hasColumn($column): bool
     {
         return Schema::hasColumn($this->getModel()->getTable(), $column);
     }
