@@ -9,12 +9,6 @@ use App\Repositories\Eloquent\BaseRepository;
 
 class TagRepository extends BaseRepository
 {
-    public function __construct(
-        private readonly Tag $tag
-    ) {
-        parent::__construct($tag);
-    }
-
     public function findWithName(string $name): ?Tag
     {
         return $this->getModel()->query()
@@ -25,5 +19,13 @@ class TagRepository extends BaseRepository
     public function createTag(array $tagData): Tag
     {
         return $this->create($tagData);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected static function getModelFqcn()
+    {
+        return Tag::class;
     }
 }

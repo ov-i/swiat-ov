@@ -4,29 +4,71 @@ declare(strict_types=1);
 
 namespace App\Services\Post;
 
+use App\Contracts\PubliclyAccessable;
 use App\Data\CreateAttachmentRequest;
+use App\Exceptions\FileOverSizedException;
+use App\Exceptions\ForbiddenFileTypeException;
 use App\Models\Posts\Attachment;
 use App\Repositories\Eloquent\Posts\AttachmentRepository;
 use App\Services\UploadedFileService;
+use Illuminate\Support\Number;
+use App\Traits\IntersectsArray;
 
-class AttachmentService extends UploadedFileService
+class AttachmentService extends UploadedFileService implements PubliclyAccessable
 {
+    use IntersectsArray;
+
     public function __construct(
         private readonly AttachmentRepository $attachmentRepository,
     ) {
         parent::__construct();
     }
 
-    public function getResource(): string
+    /**
+     * @inheritDoc
+     */
+    public function getResource()
     {
         return 'attachments';
     }
 
-    public function storeOnDisk($disk = 'public'): void
+    /**
+     * @inheritDoc
+     */
+    public function getPublicUrl()
+    {
+        return asset("storage/{$this->getResource()}/{$this->getCurrentDate()}/{$this->getFileName()}");
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function toArray()
+    {
+        return [
+            ...parent::toArray(),
+            'public_url' => $this->getPublicUrl()
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function storeOnDisk(?string $disk = null): void
     {
         $this->setUploadDir($this->getCurrentDate());
 
-        parent::storeOnDisk($disk);
+        try {
+            parent::storeOnDisk($disk);
+        } catch (ForbiddenFileTypeException $forbiddenFileTypeException) {
+            throw new ForbiddenFileTypeException($forbiddenFileTypeException->getMessage());
+        } catch (FileOverSizedException $fileOverSizedException) {
+            $maxSize = Number::fileSize(config('swiatov.max_file_size'));
+            $uploadedFileSize = Number::fileSize($this->getFileSize());
+            $originalName = $this->getOriginalName();
+
+            throw new FileOverSizedException($originalName, $maxSize, $uploadedFileSize);
+        }
     }
 
     public function createAttachment(CreateAttachmentRequest $request): Attachment|bool
@@ -37,7 +79,20 @@ class AttachmentService extends UploadedFileService
         $file->setUploadDir($this->getCurrentDate())
             ->storeOnDisk();
 
-        $attachment = $this->attachmentRepository->createAttachment($this->toArray());
+        $fileInfo = $this->toArray();
+
+        $attachment = $this->attachmentRepository->findAttachmentViaChecksum((string) $fileInfo['checksum']);
+
+        if (filled($attachment)) {
+            $toUpdate = $this->differences($attachment->toArray(), $fileInfo);
+
+            return $this->attachmentRepository->updateAttachment(
+                $attachment,
+                updateData: $this->differences($attachment->toArray(), $toUpdate)
+            );
+        }
+
+        $attachment = $this->attachmentRepository->createAttachment($fileInfo);
 
         return $attachment;
     }
@@ -50,11 +105,6 @@ class AttachmentService extends UploadedFileService
         $this->unlinkFile($attachment->getFileName());
 
         return $this->attachmentRepository->deleteAttachment($attachment, $forceDelete);
-    }
-
-    public function getPublicUrl(): string
-    {
-        return asset("storage/{$this->getResource()}/{$this->getCurrentDate()}/{$this->getFileName()}");
     }
 
     /**

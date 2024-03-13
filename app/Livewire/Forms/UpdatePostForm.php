@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Forms;
 
-use App\Data\UpdatePostRequest;
+use App\Data\UpdatePostData;
 use App\Enums\Post\PostTypeEnum;
 use App\Models\Posts\Post;
 use App\Rules\AllowOnlySpecificSpecialChars;
@@ -31,12 +31,15 @@ class UpdatePostForm extends Form
 
     public ?UploadedFile $thumbnailPath = null;
 
-    public function rules(): array
+    /**
+     * @return array<array-key, mixed>
+     */
+    public function rules()
     {
         $title = $this->title;
 
         return [
-            ...UpdatePostRequest::rules(),
+            ...UpdatePostData::rules(),
             'excerpt' => [
                 Rule::requiredIf(fn () => PostTypeEnum::event()->value !== $this->type),
                 'min:50',

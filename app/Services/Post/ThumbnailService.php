@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services\Post;
 
+use App\Contracts\PubliclyAccessable;
 use App\Models\Posts\Post;
 use App\Services\UploadedFileService;
 
-class ThumbnailService extends UploadedFileService
+class ThumbnailService extends UploadedFileService implements PubliclyAccessable
 {
     private Post $post;
 
@@ -26,6 +27,15 @@ class ThumbnailService extends UploadedFileService
         $this->post = $post;
 
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPublicUrl()
+    {
+        $post = $this->post;
+        return asset("storage/{$this->getResource()}/{$post->getSlug()}/{$this->getFileName()}");
     }
 
     public function storeOnDisk($disk = 'public'): void

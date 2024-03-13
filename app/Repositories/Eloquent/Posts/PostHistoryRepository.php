@@ -13,12 +13,6 @@ use Illuminate\Database\Eloquent\Collection;
 
 class PostHistoryRepository extends BaseRepository
 {
-    public function __construct(
-        private readonly PostHistory $postHistory
-    ) {
-        parent::__construct($postHistory);
-    }
-
     public function addHistory(Post &$post, PostHistoryActionEnum $action): PostHistory
     {
         $user = $post->user();
@@ -48,5 +42,13 @@ class PostHistoryRepository extends BaseRepository
     public function findByAction(PostHistoryActionEnum $action): ?Collection
     {
         return $this->findAllBy('action', $action->value);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected static function getModelFqcn()
+    {
+        return PostHistory::class;
     }
 }

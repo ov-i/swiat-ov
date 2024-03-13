@@ -5,39 +5,46 @@ namespace App\Repositories\Eloquent\Users;
 use App\Enums\Auth\UserStatusEnum;
 use App\Models\User;
 use App\Repositories\Eloquent\BaseRepository;
-use Illuminate\Database\Eloquent\Collection;
 
 class UserRepository extends BaseRepository
 {
     /**
-     * Summary of __construct
-     * @param \App\Models\User $user
-     */
-    public function __construct(
-        User $user
-    ) {
-        parent::__construct($user);
-    }
-
-    /**
+     * @param string|int $userId
+     *
      * @return User|null
      */
-    public function findUserById(string|int $userId): ?User
+    public function findUserById($userId)
     {
         /** @phpstan-ignore-next-line */
         return $this->find($userId);
     }
 
     /**
-     * @return Collection<int, User>
+     * @param UserStatusEnum $status
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, User>
      */
-    public function getUsersByStatus(UserStatusEnum $status): Collection
+    public function getUsersByStatus($status)
     {
         return $this->findAllBy('status', $status);
     }
 
-    public function deleteUser(User &$user, bool $forceDelete = false): void
+    /**
+     * @param User $user
+     * @param bool $forceDelete
+     *
+     * @return void
+     */
+    public function deleteUser(&$user, $forceDelete = false)
     {
         $this->delete($user, $forceDelete);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected static function getModelFqcn()
+    {
+        return User::class;
     }
 }

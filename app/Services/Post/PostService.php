@@ -5,20 +5,19 @@ declare(strict_types=1);
 namespace App\Services\Post;
 
 use App\Data\CreatePostRequest;
-use App\Data\UpdatePostRequest;
+use App\Data\UpdatePostData;
 use App\Enums\Post\PostHistoryActionEnum;
 use App\Enums\Post\PostStatusEnum;
+use App\Events\PostPublished;
 use App\Exceptions\PostAlreadyExistsException;
-use App\Jobs\PublishPost;
 use App\Models\Posts\Post;
 use App\Repositories\Eloquent\Posts\AttachmentRepository;
 use App\Repositories\Eloquent\Posts\PostHistoryRepository;
 use App\Repositories\Eloquent\Posts\PostRepository;
 use App\Traits\IntersectsArray;
-use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use Spatie\LaravelData\Data;
 
 class PostService
 {
@@ -33,7 +32,7 @@ class PostService
     }
 
     /**
-     * @param CreatePostRequest $request Referenced data object
+     * @throws PostAlreadyExistsException If post with a title already exists.
      */
     public function createPost(CreatePostRequest $request): Post
     {
@@ -48,10 +47,12 @@ class PostService
         return $post;
     }
 
-    public function editPost(Post &$post, array $updateData): bool
+    /**
+     * @throws PostAlreadyExistsException if post with a title or slug already exists
+     */
+    public function editPost(Post &$post, UpdatePostData $updateData): bool
     {
-        $request =  UpdatePostRequest::from($updateData);
-        $requestTitle = $request->title;
+        $requestTitle = $updateData->title;
 
         if ($this->postRepository->postExists($requestTitle) && $requestTitle !== $post->getTitle()) {
             throw new PostAlreadyExistsException("Post [{$requestTitle}] already exists.");
@@ -60,13 +61,13 @@ class PostService
         if ($requestTitle !== $post->getTitle()) {
             $newSlug = Str::slug($requestTitle);
 
-            return $this->postRepository->editPost($post, [...$request->toArray(), 'slug' => $newSlug]);
+            return $this->postRepository->editPost($post, [...$updateData->toArray(), 'slug' => $newSlug]);
         }
 
-        $this->syncTags($post, $request);
-        $this->syncAttachments($post, $request);
+        $this->syncTags($post, $updateData);
+        $this->syncAttachments($post, $updateData);
 
-        $editedPost = $this->postRepository->editPost($post, $request->toArray());
+        $editedPost = $this->postRepository->editPost($post, $updateData->toArray());
         $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::updated());
 
         return $editedPost;
@@ -74,28 +75,22 @@ class PostService
 
     public function publishPost(Post &$post): void
     {
-        abort_if(true === $post->isPublished(), Response::HTTP_BAD_REQUEST);
+        if($post->isPublished()) {
+            return;
+        }
 
         if($post->isEvent() && $this->postRepository->isAnyEventPublished()) {
             return;
         } // only one event per time.
 
-        if (blank($post->getPublishableDate())) {
-            $this->postRepository->setStatus($post, PostStatusEnum::published());
-            $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::published());
-        } else {
-            $this->postRepository->setStatus($post, PostStatusEnum::delayed());
-            $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::delayed());
-
-            $delayDiff = Carbon::parse($post->getPublishableDate(), config('app.timezone'))->diffInSeconds();
-
-            PublishPost::dispatch($post)->delay($delayDiff);
-        }
+        event(new PostPublished($post));
     }
 
     public function closePost(Post &$post): void
     {
-        abort_if(true === $post->isClosed(), Response::HTTP_BAD_REQUEST);
+        if (true === $post->isClosed()) {
+            return;
+        }
 
         $this->postRepository->setStatus($post, PostStatusEnum::closed());
         $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::closed());
@@ -106,8 +101,8 @@ class PostService
      */
     public function deletePost(Post &$post, bool $forceDelete = false): bool
     {
-        $postExists = $this->postRepository->findBy('title', $post->getTitle());
-        if (!filled($postExists)) {
+        $post = $this->postRepository->findBy('title', $post->getTitle());
+        if (!filled($post)) {
             return false;
         }
 
@@ -124,10 +119,12 @@ class PostService
     /**
      * Checks if tags property exist in request. If so, syncs'em with post
      *
-     * @param Post $post Referenced post
-     * @param array|CreatePostRequest Referenced data object
+     * @param \App\Models\Posts\Post $post
+     * @param \App\Data\CreatePostRequest|\App\Data\UpdatePostData $data
+     *
+     * @return void
      */
-    private function syncTags(Post &$post, CreatePostRequest|UpdatePostRequest &$data): void
+    private function syncTags(Post &$post, Data &$data)
     {
         $tags = $data->tags;
 
@@ -141,10 +138,12 @@ class PostService
     /**
      * Checks if attachments are available in request. If so, syncs'em without detaching with post.
      *
-     * @param Post $post Referenced post
-     * @param CreatePostRequest Referenced data object
+     * @param \App\Models\Posts\Post $post
+     * @param \App\Data\CreatePostRequest|\App\Data\UpdatePostData $data
+     *
+     * @return void
      */
-    private function syncAttachments(Post &$post, CreatePostRequest|UpdatePostRequest &$data): void
+    private function syncAttachments(Post &$post, Data &$data)
     {
         /** @var UploadedFile[]|null $attachments */
         $attachments = $data->attachments;
@@ -155,13 +154,11 @@ class PostService
         foreach ($attachments as $attachment) {
             $file = $this->attachmentService->setFile($attachment);
             $existingAttachment = $this->attachmentRepository->findAttachmentViaChecksum($file->getChecksum());
-
-            if (!blank($existingAttachment)) {
-                $post->attachments()->syncWithoutDetaching($existingAttachment->getKey());
-            } else {
-                $fileName = $file->getFileName();
-                abort(Response::HTTP_BAD_REQUEST, "Attachment {$fileName} was not found");
+            if (blank($existingAttachment)) {
+                return;
             }
+
+            $post->attachments()->syncWithoutDetaching($existingAttachment->getKey());
         }
     }
 }

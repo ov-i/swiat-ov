@@ -2,24 +2,42 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Contracts\EloquentRepository;
 use App\Enums\ItemsPerPageEnum;
 use App\Exceptions\NotSearchableModelException;
+use Closure;
+use Illuminate\Contracts\Database\Query\Expression as QueryExpression;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Query\Expression;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Schema;
+use Laravel\Scout\Builder as ScoutBuilder;
 use Laravel\Scout\Searchable;
 use Spatie\LaravelData\Data;
 
-class BaseRepository extends EloquentRepository
+abstract class BaseRepository implements EloquentRepository
 {
     /**
-     * @param bool $paginate
-     * @param int|null $perPage If null it gets 10 as default
-     * @param string $orderBy
-     * @param string $orderByColumn
-     *
-     * @return \Illuminate\Database\Eloquent\Collection<Model>|\Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return class-string<\Illuminate\Database\Eloquent\Model>
      */
-    public function all($paginate = true, $perPage = null, $orderBy = 'asc', $orderByColumn = 'id')
+    abstract protected static function getModelFqcn();
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    final public function getModel()
+    {
+        $modelFqcn = static::getModelFqcn();
+
+        return new $modelFqcn();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function all(bool $paginate = true, ?int $perPage = null, string $orderBy = 'asc', string $orderByColumn = 'id'): LengthAwarePaginator|Collection|null
     {
         $models = $this->getModel()
             ->query()
@@ -31,15 +49,14 @@ class BaseRepository extends EloquentRepository
     /**
      * Searches through laravel scout for a given phrase.
      *
-     * @param string $query Searched phrase from model's property
-     * @param bool $paginate
-     * @param \Closure $callback
-     *
-     * @return \Illuminate\Database\Eloquent\Collection<Model>|\Illuminate\Contracts\Pagination\LengthAwarePaginator
      * @throws NotSearchableModelException If model is not searchable.
+     * @return Collection<int, Model>|LengthAwarePaginator
      */
-    public function searchBy($query, $paginate = true, $callback = null)
-    {
+    public function searchBy(
+        string $query,
+        bool $paginate = true,
+        Closure|null $callback = null
+    ): Collection|LengthAwarePaginator {
         $classModel = $this->getModel()::class;
         if (false === in_array(Searchable::class, class_uses_recursive($classModel))) {
             throw new NotSearchableModelException("The $classModel model is not searchable.");
@@ -54,38 +71,44 @@ class BaseRepository extends EloquentRepository
     /**
      * @inheritDoc
      */
-    public function find($id)
+    public function find(string|int $id): ?Model
     {
         return $this->getModel()->query()->find($id);
     }
 
     /**
-     * Finds single record from database that matches condition
-     *
-     * @param string $column
-     * @param string|int|array<array-key, mixed> $condition
-     * @param string $operator Default '='
-     *
-     * @return Model|null
+     * @inheritDoc
      */
-    public function findBy($column, $condition, $operator = '=')
+    public function create(Data|array $data): ?Model
     {
+        if (is_array($data)) {
+            return $this->getModel()->query()->create($data);
+        }
+
+        return $this->getModel()->query()->create($data->toArray());
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function findBy(
+        string $column,
+        array|int|string $condition,
+        string $operator = '='
+    ): ?Model {
         return $this->getModel()
             ->firstWhere($column, $operator, $condition);
     }
 
     /**
-     * Finds all records matching condition
-     *
-     * @param array<array-key, array<array-key, string>>|string $param
-     * @param string|int|array<array-key, mixed> $condition
-     * @param string|null $operator
-     * @param bool $paginate
-     *
-     * @return \Illuminate\Database\Eloquent\Collection<Model>|\Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @inheritDoc
      */
-    public function findAllBy($param, $condition = null, $operator = '=', $paginate = false)
-    {
+    public function findAllBy(
+        array|string $param,
+        null|string|int|array $condition = null,
+        ?string $operator = '=',
+        bool $paginate = false
+    ): Collection|LengthAwarePaginator {
         $records = $this->getModel()->query()->where($param, $operator, $condition);
 
         if ($paginate) {
@@ -96,53 +119,49 @@ class BaseRepository extends EloquentRepository
     }
 
     /**
-     * @param array<array-key, mixed>|\Closure|string|Expression $param
-     * @param mixed $operator
-     * @param mixed $value
-     * @param string $boolean
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @inheritDoc
      */
-    public function findWhere($params, $operator = null, $value = null, $boolean = 'and')
-    {
+    public function findWhere(
+        array|Closure|string|QueryExpression $params,
+        mixed $operator = null,
+        mixed $value = null,
+        string $boolean = 'and'
+    ): Builder {
         return $this->getModel()->query()
             ->where($params, $operator, $value, $boolean);
     }
 
-    /**
-     * @param Data|array<array-key, scalar> $data
-     *
-     * @return \Illuminate\Database\Eloquent\Model
-     */
-    protected function create($data)
-    {
-        if (is_array($data)) {
-            return $this->getModel()->query()->create($data);
+    protected function update(
+        Model &$model,
+        array|Data $data
+    ): bool {
+        if ($data instanceof Data) {
+            return $model->update($data->toArray());
         }
 
-        return $this->getModel()->query()->create($data->toArray());
-    }
-
-    /**
-     * @param Data|array<array-key, scalar> $data
-     *
-     * @return bool
-     */
-    protected function update(Model &$model, Data|array $data)
-    {
         return $model->update($data);
     }
 
+    /**
+     * Updates only dirty attributes.
+     *
+     * @return bool Returns true if model is clean.
+     */
+    protected function updateDirty(Model &$model): bool
+    {
+        foreach($model->getDirty() as $dirty) {
+            $model->update($dirty);
+        }
+
+        return $model->isClean();
+    }
 
     /**
      * Force delete works only for soft deleteable models.
      *
-     * @param Model $model
-     * @param bool $forceDelete = false
-     *
      * @return bool
      */
-    protected function delete(&$model, $forceDelete = false)
+    protected function delete(Model &$model, bool $forceDelete = false)
     {
         if (true === $this->isSoftDeleteable($model) && $forceDelete) {
             return $model->forceDelete();
@@ -154,15 +173,32 @@ class BaseRepository extends EloquentRepository
     /**
      * Paginates collection. If perPage is null, it sets perPage value to 10.
      *
-     * @param \Laravel\Scout\Builder|\Illuminate\Database\Eloquent\Builder $builder
-     * @param int|null $perPage
-     *
      * @return \Illuminate\Contracts\Pagination\Paginator
      */
-    protected function toPaginated($builder, $perPage = null)
+    protected function toPaginated(Builder|ScoutBuilder $builder, int|null $perPage = null)
     {
         $perPage = blank($perPage) ? ItemsPerPageEnum::DEFAULT : $perPage;
 
         return $builder->paginate($perPage);
+    }
+
+    /**
+     * Determinates if passed model instance is soft deleteable.
+     *
+     * @return bool
+     */
+    protected function isSoftDeleteable(Model &$model)
+    {
+        return
+            in_array(SoftDeletes::class, class_uses_recursive($model)) &&
+            $this->hasColumn('deleted_at');
+    }
+
+    /**
+     * @return bool
+     */
+    protected function hasColumn(string $column): bool
+    {
+        return Schema::hasColumn($this->getModel()->getTable(), $column);
     }
 }
