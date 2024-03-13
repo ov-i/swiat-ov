@@ -35,7 +35,7 @@ class CreatePostRequest extends Data
     /**
      * @return array<array-key, array<array-key, mixed>|mixed>
      */
-    public static function rules(): array
+    public static function rules()
     {
         return [
             'title' => [

@@ -10,22 +10,38 @@ use App\Repositories\Eloquent\BaseRepository;
 
 class AttachmentRepository extends BaseRepository
 {
-    public function __construct(
-        private readonly Attachment $attachment
-    ) {
-        parent::__construct($attachment);
-    }
-
-    public function createAttachment(array $attachmentData): Attachment|bool
+    /**
+     * @param non-empty-list<array-key, mixed> $attachmentData
+     *
+     * @return Attachment|bool
+     */
+    public function createAttachment(array $attachmentData)
     {
-        if (filled($this->findAttachmentViaChecksum($attachmentData['checksum']))) {
-            return $this->update(['checksum' => $attachmentData['checksum']]);
-        }
-
         return $this->create($attachmentData);
     }
 
-    public function deleteAttachment(Attachment &$attachment, bool $forceDelete = false): bool
+    /**
+     * @param non-empty-list<array-key, mixed> $updateData
+     *
+     * @return bool
+     */
+    public function updateAttachment(Attachment &$attachment, array $updateData, bool $onlyDirty = false)
+    {
+        if ($onlyDirty) {
+            return $this->updateDirty($attachment);
+        }
+
+        return $this->update($attachment, $updateData);
+    }
+
+    /**
+     * @param Attachment $attachment
+     * @param bool $forceDelete
+     *
+     * @throws AttachmentNotFound
+     * @return bool
+     */
+    public function deleteAttachment(Attachment &$attachment, bool $forceDelete = false)
     {
         $attachmentExists = $this->find($attachment->getKey());
 
@@ -50,5 +66,13 @@ class AttachmentRepository extends BaseRepository
         $attachment->fileName = $newName;
 
         return $previousName !== $attachment->getFileName();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected static function getModelFqcn()
+    {
+        return Attachment::class;
     }
 }

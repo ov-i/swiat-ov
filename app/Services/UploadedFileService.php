@@ -12,7 +12,6 @@ use App\Jobs\StoreNewAttachmentJob;
 use DateTime;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Number;
@@ -22,9 +21,13 @@ abstract class UploadedFileService implements Arrayable
 {
     protected readonly FileSystem $fileSystem;
 
-    private string $uploadDir;
-
     private readonly string $storageResourcePath;
+
+    private readonly string $fileHashAlgorithm;
+
+    private readonly int $maxFileSize;
+
+    private string $uploadDir;
 
     private ?UploadedFile $file = null;
 
@@ -45,6 +48,10 @@ abstract class UploadedFileService implements Arrayable
         $this->fileSystem = app(FileSystem::class);
 
         $this->storageResourcePath = storage_path("app/public");
+
+        $this->fileHashAlgorithm = config('swiatov.file_hash_algo');
+
+        $this->maxFileSize = config('swiatov.max_file_size');
     }
 
     /**
@@ -52,32 +59,16 @@ abstract class UploadedFileService implements Arrayable
      *
      * @return string
      */
-    abstract public function getResource(): string;
-
-    /**
-     * Gets file data if it has been set previously.
-     *
-     * @return UploadedFile Aborts with Http not found if file not set
-     */
-    public function getContent(): UploadedFile
-    {
-        if(null === $this->file) {
-            abort(Response::HTTP_NOT_FOUND, 'File has not been set. Please use setFile method first.');
-        }
-
-        return $this->file;
-    }
+    abstract public function getResource();
 
     /**
      * Get and set information about the file.
-     *
-     * @return $this
      */
     public function setFile(UploadedFile $file): self
     {
         $this->file = $file;
 
-        $hash = $this->fileSystem->hash($file->getRealPath(), config('swiatov.file_hash_algo'));
+        $hash = $this->hashFile($file);
 
         $this->setChecksum($hash);
         $this->setMimeType($file->getMimeType());
@@ -89,15 +80,25 @@ abstract class UploadedFileService implements Arrayable
     }
 
     /**
+     * Gets file data if it has been set previously.
+     *
+     * @throws \Exception If file has not been set.
+     */
+    public function getContent(): UploadedFile
+    {
+        if(blank($this->file)) {
+            throw new \Exception('File has not been set. Please use setFile method first.');
+        }
+
+        return $this->file;
+    }
+
+    /**
      * Gets the absolute location of a file. If byDate param is null, it gets current datetime
-     *
-     * @param ?DateTime $byDate
-     *
-     * @return string
      */
     public function getFullLocation(?DateTime $byDate = null): string
     {
-        if (null === $byDate) {
+        if (blank($byDate)) {
             $byDate = $this->getCurrentDate();
         }
 
@@ -111,43 +112,27 @@ abstract class UploadedFileService implements Arrayable
     }
 
     /**
-     * Creates file name based on original name and extension and UUID v4.
-     *
-     * @return $this
-     */
-    public function createFileName(): self
-    {
-        $originalName = $this->getOriginalName();
-
-        $fileName = sprintf('%s_%s_%s', $this->getCurrentDate(), Uuid::uuid4(), $originalName);
-
-        $this->setFileName($fileName);
-
-        return $this;
-    }
-
-    /**
      * Stores a new file with file size and mime type constraints on selected disk.
-     * Moreover, any uploaded file, is going to be saved as base64.
      *
-     * @param ?string $uploadDir stores file in Resource folder if null, uploadDir otherwise.
-     * @param string $disk Default: public
-     *
-     * @return void
+     * @throws ForbiddenFileTypeException If mime type is not allowed.
+     * @throws FileOverSizedException If file size > config('swiatov.max_file_size').
      */
-    public function storeOnDisk(string $disk = 'public'): void
+    public function storeOnDisk(?string $disk = null): void
     {
+        if (blank($disk)) {
+            $disk = config('swiatov.storage_disk');
+        }
+
         $mimeType = $this->getFileMimeType();
         $fileName = $this->createFileName()->getFileName();
-
         $dirPath = $this->getUploadDir();
 
         if (false === $this->mimeTypeAllowed($mimeType)) {
             throw new ForbiddenFileTypeException("MimeType of {$mimeType} is forbidden.");
         }
 
-        if (true === $this->fileOverSized()) {
-            $maxSize = Number::fileSize(config('swiatov.max_file_size'));
+        if ($this->fileOverSized()) {
+            $maxSize = Number::fileSize($this->getMaxFileSize());
             $uploadedFileSize = Number::fileSize($this->getFileSize());
             $originalName = $this->getOriginalName();
 
@@ -183,22 +168,32 @@ abstract class UploadedFileService implements Arrayable
             in_array($mimeType, ThumbnailAllowedMimeTypesEnum::toValues());
     }
 
-    public function getStoragePath(): string
+    public function getStoragePath()
     {
         return $this->storageResourcePath;
     }
 
-    public function getFileName(): string
+    public function getMaxFileSize()
+    {
+        return $this->maxFileSize;
+    }
+
+    public function getFileHashAlgorithm()
+    {
+        return $this->fileHashAlgorithm;
+    }
+
+    public function getFileName()
     {
         return $this->fileName;
     }
 
-    public function getChecksum(): string
+    public function getChecksum()
     {
         return $this->checksum;
     }
 
-    public function getFileMimeType(): ?string
+    public function getFileMimeType()
     {
         return $this->mimeType;
     }
@@ -223,9 +218,6 @@ abstract class UploadedFileService implements Arrayable
      * If path is null, it gets a full storage location
      * @see getFullLocation()
      *
-     * @param DateTime $fromDate Deterimates the directory to lookup.
-     * @param ?string $path
-     *
      * @return bool
      */
     public function fileExists(DateTime $fromDate, ?string $path = null): bool
@@ -238,11 +230,6 @@ abstract class UploadedFileService implements Arrayable
         return $this->fileSystem->exists($path);
     }
 
-    public function getPublicUrl(): string
-    {
-        return asset("storage/{$this->getUploadDir()}/{$this->getFileName()}");
-    }
-
     final public function setUploadDir(string $uploadDir): self
     {
         $this->uploadDir = $uploadDir;
@@ -250,7 +237,10 @@ abstract class UploadedFileService implements Arrayable
         return $this;
     }
 
-    public function toArray(): array
+    /**
+     * @return array<string, scalar>
+     */
+    public function toArray()
     {
         return [
             'filename' => $this->getFileName(),
@@ -259,40 +249,30 @@ abstract class UploadedFileService implements Arrayable
             'mimetype' => $this->getFileMimeType(),
             'original_name' => $this->getOriginalName(),
             'size' => $this->getFileSize(),
-            'public_url' => $this->getPublicUrl()
         ];
     }
 
     /**
-     * Gets upload dir with Resource path
+     * Creates file name based on original name and extension and UUID v4.
      */
-    final protected function getUploadDir(): string
+    protected function createFileName(): self
     {
-        return sprintf('%s/%s', $this->getResource(), $this->uploadDir);
+        $originalName = $this->getOriginalName();
+
+        $fileName = sprintf('%s_%s_%s', $this->getCurrentDate(), Uuid::uuid4(), $originalName);
+
+        $this->setFileName($fileName);
+
+        return $this;
     }
 
     /**
-     * Creates new upload directory folder based on resource and date.
-     * Current date is based on local timezone.
+     * Returns location from storage path and resource name.
      *
-     * @param int $mode An octal-written permissions
+     * @example location app/public/attachments
      *
-     * @return void
+     * @return string
      */
-    final protected function makeUploadDir(int $mode = 0755): void
-    {
-        $dirPath = $this->getRelativeLocation();
-
-        if (false === is_dir($dirPath)) {
-            $this->fileSystem->makeDirectory($dirPath, $mode, true);
-        }
-    }
-
-    final protected function fileOverSized(): bool
-    {
-        return $this->getFileSize() > config('swiatov.max_file_size');
-    }
-
     protected function getRelativeLocation(): string
     {
         return "{$this->getStoragePath()}/{$this->getResource()}";
@@ -312,18 +292,63 @@ abstract class UploadedFileService implements Arrayable
         return $this;
     }
 
-    private function setFileSize(int $fileSize): self
+    /**
+     * Gets upload directory based on resource.
+     */
+    final protected function getUploadDir(): string
+    {
+        return sprintf('%s/%s', $this->getResource(), $this->uploadDir);
+    }
+
+    /**
+     * Creates a new upload directory folder based on resource and date.
+     * Current date is based on local timezone.
+     *
+     * @param int $mode An octal-written permissions.
+     */
+    final protected function makeUploadDir(int $mode = 0755): void
+    {
+        $dirPath = $this->getRelativeLocation();
+
+        if (false === is_dir($dirPath)) {
+            $this->fileSystem->makeDirectory($dirPath, $mode, true);
+        }
+    }
+
+    final protected function fileOverSized()
+    {
+        return $this->getFileSize() > $this->getMaxFileSize();
+    }
+
+    /**
+     * @param int $fileSize
+     *
+     * @return $this
+     */
+    private function setFileSize($fileSize)
     {
         $this->fileSize = $fileSize;
 
         return $this;
     }
 
-    private function setOriginalName(string $originalName): self
+    /**
+     * @param string $originalName
+     *
+     * @return $this
+     */
+    private function setOriginalName($originalName)
     {
         $this->originalName = $originalName;
 
         return $this;
+    }
+
+    private function hashFile(UploadedFile &$file): string
+    {
+        return once(function () use (&$file) {
+            return $this->fileSystem->hash($file->getRealPath(), $this->fileHashAlgorithm);
+        });
     }
 
     private function setFileExtension(string $fileExtension): self

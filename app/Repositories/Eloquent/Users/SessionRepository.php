@@ -7,9 +7,11 @@ use App\Repositories\Eloquent\BaseRepository;
 
 class SessionRepository extends BaseRepository
 {
-    public function __construct(
-        private readonly Session $session
-    ) {
-        parent::__construct($session);
+    /**
+     * @inheritDoc
+     */
+    protected static function getModelFqcn()
+    {
+        return Session::class;
     }
 }

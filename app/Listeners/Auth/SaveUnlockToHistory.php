@@ -20,7 +20,7 @@ class SaveUnlockToHistory
 
     /**
      * Handle the event.
-     * 
+     *
      * @param \App\Events\Auth\UserUnlocked $event
      */
     public function handle($event): void

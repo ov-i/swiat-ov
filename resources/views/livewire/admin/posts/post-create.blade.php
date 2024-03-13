@@ -9,7 +9,13 @@
         <article class="cta flex flex-row justify-right items-center">
             <button class="button-outlined mr-3" wire:click.confirm="resetForm">{{ __('Reset form') }}</button>
             <button class="button-info-outlined" type="submit">
-                {{ $this->cantBePublished() ? __('Create') : __('Publish') }}
+                {{ 
+                    $this->cantBePublished() ? __('Create') : 
+                    (
+                        filled($this->createPostForm->publishableDateTime) ? 
+                        __('Delay') : __('Publish')
+                    ) 
+                }}
             </button>
         </article>
     </section>
@@ -86,7 +92,7 @@
             </section>
 
             <!-- Attachments -->
-            @if (false === $this->isEvent())
+            @if (!$this->isEvent())
                 <section class="attachments">
                     <div class="w-full bg-white border-1 border-gray-300 rounded shadow-md p-3 mt-3">
                         <h3 class="text-2xl text-gray-600 mb-3">{{ __('Add attachment') }}</h3>
@@ -95,8 +101,10 @@
                             accept="{{ implode(',', $this->getAcceptedMimeTypes()) }}"
                             size="{{ config('swiatov.max_file_size') }}" wire:model="createPostForm.attachments"
                             multiple>
-                        @error('createPostForm.attachments')
-                            <span class="text-red-600">{{ $message }}</span>
+                        @error('createPostForm.attachments.*')
+                            <div class="block">
+                                <span class="text-red-600">{{ $message }}</span>
+                            </div>
                         @enderror
                     </div>
                 </section>

@@ -10,12 +10,6 @@ use App\Repositories\Eloquent\BaseRepository;
 
 class CategoryRepository extends BaseRepository
 {
-    public function __construct(
-        private readonly Category $category,
-    ) {
-        parent::__construct($category);
-    }
-
     public function createCategory(string $name): Category
     {
         $existingCategory = $this->findBy('name', $name);
@@ -25,5 +19,13 @@ class CategoryRepository extends BaseRepository
         }
 
         return $this->create(['name' => $name]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected static function getModelFqcn()
+    {
+        return Category::class;
     }
 }

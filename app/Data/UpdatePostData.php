@@ -10,11 +10,13 @@ use App\Enums\Post\ThumbnailAllowedMimeTypesEnum;
 use App\Rules\DoesntStartWithANumber;
 use Illuminate\Validation\Rule;
 use Spatie\LaravelData\Attributes\MapName;
+use Spatie\LaravelData\Attributes\Validation\Exists;
+use Spatie\LaravelData\Attributes\Validation\In;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Mappers\SnakeCaseMapper;
 
 #[MapName(SnakeCaseMapper::class)]
-class UpdatePostRequest extends Data
+class UpdatePostData extends Data
 {
     public function __construct(
         public ?string $title = null,
@@ -28,21 +30,24 @@ class UpdatePostRequest extends Data
     ) {
     }
 
-    public static function rules(): array
+    /**
+     * @return array<array-key, mixed>
+     */
+    public static function rules()
     {
         return [
             'type' => [
-                Rule::in(PostTypeEnum::toValues()),
                 'required',
+                new In(PostTypeEnum::toValues()),
             ],
             'category_id' => [
                 'required',
-                Rule::exists('categories', 'id'),
+                new Exists(table: 'categories', column: 'id'),
                 'numeric'
             ],
             'tags.*' => [
                 'nullable',
-                Rule::exists('tags', 'id'),
+                new Exists(table: 'tags', column: 'id'),
                 'numeric'
             ],
             'attachments.*' => [

@@ -15,19 +15,12 @@ use Illuminate\Support\Carbon;
 
 class UserLockRepository extends BaseRepository
 {
-    public function __construct(User $user)
-    {
-        parent::__construct($user);
-    }
-
     /**
      * Calculates the user's lock interval.
      *
-     * @param User& $user Referenced user.
-     *
      * @return string|null Returns null if user is NOT blocked.
      */
-    public function blockedUntil(User &$user): ?string
+    public function blockedUntil(User &$user)
     {
         if (false === $user->isBlocked()) {
             return null;
@@ -59,6 +52,10 @@ class UserLockRepository extends BaseRepository
         return $locked;
     }
 
+    /**
+     * @throws CannotUnlockPermamentLockException If someone tries to unlock permament lock
+     * @throws CannotUnlockNotLockedUserException It's impossible to unlock not locked user.
+     */
     public function unlockUser(User &$user): bool
     {
         if (false === $user->canBeUnlocked()) {
@@ -75,5 +72,13 @@ class UserLockRepository extends BaseRepository
             'banned_at' => null,
             'lock_reason' => null,
         ]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected static function getModelFqcn()
+    {
+        return User::class;
     }
 }

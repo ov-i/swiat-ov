@@ -131,8 +131,10 @@ class PostCreate extends Component
             return;
         }
 
-        $thumbnailFile = $this->thumbnailService->setFile($thumbnail)
-            ->setPost($post);
+        $thumbnailFile = $this->thumbnailService->setFile($thumbnail);
+
+        /** @var ThumbnailService $thumbnailFile */
+        $thumbnailFile->setPost($post);
 
         $thumbnailFile->storeOnDisk();
 
@@ -148,13 +150,13 @@ class PostCreate extends Component
     {
         $files = $this->createPostForm->attachments;
 
-        if (null !== $files && 0 < count($files)) {
+        if (filled($files)) {
             foreach($files as $file) {
                 $file = $this->attachmentService->setFile($file);
 
-                $request = CreateAttachmentRequest::from(['attachment' => $file->getContent()]);
+                $request = new CreateAttachmentRequest(attachment: $file->getContent());
 
-                $file->storeOnDisk();
+                /** @var AttachmentService $file */
                 $file->createAttachment($request);
             }
         }

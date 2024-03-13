@@ -12,20 +12,10 @@ use Illuminate\Database\Eloquent\Builder;
 
 class UserBlockHistoryRepository extends BaseRepository
 {
-    public function __construct(
-        private readonly UserBlockHistory $userBlock,
-    ) {
-        parent::__construct($userBlock);
-    }
-
     /**
      * Creates history record for currently banned user
-     *
-     * @param CreateUserBlockHistoryData $data
-     *
-     * @return UserBlockHistory|null
      */
-    public function addToHistory($data)
+    public function addToHistory(CreateUserBlockHistoryData $data): ?UserBlockHistory
     {
         return $this->create([
             ...$data->toArray(),
@@ -36,14 +26,16 @@ class UserBlockHistoryRepository extends BaseRepository
     /**
      * Gets history records for referencd user with action type: Default locked()
      *
-     * @param User $user Referenced user
      * @param UserBlockHistoryActionEnum|null $action User blocked enum: default locked()
      * @param BanDurationEnum|null Optional flag getting a ban duration value
      *
      * @return int
      */
-    public function historyRecordsCount(&$user, $action = null, $banDurationEnum = null)
-    {
+    public function historyRecordsCount(
+        User &$user,
+        UserBlockHistoryActionEnum $action = null,
+        BanDurationEnum $banDurationEnum = null
+    ): int {
         if (null === $action) {
             $action = UserBlockHistoryActionEnum::locked();
         }
@@ -61,5 +53,13 @@ class UserBlockHistoryRepository extends BaseRepository
         })->count();
 
         return $userBlockHistories;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected static function getModelFqcn()
+    {
+        return UserBlockHistory::class;
     }
 }

@@ -13,16 +13,10 @@ use Illuminate\Support\Str;
 
 class PostRepository extends BaseRepository
 {
-    public function __construct(
-        private readonly Post $post,
-    ) {
-        parent::__construct($post);
-    }
-
     /**
-     * @param array<array-key, scalar> $postData
+     * @param non-empty-list<array-key, scalar> $postData
      */
-    public function createPost($postData): Post|false
+    public function createPost(array $postData): Post|false
     {
         if($this->postExists((string) $postData['title'])) {
             return false;
@@ -123,5 +117,13 @@ class PostRepository extends BaseRepository
                         ->whereNotNull('should_be_published_at');
                 });
         })->exists();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected static function getModelFqcn()
+    {
+        return Post::class;
     }
 }

@@ -12,15 +12,6 @@ use Ramsey\Uuid\Uuid;
 
 class TicketRepository extends BaseRepository
 {
-    public function __construct(Ticket $ticket)
-    {
-        parent::__construct($ticket);
-    }
-
-    /**
-     * @param CreateTicketRequestData $requestData
-     * @return Ticket|null
-     */
     public function createTicket(CreateTicketRequestData $requestData): ?Ticket
     {
         /** @phpstan-ignore-next-line */
@@ -32,8 +23,6 @@ class TicketRepository extends BaseRepository
     }
 
     /**
-     * @param TicketPriorityEnum $priority Searched priority of tickets
-     *
      * @return LengthAwarePaginator<Ticket>|null
      */
     public function getTicketsByPriority(TicketPriorityEnum $priority): ?LengthAwarePaginator
@@ -42,8 +31,6 @@ class TicketRepository extends BaseRepository
     }
 
     /**
-     * @param TicketStatusEnum $status Searched status of tickets
-     *
      * @return LengthAwarePaginator<Ticket>|null
      */
     public function getTicketsByStatus(TicketStatusEnum $status): ?LengthAwarePaginator
@@ -53,9 +40,6 @@ class TicketRepository extends BaseRepository
 
     /**
      * Gets tickets by its criteria and returns paginated results
-     *
-     * @param string $criteria Searched value
-     * @param mixed $value Matched value to criteria
      *
      * @return LengthAwarePaginator<Ticket>|null
      */
@@ -96,5 +80,13 @@ class TicketRepository extends BaseRepository
         $ticket->update();
 
         return $ticket;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected static function getModelFqcn()
+    {
+        return Ticket::class;
     }
 }

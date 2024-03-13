@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin\Posts;
 
+use App\Data\UpdatePostData;
 use App\Enums\Post\AttachmentAllowedMimeTypesEnum;
 use App\Traits\IntersectsArray;
 use App\Enums\Post\PostTypeEnum;
@@ -51,13 +52,13 @@ class PostEdit extends Component
         CategoryRepository $categoryRepository,
         TagRepository $tagRepository,
     ): void {
-
         $this->postRepository = $postRepository;
         $this->categoryRepository = $categoryRepository;
         $this->tagRepository = $tagRepository;
         $this->postService = $postService;
 
         $post = $this->post();
+
         abort_if(blank($post) || $post->isClosed(), Response::HTTP_NOT_FOUND);
     }
 
@@ -102,7 +103,7 @@ class PostEdit extends Component
             return;
         }
 
-        $edited = $this->postService->editPost($post, $validated);
+        $edited = $this->postService->editPost($post, UpdatePostData::from($validated));
 
         $edited ? $this->redirectRoute('admin.posts.edit', ['post' => $post]) : null;
     }
@@ -159,7 +160,11 @@ class PostEdit extends Component
     #[Computed]
     public function isPublishable(): bool
     {
-        return !$this->post()->isEvent() || ($this->post()->isEvent() && !$this->postRepository->isAnyEventPublished());
+        return
+            !$this->post()->isEvent() || (
+                $this->post()->isEvent() &&
+                !$this->postRepository->isAnyEventPublished()
+            );
     }
 
     #[Computed]
@@ -178,7 +183,7 @@ class PostEdit extends Component
         $exceptTitle = $this->updatePostForm->except(['title']);
         $request = $this->updatePostForm->validate(attributes: $exceptTitle);
 
-        return $this->postService->editPost($post, $request);
+        return $this->postService->editPost($post, UpdatePostData::from($request));
     }
 
     private function getPostWithRelations(): array

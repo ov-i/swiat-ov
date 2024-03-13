@@ -19,8 +19,7 @@ trait IntersectsArray
     public function intersectSame(array|Collection $needle, array|Collection $haystack): bool
     {
         if (false === $needle instanceof Collection || false === $haystack instanceof Collection) {
-            $needle = collect($needle);
-            $haystack = collect($haystack);
+            [$needle, $haystack] = $this->convertArrayToCollection($needle, $haystack);
         }
 
         if ($needle->isEmpty() && !$haystack->isEmpty()) {
@@ -35,8 +34,30 @@ trait IntersectsArray
         return $needle->only($haystack->keys())->count() === $diff->count();
     }
 
+    public function differences(array|Collection $needle, array|Collection $haystack): array
+    {
+        if (false === $needle instanceof Collection || false === $haystack instanceof Collection) {
+            [$needle, $haystack] = $this->convertArrayToCollection($needle, $haystack);
+        }
+
+        if ($needle->isEmpty() && !$haystack->isEmpty()) {
+            return [];
+        }
+
+        $needle = $this->convertItemsToJson($needle);
+        $haystack = $this->convertItemsToJson($haystack);
+
+        $diff = $haystack->diffAssoc($needle);
+
+        return $diff->toArray();
+    }
+
     /**
      * Returns json encoded text if an item of the array | collection is array or object
+     *
+     * @param non-empty-list<array-key, mixed>|Collection<array-key, mixed>
+     *
+     * @return Collection<array-key, mixed>
      */
     public function convertItemsToJson(array|Collection $collection): Collection
     {
@@ -47,5 +68,15 @@ trait IntersectsArray
         return $collection->map(function (mixed $item) {
             return is_array($item) || is_object($item) ? json_encode($item) : $item;
         });
+    }
+
+    /**
+     * @param non-empty-array<array-key, scalar> ...$arrays
+     *
+     * @return non-empty-array<array-key, Collection>
+     */
+    private function convertArrayToCollection(...$arrays): array
+    {
+        return array_map(fn ($array) => collect($array), $arrays);
     }
 }
