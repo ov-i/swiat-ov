@@ -5,7 +5,6 @@ namespace App\Providers;
 use App\Contracts\Followable;
 use App\Enums\Post\PostStatusEnum;
 use App\Models\Posts\Post;
-use App\Models\Tickets\Ticket;
 use App\Models\User;
 use App\Policies\ApiTokenPolicy;
 use App\Policies\PostPolicy;
@@ -25,7 +24,6 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         PersonalAccessToken::class => ApiTokenPolicy::class,
-        Ticket::class => TicketPolicy::class,
         User::class => UserPolicy::class,
         Post::class => PostPolicy::class
     ];
