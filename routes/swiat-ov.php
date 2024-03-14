@@ -48,15 +48,4 @@ Route::prefix('admin')->middleware($middlewares)->group(function () {
         Route::get('/users/show/{user}', UserShow::class)->name('admin.users.show');
         Route::get('/roles', Role::class)->name('admin.roles');
     });
-
-    Route::prefix('resource/tickets')->group(function () {
-        Route::get('/', Ticket::class)->name('admin.tickets');
-        Route::get('/edit/{ticket}', Ticket::class)->name('admin.tickets.edit');
-        Route::get('/show/{ticket}', Ticket::class)->name('admin.tickets.show');
-        Route::get('/messages', Message::class)->name('admin.tickets.messages');
-        Route::get('/messages/edit/{message}', MessageEdit::class)->name('admin.tickets.messages.edit');
-        Route::get('/messages/show/{message}', MessageShow::class)->name('admin.tickets.messages.show');
-        Route::get('/tags', TagEdit::class)->name('admin.tickets.tags.edit');
-        Route::get('/tags', TagShow::class)->name('admin.tickets.tags.show');
-    });
 });

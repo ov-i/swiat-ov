@@ -5,11 +5,9 @@ namespace App\Providers;
 use App\Contracts\Followable;
 use App\Enums\Post\PostStatusEnum;
 use App\Models\Posts\Post;
-use App\Models\Tickets\Ticket;
 use App\Models\User;
 use App\Policies\ApiTokenPolicy;
 use App\Policies\PostPolicy;
-use App\Policies\TicketPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +23,6 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         PersonalAccessToken::class => ApiTokenPolicy::class,
-        Ticket::class => TicketPolicy::class,
         User::class => UserPolicy::class,
         Post::class => PostPolicy::class
     ];
@@ -42,14 +39,6 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('writePost', [PostPolicy::class, 'create']);
 
         Gate::define('canEditPost', [PostPolicy::class, 'update']);
-
-        Gate::define('read-ticket', function (User $user, Ticket $ticket) {
-            return $user->isAdmin() ||
-                $ticket->assigned_to === $user->id ||
-                $ticket->user_id === $user->id;
-        });
-
-        Gate::define('create-ticket', [TicketPolicy::class, 'create']);
 
         Gate::define('can-follow', function (User $user, Followable $followable) {
             if (false === Auth::check() || $user->isBlocked()) {

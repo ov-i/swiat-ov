@@ -17,7 +17,6 @@ class DatabaseSeeder extends Seeder
             PostTagTableSeeder::class,
             PostTableSeeder::class,
             AttachmentTableSeeder::class,
-            TicketTableSeeder::class
         ]);
     }
 }
