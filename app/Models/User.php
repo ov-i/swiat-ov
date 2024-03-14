@@ -5,8 +5,6 @@ namespace App\Models;
 use App\Enums\Auth\BanDurationEnum;
 use App\Enums\Auth\RoleNamesEnum;
 use App\Enums\Auth\UserStatusEnum;
-use Coderflex\LaravelTicket\Concerns\HasTickets;
-use Coderflex\LaravelTicket\Contracts\CanUseTickets;
 use Database\Factories\UserFactory;
 use App\Models\License\License;
 use App\Models\Posts\Post;
@@ -37,7 +35,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property ?DateTime $banned_at
  * @property ?BanDurationEnum $ban_duration
  */
-class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens;
     use HasFactory;
@@ -47,7 +45,6 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
     use Billable;
     use Searchable;
     use HasRoles;
-    use HasTickets;
     use SoftDeletes;
 
     /**
@@ -80,16 +77,6 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed'
-    ];
-
-    /**
      * The accessors to append to the model's array form.
      *
      * @var array<int, string>
@@ -97,6 +84,17 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
     protected $appends = [
         'profile_photo_url',
     ];
+
+    /**
+     * @return list<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed'
+        ];
+    }
 
     public function getName(): string
     {

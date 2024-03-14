@@ -59,6 +59,7 @@
                                 <x-nav-section route='roles' icon='key' />
                             </article>
 
+                            <!-- sub resource -->
                             <article class="sub-resources py-4">
                                 <h3 class="sub-resource-header text-md text-gray-200">{{ __('Posts system') }}</h3>
 
@@ -67,14 +68,6 @@
                                 <x-nav-section route='categories' icon='category' />
                                 <x-nav-section route='tags' icon='tag' />
                                 <x-nav-section route='attachments' icon='cloud_upload' />
-                            </article>
-                            
-                            <!-- sub resource -->
-                            <article class="sub-resources">
-                                <h3 class="sub-resource-header text-md text-gray-200">{{ __('Tickets system') }}</h3>
-
-                                <x-nav-section route='tickets' icon='confirmation_number' />
-                                <x-nav-section route='tickets.messages' content='messages' icon='mail' />
                             </article>
                         </section>
                     </article>

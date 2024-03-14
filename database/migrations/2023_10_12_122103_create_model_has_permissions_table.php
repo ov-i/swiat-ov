@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Spatie\Permission\PermissionRegistrar;
 
 return new class () extends Migration {
     /**
@@ -16,7 +15,9 @@ return new class () extends Migration {
 
         Schema::create($tableNames['model_has_permissions'], function (Blueprint $table) use ($tableNames, $columnNames) {
             $table->id();
-            $table->foreignId(PermissionRegistrar::$pivotPermission)->constrained($tableNames['permissions']);
+            $table->foreignId($columnNames['permission_pivot_key'])
+                ->constrained($tableNames['permissions'])
+                ->cascadeOnDelete();
             $table->string('model_type');
             $table->unsignedBigInteger($columnNames['model_morph_key']);
             $table->index([
