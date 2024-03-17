@@ -24,7 +24,7 @@ class DenyRegisterForForbiddenMails
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ('/register' === $request->getPathInfo() && Request::METHOD_POST === $request->getMethod()) {
+        if ($request->getPathInfo() === '/register' && $request->isMethod(Request::METHOD_POST)) {
             $email = $request->email;
             $name = $request->name;
 

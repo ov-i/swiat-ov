@@ -116,7 +116,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->status->value;
     }
 
-    public function getLastLoginTZ(): ?DateTime
+    public function getLastLoginTZ(): DateTime|string|null
     {
         return $this->last_login_at;
     }
@@ -188,7 +188,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isBlocked(): bool
     {
-        return UserStatusEnum::banned()->value === $this->status;
+        return $this->status === UserStatusEnum::banned()->value;
     }
 
     /**
@@ -200,17 +200,12 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return
             $this->isBlocked() &&
-            BanDurationEnum::forever()->value !== $this->ban_duration;
-    }
-
-    public function isActive(): bool
-    {
-        return UserStatusEnum::banned()->value === $this->status;
+            $this->ban_duration !== BanDurationEnum::forever()->value;
     }
 
     public function isPostAuthor(Post $post): bool
     {
-        return $post->user()->getParentKey() === $this->getKey();
+        return $this->getKey() === $post->user()->getParentKey();
     }
 
     public function followedPosts(): MorphToMany

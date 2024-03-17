@@ -29,7 +29,7 @@ class UserService
             ->with(['roles'])
             ->paginate(ItemsPerPageEnum::DEFAULT);
 
-        if (true === $users->isEmpty()) {
+        if ($users->isEmpty()) {
             return null;
         }
 

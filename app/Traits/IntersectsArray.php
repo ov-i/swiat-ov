@@ -18,7 +18,7 @@ trait IntersectsArray
      */
     public function intersectSame(array|Collection $needle, array|Collection $haystack): bool
     {
-        if (false === $needle instanceof Collection || false === $haystack instanceof Collection) {
+        if (!$needle instanceof Collection || !$haystack instanceof Collection) {
             [$needle, $haystack] = $this->convertArrayToCollection($needle, $haystack);
         }
 
@@ -36,7 +36,7 @@ trait IntersectsArray
 
     public function differences(array|Collection $needle, array|Collection $haystack): array
     {
-        if (false === $needle instanceof Collection || false === $haystack instanceof Collection) {
+        if (!$needle instanceof Collection || !$haystack instanceof Collection) {
             [$needle, $haystack] = $this->convertArrayToCollection($needle, $haystack);
         }
 

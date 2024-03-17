@@ -7,7 +7,7 @@ namespace App\Listeners\Auth;
 use App\Data\Auth\CreateUserBlockHistoryData;
 use App\Enums\Auth\UserBlockHistoryActionEnum;
 use App\Events\Auth\UserLocked;
-use App\Repositories\Eloquent\UserBlockHistory\UserBlockHistoryRepository;
+use App\Services\Users\UserBlockHistoryService;
 
 class SaveLockToHistory
 {
@@ -15,7 +15,7 @@ class SaveLockToHistory
      * Create the event listener.
      */
     public function __construct(
-        private readonly UserBlockHistoryRepository $blockRepository,
+        private readonly UserBlockHistoryService $userBlockHistoryService,
     ) {
     }
 
@@ -24,7 +24,7 @@ class SaveLockToHistory
      */
     public function handle(UserLocked $event): void
     {
-        if (false === $event->isLocked()) {
+        if (!$event->isLocked()) {
             return;
         }
 
@@ -34,6 +34,6 @@ class SaveLockToHistory
             banDuration: $event->lockOption->getDuration()->value,
         );
 
-        $this->blockRepository->addToHistory($data);
+        $this->userBlockHistoryService->addToHistory($data);
     }
 }

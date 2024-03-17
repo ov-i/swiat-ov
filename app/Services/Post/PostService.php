@@ -54,11 +54,11 @@ class PostService
     {
         $requestTitle = $updateData->title;
 
-        if ($this->postRepository->postExists($requestTitle) && $requestTitle !== $post->getTitle()) {
+        if ($this->postRepository->postExists($requestTitle) && $post->getTitle() !== $requestTitle) {
             throw new PostAlreadyExistsException("Post [{$requestTitle}] already exists.");
         }
 
-        if ($requestTitle !== $post->getTitle()) {
+        if ($post->getTitle() !== $requestTitle) {
             $newSlug = Str::slug($requestTitle);
 
             return $this->postRepository->editPost($post, [...$updateData->toArray(), 'slug' => $newSlug]);
@@ -88,7 +88,7 @@ class PostService
 
     public function closePost(Post &$post): void
     {
-        if (true === $post->isClosed()) {
+        if ($post->isClosed()) {
             return;
         }
 

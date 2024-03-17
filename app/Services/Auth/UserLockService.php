@@ -7,6 +7,7 @@ namespace App\Services\Auth;
 use App\Enums\Auth\BanDurationEnum;
 use App\Enums\Auth\LockReasonEnum;
 use App\Enums\Auth\UserBlockHistoryActionEnum;
+use App\Events\Auth\UserLocked;
 use App\Events\Auth\UserUnlocked;
 use App\Exceptions\AdminIsNotBlockableException;
 use App\Exceptions\UserBlockHistoryRecordNotFoundException;
@@ -28,23 +29,19 @@ class UserLockService
     /**
      * Locks an user's account for a certain time.
      *
-     * @param User $user User that get's a ban.
-     * @param LockOption $lockOption Lock option for duratio and reason.
-     *
-     * @return bool
      * @throws AdminIsNotBlockableException if someone would try to lock a admin user.
      */
-    public function lockUser(&$user, $lockOption)
+    public function lockUser(User &$user, LockOption $lockOption): bool
     {
-        if (true === $user->isAdmin()) {
+        if ($user->isAdmin()) {
             throw new AdminIsNotBlockableException($user);
         }
+        
+        $locked = $this->mothlyLocking($user, $lockOption);
 
-        if (false === $this->isMonthlyLockingSuspect($user)) {
-            return $this->userLockRepository->lockUser($user, $lockOption);
-        }
+        event(new UserLocked($user, $lockOption));
 
-        return $this->mothlyLocking($user);
+        return $locked;
     }
 
     /**
@@ -54,9 +51,9 @@ class UserLockService
      *
      * @return bool
      */
-    public function unlockUser(&$user)
+    public function unlockUser(User &$user)
     {
-        if (true === $this->userLockRepository->unlockUser($user)) {
+        if ($this->userLockRepository->unlockUser($user)) {
             event(new UserUnlocked($user));
 
             return true;
@@ -67,12 +64,8 @@ class UserLockService
 
     /**
      * Checks if user is blocked, if ban time has passed and if user is not banned 4ever.
-     *
-     * @param User $user
-     *
-     * @return bool
      */
-    public function isLockDurationOver(&$user)
+    public function isLockDurationOver(User &$user): bool
     {
         $time = Carbon::parse($this->userLockRepository->blockedUntil($user));
 
@@ -85,18 +78,15 @@ class UserLockService
     /**
      * Monthly locking algorithm. See docs to read more about this method.
      *
-     * @param User $user Referenced user.
-     *
-     * @return bool
      * @throws UserBlockHistoryRecordNotFoundException
      */
-    public function mothlyLocking(&$user)
+    public function mothlyLocking(User &$user, LockOption $lockOption): bool
     {
-        $lockReason = LockReasonEnum::monthlyLocking()->value;
-        if (false === $this->isMonthlyLockingSuspect($user)) {
-            return false;
+        if (!$this->isMonthlyLockingSuspect($user)) {
+            return $this->userLockRepository->lockUser($user, $lockOption);
         }
-
+        
+        $lockReason = LockReasonEnum::monthlyLocking()->value;
         $oneMonthCount = $this->getLockCount($user, BanDurationEnum::oneMonth());
         $yearlyMonthCount = $this->getLockCount($user, BanDurationEnum::oneYear());
 
@@ -113,12 +103,8 @@ class UserLockService
 
     /**
      * Checks if user is a suspect of monthly locking.
-     *
-     * @param User $user
-     *
-     * @return bool
      */
-    public function isMonthlyLockingSuspect(&$user)
+    public function isMonthlyLockingSuspect(User &$user): bool
     {
         $monthHistory = $this->getLockCount($user, BanDurationEnum::oneMonth());
 
@@ -127,13 +113,8 @@ class UserLockService
 
     /**
      * Gets user locks count history from the given duration.
-     *
-     * @param User $user
-     * @param BanDurationEnum $duration
-     *
-     * @return int
      */
-    public function getLockCount(&$user, $duration)
+    public function getLockCount(User &$user, BanDurationEnum $duration): int
     {
         return $this->userBlockHistoryRepository
             ->historyRecordsCount($user, UserBlockHistoryActionEnum::locked(), $duration);

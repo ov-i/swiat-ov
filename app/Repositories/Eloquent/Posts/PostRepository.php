@@ -42,7 +42,7 @@ class PostRepository extends BaseRepository
 
     public function setStatus(Post &$post, PostStatusEnum $status): self
     {
-        if ($post->getStatus() === $status) {
+        if ($status === $post->getStatus()) {
             throw new \Exception(__("Post {$post->getTitle()} is already {$status->value}"));
         }
 

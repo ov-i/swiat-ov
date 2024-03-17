@@ -23,7 +23,7 @@ class UserActivityService
     {
         $session = $this->sessionService->getSessionFromUser($user);
 
-        if (true === $this->isInactive($session) || blank($session->user_id)) {
+        if ($this->isInactive($session) || blank($session->user_id)) {
             return UserActivityEnum::offline()->value;
         }
 

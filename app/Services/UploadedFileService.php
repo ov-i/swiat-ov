@@ -127,7 +127,7 @@ abstract class UploadedFileService implements Arrayable
         $fileName = $this->createFileName()->getFileName();
         $dirPath = $this->getUploadDir();
 
-        if (false === $this->mimeTypeAllowed($mimeType)) {
+        if (!$this->mimeTypeAllowed($mimeType)) {
             throw new ForbiddenFileTypeException("MimeType of {$mimeType} is forbidden.");
         }
 
@@ -222,7 +222,7 @@ abstract class UploadedFileService implements Arrayable
      */
     public function fileExists(DateTime $fromDate, ?string $path = null): bool
     {
-        if (null === $path) {
+        if (blank($path)) {
             $path = $this->getFullLocation($fromDate);
             return $this->fileSystem->exists($path);
         }
@@ -310,7 +310,7 @@ abstract class UploadedFileService implements Arrayable
     {
         $dirPath = $this->getRelativeLocation();
 
-        if (false === is_dir($dirPath)) {
+        if (!is_dir($dirPath)) {
             $this->fileSystem->makeDirectory($dirPath, $mode, true);
         }
     }

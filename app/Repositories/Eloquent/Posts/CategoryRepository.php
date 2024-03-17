@@ -14,7 +14,7 @@ class CategoryRepository extends BaseRepository
     {
         $existingCategory = $this->findBy('name', $name);
 
-        if (null !== $existingCategory) {
+        if (filled($existingCategory)) {
             throw new CategoryAlreadyExistsException();
         }
 

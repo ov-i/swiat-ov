@@ -46,7 +46,7 @@ class ClearUserBlock implements ShouldQueue
 
         foreach ($blockedUsers as $user) {
             if (
-                true === $user->canBeUnlocked() &&
+                $user->canBeUnlocked() &&
                 $userLockService->isLockDurationOver($user)
             ) {
                 $userLockService->unlockUser($user);

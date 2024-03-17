@@ -17,7 +17,7 @@ class PostHistoryRepository extends BaseRepository
     {
         $user = $post->user();
 
-        if (null === $user) {
+        if (blank($user)) {
             throw new \LogicException("The post [{$post->getKey()}] is not being assigned to user");
         }
 

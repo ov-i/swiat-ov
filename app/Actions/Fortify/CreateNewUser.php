@@ -5,7 +5,6 @@ namespace App\Actions\Fortify;
 use App\Data\Auth\RegisterRequestData;
 use App\Models\User;
 use App\Services\Auth\AuthService;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
@@ -33,8 +32,6 @@ class CreateNewUser implements CreatesNewUsers
         ]);
 
         $user = $this->authService->create($input);
-
-        event(new Registered($user));
 
         return $user;
     }

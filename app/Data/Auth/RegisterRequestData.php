@@ -63,7 +63,7 @@ final class RegisterRequestData extends Data
         public readonly string $name,
         #[Email, Max(255)]
         public readonly string $email,
-        #[Password(min: 10, mixedCase: true, numbers: true), Max(255)]
+        #[Password(min: 10), Max(255)]
         public readonly string $password,
         #[IPv4]
         public readonly string $ip,

@@ -2,7 +2,6 @@
 
 namespace App\Repositories\Eloquent\UserBlockHistory;
 
-use App\Data\Auth\CreateUserBlockHistoryData;
 use App\Enums\Auth\BanDurationEnum;
 use App\Enums\Auth\UserBlockHistoryActionEnum;
 use App\Models\User;
@@ -14,13 +13,12 @@ class UserBlockHistoryRepository extends BaseRepository
 {
     /**
      * Creates history record for currently banned user
+     *
+     * @param non-empty-list<array-key, mixed>
      */
-    public function addToHistory(CreateUserBlockHistoryData $data): ?UserBlockHistory
+    public function addToHistory(array $data): ?UserBlockHistory
     {
-        return $this->create([
-            ...$data->toArray(),
-            'operator_id' => auth()->id(),
-        ]);
+        return $this->create($data);
     }
 
     /**
@@ -36,7 +34,7 @@ class UserBlockHistoryRepository extends BaseRepository
         UserBlockHistoryActionEnum $action = null,
         BanDurationEnum $banDurationEnum = null
     ): int {
-        if (null === $action) {
+        if (blank($action)) {
             $action = UserBlockHistoryActionEnum::locked();
         }
 

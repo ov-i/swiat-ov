@@ -12,6 +12,7 @@ use App\Models\Auth\Role;
 use App\Models\User;
 use App\Repositories\Eloquent\Auth\AuthRepository;
 use App\Repositories\Eloquent\UserBlockHistory\UserBlockHistoryRepository;
+use App\Repositories\Eloquent\Users\UserRepository;
 use App\Strategies\Auth\RoleHasPermissions\RoleHasPermissionsStrategy;
 use App\Strategies\Auth\RoleHasPermissions\RoleHasPermissionsStrategyInterface;
 use Illuminate\Database\Eloquent\Collection;
@@ -20,6 +21,7 @@ use Illuminate\Support\Facades\Request;
 class AuthService
 {
     public function __construct(
+        private readonly UserRepository $userRepository,
         private readonly AuthRepository $authRepository,
         private readonly UserBlockHistoryRepository $userBlockHistoryRepository,
         private readonly RoleHasPermissionsStrategy $roleHasPermissionsStrategy,
@@ -56,8 +58,8 @@ class AuthService
     public function assignRolesFromUserEmail(string $userEmail, RoleNamesEnum ...$roles): ?self
     {
         /** @var ?User $user */
-        $user = User::query()->where('email', $userEmail)->first();
-        if (null === $user) {
+        $user = $this->userRepository->findBy('email', $userEmail);
+        if (blank($user)) {
             throw new UserNotFoundException("User with an email [{$userEmail}] does not exist");
         }
 

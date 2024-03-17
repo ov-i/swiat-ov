@@ -23,6 +23,6 @@ class UserUnlocked
 
     public function isUnlocked(): bool
     {
-        return false === $this->user->isBlocked();
+        return !$this->user->isBlocked();
     }
 }
