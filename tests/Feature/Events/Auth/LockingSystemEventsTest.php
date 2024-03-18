@@ -9,8 +9,6 @@ use App\Listeners\Auth\SaveUnlockToHistory;
 use App\Listeners\Auth\SendLockNotification;
 use App\Listeners\Auth\SendUnlockNotification;
 use App\Models\User;
-use App\Repositories\Eloquent\Auth\UserLockRepository;
-use App\Repositories\Eloquent\UserBlockHistory\UserBlockHistoryRepository;
 use App\Services\Auth\UserLockService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -23,21 +21,7 @@ uses(RefreshDatabase::class, WithFaker::class);
 
 describe('Locking System', function () {
     beforeEach(function () {
-        $userBlockHistoryRepository = mock(UserBlockHistoryRepository::class);
-        $userBlockHistoryRepository->shouldReceive('historyRecordsCount')
-            ->andReturn(0);
-
-        $this->userLockRepository = mock(UserLockRepository::class);
-
-        $this->userLockService = new UserLockService(
-            $userBlockHistoryRepository,
-            $this->userLockRepository,
-        );
-
-        $this->lockOption = new LockOption(
-            lockDuration: BanDurationEnum::oneDay(),
-            reason: 'testing purpose'
-        );
+        $this->userLockService = app(UserLockService::class);
     });
 
     test('The [UserLocked] event is being listened by SendLockNotification', function () {
@@ -64,49 +48,34 @@ describe('Locking System', function () {
         Event::assertListening(UserUnlocked::class, SaveUnlockToHistory::class);
     });
 
-    test("The [UserLocked] event is being dispatched after user is locked", function () {
-        $this->userLockRepository
-            ->shouldReceive('lockUser')
-            ->andReturnTrue();
-
-        $user = User::factory()->create();
-
+    test("The [UserLocked] event is being dispatched after user is locked", function (LockOption $lockOption, User $user) {
         assert(!$user->isBlocked());
 
         Event::fake();
 
-        $this->userLockService->lockUser($user, $this->lockOption);
+        $this->userLockService->lockUser($user, $lockOption);
 
         Event::assertDispatched(UserLocked::class);
-    });
+    })->with('lock-option', 'custom-user');
 
     test(
         'The [SendLockNotification] is being send to the user after [UserLocked] event is dispatched',
-        function () {
-            $this->userLockRepository
-                ->shouldReceive('lockUser')
-                ->andReturnTrue();
-
+        function (LockOption $lockOption) {
             $this->markTestIncomplete("Needs further improvements for listener testing");
 
             $user = User::factory()->create();
 
             Notification::fake();
 
-            $locked = $this->userLockService->lockUser($user, $this->lockOption);
+            $locked = $this->userLockService->lockUser($user, $lockOption);
 
             assertTrue($locked);
 
             Notification::assertSentTo($user, SendLockNotification::class);
         }
-    );
+    )->with('lock-option');
 
-    test('The [UserUnlocked] event is being dispatched if user can be unlocked', function () {
-        $this->userLockRepository->shouldReceive('unlockUser')
-                    ->andReturnTrue();
-
-        $user = User::factory()->locked()->create();
-
+    test('The [UserUnlocked] event is being dispatched if user can be unlocked', function (User $user) {
         $this->assertDatabaseHas('users', [
             'email' => $user->getEmail(),
             'ban_duration' => BanDurationEnum::oneDay()->value
@@ -119,5 +88,5 @@ describe('Locking System', function () {
         assertTrue($unlocked);
 
         Event::assertDispatched(UserUnlocked::class);
-    });
+    })->with('locked-user');
 });

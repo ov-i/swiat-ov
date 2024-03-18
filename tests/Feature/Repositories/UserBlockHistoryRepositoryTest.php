@@ -89,8 +89,11 @@ describe('User Block History Repository', function () {
         });
     });
 
-    function getRecordsCount(User &$user, ?UserBlockHistoryActionEnum $action = null, ?BanDurationEnum $banDuration = null): int
-    {
+    function getRecordsCount(
+        User &$user,
+        ?UserBlockHistoryActionEnum $action = null,
+        ?BanDurationEnum $banDuration = null
+    ): int {
         $blockRepostory = new UserBlockHistoryRepository();
 
         return $blockRepostory->historyRecordsCount($user, $action, $banDuration);

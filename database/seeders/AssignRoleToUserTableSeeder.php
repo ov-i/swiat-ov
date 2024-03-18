@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\Auth\RoleNamesEnum;
 use App\Exceptions\UserNotFoundException;
+use App\Models\User;
 use App\Services\Auth\AuthService;
 use Illuminate\Database\Seeder;
 
@@ -20,6 +21,7 @@ class AssignRoleToUserTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->authService->assignRolesFromUserEmail('ov@swiat-ov.pl', RoleNamesEnum::admin());
+        $user = User::find(1);
+        $this->authService->assignRolesFor($user, RoleNamesEnum::admin());
     }
 }

@@ -52,7 +52,7 @@ class UserFactory extends Factory
         ]);
     }
 
-    public function locked(BanDurationEnum|null $banDuration = null): static
+    public function locked(?BanDurationEnum $banDuration = null): static
     {
         return $this->state(fn (array $attributes) => [
             'status' => UserStatusEnum::banned(),

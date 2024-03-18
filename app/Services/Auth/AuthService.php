@@ -6,7 +6,6 @@ namespace App\Services\Auth;
 
 use App\Data\Auth\RegisterRequestData;
 use App\Enums\Auth\RoleNamesEnum;
-use App\Exceptions\UserNotFoundException;
 use App\Models\Auth\Permission;
 use App\Models\Auth\Role;
 use App\Models\User;
@@ -43,26 +42,15 @@ class AuthService
             'ip' => Request::ip(),
         ]);
 
-        if (false === app()->environment('testing')) {
-            $this->assignRolesFromUserEmail($user->email, RoleNamesEnum::user());
-        }
         return $user;
     }
 
 
     /**
      * @param RoleNamesEnum ...$roles Seperated by (optional) coma roles
-     *
-     * @return self
      */
-    public function assignRolesFromUserEmail(string $userEmail, RoleNamesEnum ...$roles): ?self
+    public function assignRolesFor(User &$user, RoleNamesEnum ...$roles): ?self
     {
-        /** @var ?User $user */
-        $user = $this->userRepository->findBy('email', $userEmail);
-        if (blank($user)) {
-            throw new UserNotFoundException("User with an email [{$userEmail}] does not exist");
-        }
-
         foreach ($roles as $role) {
             $user->assignRole($role->value);
         }

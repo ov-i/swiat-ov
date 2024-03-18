@@ -56,7 +56,7 @@ class UserLockRepository extends BaseRepository
      */
     public function unlockUser(User &$user): bool
     {
-        if (!$user->canBeUnlocked()) {
+        if (!$user->canBeUnlocked() && $user->isBlocked()) {
             throw new CannotUnlockPermamentLockException();
         }
 

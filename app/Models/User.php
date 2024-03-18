@@ -30,10 +30,10 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $name
  * @property string $email
  * @property string $ip
- * @property UserStatusEnum|string $status
  * @property ?DateTime $last_login_at
  * @property ?DateTime $banned_at
- * @property ?BanDurationEnum $ban_duration
+ * @property string $status
+ * @property ?string $ban_duration
  */
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -92,7 +92,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed'
+            'password' => 'hashed',
+            'status' => 'string',
+            'ban_duration' => 'string'
         ];
     }
 
@@ -113,7 +115,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getStatus(): string
     {
-        return $this->status->value;
+        return $this->status;
     }
 
     public function getLastLoginTZ(): DateTime|string|null
@@ -199,7 +201,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function canBeUnlocked(): bool
     {
         return
-            $this->isBlocked() &&
+            ($this->isBlocked() && filled($this->ban_duration)) &&
             $this->ban_duration !== BanDurationEnum::forever()->value;
     }
 
