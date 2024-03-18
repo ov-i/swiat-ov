@@ -4,7 +4,6 @@ namespace App\Exceptions;
 
 use App\Models\User;
 use Exception;
-use Illuminate\Http\Response;
 
 class AdminIsNotBlockableException extends Exception
 {

@@ -1,8 +1,11 @@
 <?php
 
 use App\Providers\RouteServiceProvider;
+use Illuminate\Foundation\Testing\WithFaker;
 use Laravel\Fortify\Features;
 use Laravel\Jetstream\Jetstream;
+
+uses(WithFaker::class);
 
 test('registration screen can be rendered', function () {
     $response = $this->get('/register');
@@ -22,11 +25,12 @@ test('registration screen cannot be rendered if support is disabled', function (
 
 test('new users can register', function () {
     $response = $this->post('/register', [
-        'name' => 'Test User',
-        'email' => 'test@example.com',
+        'name' => fake()->userName(),
+        'email' => fake()->safeEmail(),
         'password' => 'password1234567',
         'password_confirmation' => 'password1234567',
         'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature(),
+        'g-recaptcha-response' => 'value'
     ]);
 
     $this->assertAuthenticated();

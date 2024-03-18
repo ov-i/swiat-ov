@@ -2,30 +2,25 @@
 
 use App\Enums\Auth\BanDurationEnum;
 use App\Enums\Auth\LockReasonEnum;
-use App\Enums\Auth\UserBlockHistoryActionEnum;
 use App\Lib\Auth\LockOption;
 use App\Models\User;
 use App\Models\UserBlockHistory;
 use App\Repositories\Eloquent\Auth\UserLockRepository;
-use App\Repositories\Eloquent\UserBlockHistory\UserBlockHistoryRepository;
 use App\Services\Auth\UserLockService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 
-uses(RefreshDatabase::class, WithFaker::class);
+use function Pest\Laravel\actingAs;
 
 describe('User blocking system', function () {
+    uses(RefreshDatabase::class, WithFaker::class);
     beforeEach(function () {
-        $user = mock(User::class);
-        $blockHistoryRepository = mock(UserBlockHistoryRepository::class);
-        $blockHistoryRepository->shouldReceive('getCount');
-
-        $this->authRepository = new UserLockRepository($user);
-        $this->userLockService = new UserLockService($blockHistoryRepository, $this->authRepository);
+        $this->authRepository = new UserLockRepository();
+        $this->userLockService = app(UserLockService::class);
     });
 
     it('should be able to lock user\'s account', function (BanDurationEnum $banDuration) {
-        $this->actingAs($user = User::factory()->create()->fresh());
+        actingAs($user = User::factory()->create()->fresh());
 
         $lockOption = new LockOption($banDuration, LockReasonEnum::highFraudScore());
 
@@ -37,7 +32,7 @@ describe('User blocking system', function () {
     })->with('ban_durations');
 
     test('locked user should have ban duration NOT set to null', function () {
-        $this->actingAs($user = User::factory()->locked()->create()->fresh());
+        actingAs($user = User::factory()->locked(BanDurationEnum::oneDay())->create()->fresh());
 
         $blockedUntil = $this->authRepository->blockedUntil($user);
 
@@ -46,7 +41,7 @@ describe('User blocking system', function () {
     });
 
     it('should be able to unlock user\'s account', function () {
-        $this->actingAs($user = User::factory()->locked()->create()->fresh());
+        actingAs($user = User::factory()->locked(BanDurationEnum::oneDay())->create()->fresh());
 
         $unLocked = $this->userLockService->unlockUser($user);
 
@@ -56,7 +51,7 @@ describe('User blocking system', function () {
     });
 
     test('unlocked user should have ban duration set to null', function () {
-        $this->actingAs($user = User::factory()->create()->fresh());
+        actingAs($user = User::factory()->create());
 
         $blockedUntil = $this->authRepository->blockedUntil($user);
 
@@ -64,10 +59,11 @@ describe('User blocking system', function () {
     });
 
     it('should lock user by increasing lock duration', function (User $user, BanDurationEnum $duration) {
-        UserBlockHistory::factory()->for($user)->create([
-            'action' => UserBlockHistoryActionEnum::locked()->value,
-            'ban_duration' => $duration
-        ]);
+        $admin = User::factory()
+            ->has(UserBlockHistory::factory())
+            ->create();
+
+        actingAs($admin);
 
         $lockOption = new LockOption($duration, LockReasonEnum::monthlyLocking()->value);
 

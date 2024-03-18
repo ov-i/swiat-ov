@@ -36,7 +36,7 @@ class UserLockService
         if ($user->isAdmin()) {
             throw new AdminIsNotBlockableException($user);
         }
-        
+
         $locked = $this->mothlyLocking($user, $lockOption);
 
         event(new UserLocked($user, $lockOption));
@@ -85,7 +85,7 @@ class UserLockService
         if (!$this->isMonthlyLockingSuspect($user)) {
             return $this->userLockRepository->lockUser($user, $lockOption);
         }
-        
+
         $lockReason = LockReasonEnum::monthlyLocking()->value;
         $oneMonthCount = $this->getLockCount($user, BanDurationEnum::oneMonth());
         $yearlyMonthCount = $this->getLockCount($user, BanDurationEnum::oneYear());

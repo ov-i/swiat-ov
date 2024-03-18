@@ -28,7 +28,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         $adminPass = 'password';
-        if (false === app()->environment('testing')) {
+        if (!app()->environment('testing')) {
             $adminPass = config('app.admin_pass');
         }
 
@@ -68,7 +68,7 @@ class UserFactory extends Factory
             'email' => fake()->safeEmail(),
             'ip' => fake()->ipv4(),
             'email_verified_at' => now(),
-            'password' => fake()->password(),
+            'password' => 'password',
             'remember_token' => Str::random(10),
         ]);
     }

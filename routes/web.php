@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Laravel\Jetstream\Http\Controllers\Livewire\UserProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +36,16 @@ $profileMiddlewares = array_filter([$authMiddleware, $authSessionMiddleware]);
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+
+
+Route::middleware($profileMiddlewares)->group(function () {
+    Route::get('/profile', [UserProfileController::class, 'show'])
+        ->name('profile.show');
+
+    Route::get('/posts', function () {echo 'ddd'; })
+        ->name('user.posts')
+      ->middleware('can:writePost');
+});
 
 
 require_once('swiat-ov.php');

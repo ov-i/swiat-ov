@@ -8,7 +8,6 @@ use App\Enums\Auth\UserBlockHistoryActionEnum;
 use OpenApi\Attributes\Property;
 use OpenApi\Attributes\Schema;
 use Spatie\LaravelData\Attributes\MapName;
-use Spatie\LaravelData\Attributes\Validation\AcceptedIf;
 use Spatie\LaravelData\Attributes\Validation\Exists;
 use Spatie\LaravelData\Attributes\Validation\In;
 use Spatie\LaravelData\Attributes\Validation\RequiredIf;
@@ -47,7 +46,7 @@ final class CreateUserBlockHistoryData extends Data
         public readonly int $userId,
         public readonly UserBlockHistoryActionEnum $action,
         public readonly ?string $banDuration = '',
-        public readonly ?int $operatorId 
+        public readonly ?int $operatorId
     ) {
     }
 
