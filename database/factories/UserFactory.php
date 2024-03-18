@@ -28,7 +28,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         $adminPass = 'password';
-        if (false === app()->environment('testing')) {
+        if (!app()->environment('testing')) {
             $adminPass = config('app.admin_pass');
         }
 
@@ -52,12 +52,24 @@ class UserFactory extends Factory
         ]);
     }
 
-    public function locked(): static
+    public function locked(?BanDurationEnum $banDuration = null): static
     {
         return $this->state(fn (array $attributes) => [
             'status' => UserStatusEnum::banned(),
             'banned_at' => now(),
-            'ban_duration' => BanDurationEnum::oneDay()->value
+            'ban_duration' => $banDuration ?? BanDurationEnum::oneDay()->value,
+        ]);
+    }
+
+    public function dummy(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'name' => fake()->userName(),
+            'email' => fake()->safeEmail(),
+            'ip' => fake()->ipv4(),
+            'email_verified_at' => now(),
+            'password' => 'password',
+            'remember_token' => Str::random(10),
         ]);
     }
 }

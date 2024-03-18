@@ -26,7 +26,7 @@ class UserFollowService
             throw new SelfFollowedException('Cannot follow yourself!');
         }
 
-        if (true === $this->alreadyFollowed($user, $followable)) {
+        if ($this->alreadyFollowed($user, $followable)) {
             $followableType = $followable::class;
             throw new AlreadyFollowedEntity(
                 "User [{$user->getName()}] is already following an entity {$followableType}::{$followable->getKey()}"
@@ -40,7 +40,7 @@ class UserFollowService
 
     public function unFollow(User &$user, Followable $followable): bool
     {
-        if (false === $this->alreadyFollowed($user, $followable)) {
+        if (!$this->alreadyFollowed($user, $followable)) {
             return false;
         }
 

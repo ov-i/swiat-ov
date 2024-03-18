@@ -27,6 +27,8 @@ abstract class UploadedFileService implements Arrayable
 
     private readonly int $maxFileSize;
 
+    private ?string $fileHash = null;
+
     private string $uploadDir;
 
     private ?UploadedFile $file = null;
@@ -127,7 +129,7 @@ abstract class UploadedFileService implements Arrayable
         $fileName = $this->createFileName()->getFileName();
         $dirPath = $this->getUploadDir();
 
-        if (false === $this->mimeTypeAllowed($mimeType)) {
+        if (!$this->mimeTypeAllowed($mimeType)) {
             throw new ForbiddenFileTypeException("MimeType of {$mimeType} is forbidden.");
         }
 
@@ -156,9 +158,14 @@ abstract class UploadedFileService implements Arrayable
         return is_file($path) ? $this->fileSystem->delete($path) : false;
     }
 
+    public function getHashFile(): ?string
+    {
+        return $this->fileHash;
+    }
+
     public function getCurrentDate(): string
     {
-        return Carbon::now(tz: config('app.timezone'))->format('Y_m_d');
+        return Carbon::now(timezone: config('app.timezone'))->format('Y_m_d');
     }
 
     public function mimeTypeAllowed(string $mimeType): bool
@@ -222,7 +229,7 @@ abstract class UploadedFileService implements Arrayable
      */
     public function fileExists(DateTime $fromDate, ?string $path = null): bool
     {
-        if (null === $path) {
+        if (blank($path)) {
             $path = $this->getFullLocation($fromDate);
             return $this->fileSystem->exists($path);
         }
@@ -310,7 +317,7 @@ abstract class UploadedFileService implements Arrayable
     {
         $dirPath = $this->getRelativeLocation();
 
-        if (false === is_dir($dirPath)) {
+        if (!is_dir($dirPath)) {
             $this->fileSystem->makeDirectory($dirPath, $mode, true);
         }
     }
@@ -347,7 +354,10 @@ abstract class UploadedFileService implements Arrayable
     private function hashFile(UploadedFile &$file): string
     {
         return once(function () use (&$file) {
-            return $this->fileSystem->hash($file->getRealPath(), $this->fileHashAlgorithm);
+            $hash = $this->fileSystem->hash($file->getRealPath(), $this->fileHashAlgorithm);
+            $this->fileHash = $hash;
+
+            return $hash;
         });
     }
 

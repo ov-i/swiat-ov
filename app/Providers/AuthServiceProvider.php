@@ -41,15 +41,15 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('canEditPost', [PostPolicy::class, 'update']);
 
         Gate::define('can-follow', function (User $user, Followable $followable) {
-            if (false === Auth::check() || $user->isBlocked()) {
+            if (!Auth::check() || $user->isBlocked()) {
                 return false;
             }
 
             $isPost = true === $followable instanceof Post;
 
             if ($isPost && (
-                PostStatusEnum::published()->value !== $followable->getStatus() &&
-                false === Gate::allows('viewAdmin', [$user])
+                $followable->getStatus() !== PostStatusEnum::published()->value &&
+                !Gate::allows('viewAdmin', [$user])
             )) {
                 return false;
             }

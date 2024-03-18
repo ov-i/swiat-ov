@@ -7,12 +7,12 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
 use Laravel\Fortify\Features;
 
-test('email verification screen can be rendered', function () {
-    $user = User::factory()->create([
-        'email_verified_at' => null,
-    ]);
+use function Pest\Laravel\actingAs;
 
-    $response = $this->actingAs($user)->get('/email/verify');
+test('email verification screen can be rendered', function () {
+    $user = User::factory()->unverified()->create();
+
+    $response = actingAs($user)->get('/email/verify');
 
     $response->assertStatus(200);
 })->skip(function () {

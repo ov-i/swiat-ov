@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Enums\Auth\BanDurationEnum;
 use App\Enums\Auth\UserBlockHistoryActionEnum;
 use App\Models\UserBlockHistory;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -31,9 +32,25 @@ class UserBlockHistoryFactory extends Factory
         $actions = UserBlockHistoryActionEnum::toValues();
 
         return [
-            'user_id' => 1,
+            'user_id' => User::factory(),
+            'operator_id' => 1,
             'action' => fake()->randomElement($actions),
             'ban_duration' => app($this->model)->action === UserBlockHistoryActionEnum::locked() ? fake()->randomElement(BanDurationEnum::toValues()) : null
         ];
+    }
+
+    public function locked(BanDurationEnum $banDurationEnum): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'action' => UserBlockHistoryActionEnum::locked(),
+            'ban_duration' => $banDurationEnum
+        ]);
+    }
+
+    public function unlocked(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'action' => UserBlockHistoryActionEnum::unlocked(),
+        ]);
     }
 }

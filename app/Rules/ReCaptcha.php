@@ -15,12 +15,12 @@ class ReCaptcha implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (false === is_string($value)) {
+        if (!is_string($value)) {
             $fail('ReCaptcha token must be a string');
         }
 
         $googleRecaptcha = new GoogleRecaptchaService();
-        if (false === $googleRecaptcha->verify($value)) {
+        if (!$googleRecaptcha->verify($value)) {
             $fail('Invalid ReCaptcha');
         }
     }

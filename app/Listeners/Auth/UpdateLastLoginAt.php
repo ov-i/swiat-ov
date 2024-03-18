@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events\Auth;
+namespace App\Listeners\Auth;
 
 use App\Models\User;
 use Illuminate\Auth\Events\Login;
@@ -23,7 +23,7 @@ class UpdateLastLoginAt implements ShouldBeEncrypted
         /** @var User $user */
         $user = $event->user;
 
-        if (true === $user->isBlocked()) {
+        if ($user->isBlocked()) {
             return;
         }
 

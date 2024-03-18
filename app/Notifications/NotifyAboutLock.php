@@ -16,7 +16,7 @@ class NotifyAboutLock extends Notification implements ShouldQueue
      * Create a new notification instance.
      */
     public function __construct(
-        private readonly User $user,
+        public readonly User $user,
     ) {
     }
 

@@ -16,7 +16,7 @@ class ValidateRegisterReCaptcha
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ('/register' === $request->getBasePath() && $request->isMethod(Request::METHOD_POST)) {
+        if ($request->getBasePath() === '/register' && $request->isMethod(Request::METHOD_POST)) {
             $googleRecaptcha = new GoogleRecaptchaService();
 
             $token = $request['g-recaptcha-response'];

@@ -31,7 +31,13 @@ abstract class BaseRepository implements EloquentRepository
     {
         $modelFqcn = static::getModelFqcn();
 
-        return new $modelFqcn();
+        $modelable = new $modelFqcn();
+
+        if (!$modelable instanceof Model) {
+            throw new \LogicException(__('Only classes that extends Illuminate\\Database\\Eloquent\\Model can be used.'));
+        }
+
+        return $modelable;
     }
 
     /**
@@ -140,6 +146,15 @@ abstract class BaseRepository implements EloquentRepository
         }
 
         return $model->update($data);
+    }
+
+    /**
+     * @param non-empty-list<array-key, string> @relations
+     */
+    public function with(array $relations, callable|string|null $callback = null): Builder
+    {
+        return $this->getModel()
+            ->with($relations, $callback);
     }
 
     /**

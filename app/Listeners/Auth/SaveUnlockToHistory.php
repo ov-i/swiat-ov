@@ -14,7 +14,7 @@ class SaveUnlockToHistory
      * Create the event listener.
      */
     public function __construct(
-        private readonly UserBlockHistoryRepository $blockRepository
+        private readonly UserBlockHistoryRepository $userBlockHistoryRepository
     ) {
     }
 
@@ -25,14 +25,15 @@ class SaveUnlockToHistory
      */
     public function handle($event): void
     {
-        if (true === $event->isUnlocked()) {
+        if ($event->isUnlocked()) {
             $data = new CreateUserBlockHistoryData(
                 userId: $event->user->getKey(),
                 action: UserBlockHistoryActionEnum::unlocked(),
-                banDuration: null
+                banDuration: null,
+                operatorId: auth()->id()
             );
 
-            $this->blockRepository->addToHistory($data);
+            $this->userBlockHistoryRepository->addToHistory($data);
         }
     }
 }

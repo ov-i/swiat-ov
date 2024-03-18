@@ -27,7 +27,7 @@ class SendUnlockNotification implements ShouldQueue
      */
     public function handle(UserUnlocked $event): void
     {
-        if(false === $event->isUnlocked()) {
+        if(!$event->isUnlocked()) {
             return;
         }
 

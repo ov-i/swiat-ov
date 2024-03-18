@@ -10,7 +10,6 @@ class MakeRepository extends OVGeneratorCommand
 {
     protected $signature = "ov:make-repository 
         {name : Repository name.} 
-        {model : Attached model.} 
         {--orm=eloquent : Which ORM Engine should be used [availables: eloquent, sqlite]}.
     ";
 
@@ -19,7 +18,7 @@ class MakeRepository extends OVGeneratorCommand
      *
      * @var string
      */
-    protected $description = 'Creates a new Repository class with name and model attached';
+    protected $description = 'Creates a new Repository class';
 
     public function handle(): ?bool
     {
@@ -37,22 +36,12 @@ class MakeRepository extends OVGeneratorCommand
 
     protected function getDefaultNamespace($rootNamespace): string
     {
-        $repositoryNameNamespace = ucfirst($this->argument('name'));
-        $className = $this->cutSuffix($repositoryNameNamespace, 'Repository');
-        $baseNamespace = "{$rootNamespace}\\Repositories";
+        $baseNamespace = parent::getDefaultNamespace($rootNamespace);
         if (ORMEnginesEnum::sqlite()->value === $this->option('orm')) {
-            return "{$baseNamespace}\\SQlite\\{$className}";
+            return "{$baseNamespace}\\SQlite";
         }
 
-        return "{$baseNamespace}\\Eloquent\\{$className}";
-    }
-
-    protected function replaceModel(string &$stub): string
-    {
-        $model = $this->argument('model');
-        $modelVariable = lcfirst(class_basename($model));
-
-        return str_replace(['{{ model }}', '{{ modelVariable }}'], [$model, $modelVariable], $stub);
+        return "{$baseNamespace}\\Eloquent";
     }
 
     protected function buildClass($name): string
@@ -63,6 +52,6 @@ class MakeRepository extends OVGeneratorCommand
             ->replaceNamespace($stub, $name)
             ->replaceClass($stub, $name);
 
-        return $this->replaceModel($stub);
+        return $stub;
     }
 }

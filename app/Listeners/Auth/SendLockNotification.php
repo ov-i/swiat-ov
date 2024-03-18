@@ -6,19 +6,11 @@ namespace App\Listeners\Auth;
 
 use App\Events\Auth\UserLocked;
 use App\Notifications\NotifyAboutLock;
-use App\Repositories\Eloquent\Auth\AuthRepository;
-use App\Repositories\Eloquent\UserBlockHistory\UserBlockHistoryRepository;
 use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 
-class SendLockNotification implements ShouldQueue, ShouldDispatchAfterCommit
+class SendLockNotification implements ShouldDispatchAfterCommit
 {
-    use InteractsWithQueue;
-
     public function __construct(
-        private readonly AuthRepository $authRepository,
-        private readonly UserBlockHistoryRepository $blockRepository
     ) {
     }
 
@@ -27,7 +19,7 @@ class SendLockNotification implements ShouldQueue, ShouldDispatchAfterCommit
      */
     public function handle(UserLocked $event): void
     {
-        if (false === $event->isLocked()) {
+        if (!$event->isLocked()) {
             return;
         }
 

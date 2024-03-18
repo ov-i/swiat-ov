@@ -30,10 +30,10 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $name
  * @property string $email
  * @property string $ip
- * @property UserStatusEnum|string $status
  * @property ?DateTime $last_login_at
  * @property ?DateTime $banned_at
- * @property ?BanDurationEnum $ban_duration
+ * @property string $status
+ * @property ?string $ban_duration
  */
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -92,7 +92,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed'
+            'password' => 'hashed',
+            'status' => 'string',
+            'ban_duration' => 'string'
         ];
     }
 
@@ -113,10 +115,10 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getStatus(): string
     {
-        return $this->status->value;
+        return $this->status;
     }
 
-    public function getLastLoginTZ(): ?DateTime
+    public function getLastLoginTZ(): DateTime|string|null
     {
         return $this->last_login_at;
     }
@@ -188,7 +190,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isBlocked(): bool
     {
-        return UserStatusEnum::banned()->value === $this->status;
+        return $this->status === UserStatusEnum::banned()->value;
     }
 
     /**
@@ -199,18 +201,13 @@ class User extends Authenticatable implements MustVerifyEmail
     public function canBeUnlocked(): bool
     {
         return
-            $this->isBlocked() &&
-            BanDurationEnum::forever()->value !== $this->ban_duration;
-    }
-
-    public function isActive(): bool
-    {
-        return UserStatusEnum::banned()->value === $this->status;
+            ($this->isBlocked() && filled($this->ban_duration)) &&
+            $this->ban_duration !== BanDurationEnum::forever()->value;
     }
 
     public function isPostAuthor(Post $post): bool
     {
-        return $post->user()->getParentKey() === $this->getKey();
+        return $this->getKey() === $post->user()->getParentKey();
     }
 
     public function followedPosts(): MorphToMany

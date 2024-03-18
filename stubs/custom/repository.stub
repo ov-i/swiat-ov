@@ -6,9 +6,11 @@ use {{ rootNamespace }}Repositories\Eloquent\BaseRepository;
 
 class {{ class }} extends BaseRepository
 {
-    public function __construct(
-        {{ model }} ${{ modelVariable }}
-    ) {
-        parent::__construct(${{ modelVariable }});
+    /**
+    * @inheritDoc
+    */
+    protected static function getModelFqcn()
+    {
+        // code ..
     }
 }

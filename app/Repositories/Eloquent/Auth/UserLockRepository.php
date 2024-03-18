@@ -3,7 +3,6 @@
 namespace App\Repositories\Eloquent\Auth;
 
 use App\Enums\Auth\UserStatusEnum;
-use App\Events\Auth\UserLocked;
 use App\Exceptions\AdminIsNotBlockableException;
 use App\Exceptions\CannotLockAlreadyLockedUserException;
 use App\Exceptions\CannotUnlockNotLockedUserException;
@@ -22,7 +21,7 @@ class UserLockRepository extends BaseRepository
      */
     public function blockedUntil(User &$user)
     {
-        if (false === $user->isBlocked()) {
+        if (!$user->isBlocked()) {
             return null;
         }
 
@@ -37,18 +36,17 @@ class UserLockRepository extends BaseRepository
      */
     public function lockUser(User &$user, LockOption $lockOption): bool
     {
-        if (true === $user->isBlocked()) {
+        if ($user->isBlocked()) {
             throw new CannotLockAlreadyLockedUserException();
         }
 
-        $locked = false === $user->isBlocked() && $user->update([
+        $locked = !$user->isBlocked() && $user->update([
             'status' => UserStatusEnum::banned()->value,
             'ban_duration' => $lockOption->getDuration(),
             'banned_at' => now(),
             'lock_reason' => $lockOption->getReason()
         ]);
 
-        event(new UserLocked($user, $lockOption));
         return $locked;
     }
 
@@ -58,11 +56,11 @@ class UserLockRepository extends BaseRepository
      */
     public function unlockUser(User &$user): bool
     {
-        if (false === $user->canBeUnlocked()) {
+        if (!$user->canBeUnlocked() && $user->isBlocked()) {
             throw new CannotUnlockPermamentLockException();
         }
 
-        if (false === $user->isBlocked()) {
+        if (!$user->isBlocked()) {
             throw new CannotUnlockNotLockedUserException();
         }
 

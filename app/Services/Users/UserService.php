@@ -23,17 +23,11 @@ class UserService
     public function getUsersWithRoles(): ?LengthAwarePaginator
     {
         $users = $this->userRepository
-            ->getModel()
-            ->query()
-            ->orderBy('id')
             ->with(['roles'])
+            ->orderBy('id')
             ->paginate(ItemsPerPageEnum::DEFAULT);
 
-        if (true === $users->isEmpty()) {
-            return null;
-        }
-
-        return $users;
+        return filled($users) ? $users : null;
     }
 
     public function deleteUser(User &$user, bool $forceDelete = false): void

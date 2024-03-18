@@ -45,19 +45,23 @@ final class CreateUserBlockHistoryData extends Data
     public function __construct(
         public readonly int $userId,
         public readonly UserBlockHistoryActionEnum $action,
-        public readonly ?string $banDuration = ''
+        public readonly ?string $banDuration = '',
+        public readonly ?int $operatorId
     ) {
     }
 
     /**
      * @return array<string, array<array-key, mixed>|mixed>
      */
-    public static function rules()
+    public static function rules($context)
     {
         return [
             'userId' => [
                 new Exists(table: 'users', column: 'id'),
                 'required'
+            ],
+            'operatorId' => [
+                new Exists(table: 'users', column: 'id'),
             ],
             'action' => [
                 new In(UserBlockHistoryActionEnum::toValues()),

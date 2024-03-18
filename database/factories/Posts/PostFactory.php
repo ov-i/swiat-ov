@@ -4,7 +4,9 @@ namespace Database\Factories\Posts;
 
 use App\Enums\Post\PostStatusEnum;
 use App\Enums\Post\PostTypeEnum;
+use App\Models\Posts\Category;
 use App\Models\Posts\Post;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -35,8 +37,8 @@ class PostFactory extends Factory
             null;
 
         return [
-            'user_id' => 1,
-            'category_id' => fake()->numberBetween(1, count(CategoryFactory::$categories)),
+            'user_id' => User::factory(),
+            'category_id' => Category::factory(),
             'title' => fake()->unique()->realText(30),
             'slug' => fake()->unique()->slug(),
             'type' => fake()->randomElement(PostTypeEnum::toValues()),

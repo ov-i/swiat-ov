@@ -1,22 +1,21 @@
 <?php
 
-use App\Repositories\Eloquent\Posts\AttachmentRepository;
+use App\Data\CreateAttachmentRequest;
 use App\Services\Post\AttachmentService;
 use Illuminate\Http\UploadedFile;
 
 describe('Delete attachment test', function () {
     beforeEach(function () {
-        $attachmentRepository = app(AttachmentRepository::class);
-
-        $this->attachmentService = new AttachmentService($attachmentRepository);
+        $this->attachmentService = app(AttachmentService::class);
     });
 
     it('should be able to unlink the file from storage', function () {
         $uploadedFile = UploadedFile::fake()->create('avatar.png');
-        $this->attachmentService->setFile($uploadedFile)
-            ->createFileName();
+        $this->attachmentService->setFile($uploadedFile);
 
-        $attachment = $this->attachmentService->createAttachment(['attachment' => $uploadedFile]);
+        $attachmentReq = new CreateAttachmentRequest(attachment: $uploadedFile);
+
+        $attachment = $this->attachmentService->createAttachment($attachmentReq);
 
         expect($attachment)->not()->toBeNull();
         expect($attachment->filename)->not()->toBeNull();

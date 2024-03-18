@@ -2,12 +2,12 @@
 
 namespace App\Providers;
 
-use App\Events\Auth\UpdateLastLoginAt;
 use App\Events\Auth\UserDeleted;
 use App\Events\Auth\UserLocked;
 use App\Events\Auth\UserUnlocked;
 use App\Events\PostPublished;
 use App\Events\User\UserProfileImageDeleted;
+use App\Listeners\Auth\UpdateLastLoginAt;
 use App\Listeners\Auth\SaveLockToHistory;
 use App\Listeners\Auth\SaveUnlockToHistory;
 use App\Listeners\Auth\SendAccountDeletionNotification;
@@ -17,8 +17,6 @@ use App\Listeners\Auth\SaveUserAccountDeletionToHistory;
 use App\Listeners\PublishPost;
 use App\Listeners\User\SendDeletedImageNotification;
 use Illuminate\Auth\Events\Login;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -29,9 +27,6 @@ class EventServiceProvider extends ServiceProvider
      * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
-        Registered::class => [
-            SendEmailVerificationNotification::class,
-        ],
         Login::class => [
             UpdateLastLoginAt::class,
         ],

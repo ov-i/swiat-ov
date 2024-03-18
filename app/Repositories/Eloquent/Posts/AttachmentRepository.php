@@ -45,7 +45,7 @@ class AttachmentRepository extends BaseRepository
     {
         $attachmentExists = $this->find($attachment->getKey());
 
-        if (null === $attachmentExists) {
+        if (blank($attachmentExists)) {
             throw new AttachmentNotFound();
         }
 
