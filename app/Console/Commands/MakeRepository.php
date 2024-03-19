@@ -2,56 +2,119 @@
 
 namespace App\Console\Commands;
 
-use App\Console\OVGeneratorCommand;
 use App\Enums\ORMEnginesEnum;
-use Exception;
+use Illuminate\Console\GeneratorCommand;
+use Illuminate\Contracts\Console\PromptsForMissingInput;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Input\InputOption;
 
-class MakeRepository extends OVGeneratorCommand
+#[AsCommand(name: 'make:repository')]
+class MakeRepository extends GeneratorCommand implements PromptsForMissingInput
 {
-    protected $signature = "ov:make-repository 
-        {name : Repository name.} 
-        {--orm=eloquent : Which ORM Engine should be used [availables: eloquent, sqlite]}.
-    ";
+    protected $name = "make:repository";
 
     /**
      * The console command <description class=""></description>
      *
      * @var string
      */
-    protected $description = 'Creates a new Repository class';
+    protected $description = 'Creates a new Repository class for eloquent';
 
-    public function handle(): ?bool
-    {
-        try {
-            return parent::handle();
-        } catch (Exception $exception) {
-            throw new Exception($exception->getMessage());
-        }
-    }
+    protected $type = 'Repository';
 
-    protected function getStubName(): string
+    public function handle()
     {
-        return 'repository';
-    }
+        $ormOption = $this->getOrmOption();
 
-    protected function getDefaultNamespace($rootNamespace): string
-    {
-        $baseNamespace = parent::getDefaultNamespace($rootNamespace);
-        if (ORMEnginesEnum::sqlite()->value === $this->option('orm')) {
-            return "{$baseNamespace}\\SQlite";
+        if (!$this->isOrmDriverSupported() && filled($ormOption)) {
+            $this->error("\n The '$ormOption' orm option is NOT supported. \n");
+
+            return;
         }
 
-        return "{$baseNamespace}\\Eloquent";
+        parent::handle();
     }
 
-    protected function buildClass($name): string
+    protected function getStub(): string
     {
-        $stub = $this->files->get($this->getStub());
+        if ($this->isOrmOptionFilled() && $this->isOrmDriverSupported()) {
+            return $this->getOrmStub();
+        }
 
-        $stub = $this
-            ->replaceNamespace($stub, $name)
-            ->replaceClass($stub, $name);
+        return app_path('Repositories/eloquent_repository.stub');
+    }
 
-        return $stub;
+    protected function getOptions(): array
+    {
+        return [
+            ['orm', null, InputOption::VALUE_OPTIONAL, 'apply ORM engine other than Eloquent'],
+        ];
+    }
+
+    protected function getDefaultNamespace($rootNamespace): string|int
+    {
+        return $this->matchOrmToNamespace($rootNamespace);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function promptForMissingArgumentsUsing()
+    {
+        return [
+            'name' => [
+                'What should the repository be named?',
+                'E.g. UserRepository'
+            ],
+        ];
+    }
+
+    private function getOrmOption(): ?string
+    {
+        return strtolower($this->option('orm'));
+    }
+
+    private function getOrmStub(): string
+    {
+        $ormEngine = $this->getOrmOption();
+
+        return sprintf('%s/%s_repository.stub', app_path('Repositories'), $ormEngine);
+    }
+
+    private function ormStubExists(): bool
+    {
+        return File::exists($this->getOrmStub());
+    }
+
+    private function matchOrmToNamespace(string $rootNamespace): string
+    {
+        $baseNamespace = sprintf('%s\\Repositories', $rootNamespace);
+
+        return match($this->getOrmOption()) {
+            ORMEnginesEnum::sqlite()->value => $baseNamespace .= '\\Sqlite',
+            default => $baseNamespace .= '\\Eloquent',
+        };
+    }
+
+    private function isOrmOptionFilled(): bool
+    {
+        return filled($this->getOrmOption());
+    }
+
+    private function isOrmDriverSupported(): bool
+    {
+        $supportedByFile = fn () => $this->ormStubExists() && $this->isOrmOptionFilled();
+
+        if (!$supportedByFile()) {
+            $this->error("\n The {$this->getOrmStub()} file does not exists \n");
+
+            return false;
+        }
+
+        return
+            $this->isOrmOptionFilled() &&
+            in_array($this->getOrmOption(), ORMEnginesEnum::toValues());
     }
 }
