@@ -8,7 +8,7 @@
         </article>
         <article class="cta flex flex-row justify-right items-center">
             <button class="button-outlined mr-3" wire:click.confirm="resetForm">{{ __('Reset form') }}</button>
-            <button class="button-info-outlined" type="submit">
+            <button class="button-info-outlined flex items-center" type="submit" wire:loading.remove wire:target="save">
                 {{ 
                     $this->cantBePublished() ? __('Create') : 
                     (
@@ -16,6 +16,11 @@
                         __('Delay') : __('Publish')
                     ) 
                 }}
+            </button>
+            <button class="button-info-outlined flex items-center" wire:loading wire:target="save">
+                <x-material-icon classes="animate-spin">
+                    sync
+                </x-material-icon>
             </button>
         </article>
     </section>

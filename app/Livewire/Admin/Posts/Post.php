@@ -2,42 +2,33 @@
 
 namespace App\Livewire\Admin\Posts;
 
+use App\Livewire\SearchableComponent;
 use App\Repositories\Eloquent\Posts\PostRepository;
 use App\Services\Post\PostService;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
-use Livewire\Component;
 use Livewire\WithPagination;
 
-class Post extends Component
+class Post extends SearchableComponent
 {
     use WithPagination;
 
-    public ?int $perPage = null;
+    protected $repository = PostRepository::class;
 
-    public string $search = '';
-
-    private PostRepository $postRepository;
+    protected bool $paginate = true;
 
     private PostService $postService;
 
     public function boot(
-        PostRepository $postRepository,
         PostService $postService,
     ): void {
-        $this->postRepository = $postRepository;
         $this->postService = $postService;
     }
 
     #[Layout('layouts.admin')]
     public function render(): View
     {
-        $posts = $this->postRepository->all(perPage: $this->perPage);
-
-        if (filled($this->search)) {
-            $posts = $this->postRepository->searchBy(Str::lower($this->search));
-        }
+        $posts = $this->search();
 
         return view('livewire.admin.posts.post', ['posts' => $posts]);
     }

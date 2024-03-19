@@ -1,13 +1,16 @@
-@props(['link', 'content', 'icon' ,'wired_nav' => true, 'icon_size' => 'sm'])
+@props(['link', 'icon' ,'wired_nav' => true, 'icon_size' => 'sm', 'classes' => null])
 
 <a 
   href="{{ $link }}" 
-  class="flex flex-row items-center"
-  {{ $wired_nav ? 'wire:navigate' : null }}
+  {{ $attributes->merge([
+      'class' => "flex flex-row items-center $classes",
+      $wired_nav ? 'wire:navigate' : null 
+    ]) 
+  }}
 >
-  <span class="material-symbols-outlined text-{{ $icon_size }} mr-2">
-    {{ $icon }}
-  </span>
+  <x-material-icon classes="text-{{$icon_size}} flex items-center">
+    {{$icon}}
+  </x-material-icon>
 
-  {{ __($content) }}
+  {{ $slot }}
 </a>

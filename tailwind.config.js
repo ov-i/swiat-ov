@@ -20,6 +20,7 @@ export default {
             },
 
             colors: {
+                asideMenu: '#1e293b',
                 dark: '#323232',
                 gray_accent: '#C1C1C1'
             },

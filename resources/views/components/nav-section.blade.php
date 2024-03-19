@@ -5,6 +5,7 @@
     <x-iconed-link
         link="{{ route('admin.'.$route) }}"
         icon="{{ $icon }}"
-        content="{{ __(ucfirst($content)) }}" 
-        icon_size="md" />
+        icon_size="md">
+    {{ __(ucfirst($route)) }}
+    </x-iconed-link>
 </div>

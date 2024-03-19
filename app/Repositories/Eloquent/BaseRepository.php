@@ -61,17 +61,18 @@ abstract class BaseRepository implements EloquentRepository
     public function searchBy(
         string $query,
         bool $paginate = true,
-        Closure|null $callback = null
+        Closure|null $callback = null,
+        ?int $perPage = null,
     ): Collection|LengthAwarePaginator {
         $classModel = $this->getModel()::class;
-        if (false === in_array(Searchable::class, class_uses_recursive($classModel))) {
+        if (!in_array(Searchable::class, class_uses_recursive($classModel))) {
             throw new NotSearchableModelException("The $classModel model is not searchable.");
         }
 
         /** @var \Laravel\Scout\Builder $searched */
         $searched = $this->getModel()->search($query, $callback);
 
-        return $paginate ? $this->toPaginated($searched) : $searched->get();
+        return $paginate ? $this->toPaginated($searched, $perPage) : $searched->get();
     }
 
     /**
