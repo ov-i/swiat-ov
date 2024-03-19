@@ -20,7 +20,7 @@ class MakeRepository extends GeneratorCommand implements PromptsForMissingInput
      *
      * @var string
      */
-    protected $description = 'Creates a new Repository class for eloquent';
+    protected $description = 'Create a new Repository class for eloquent';
 
     protected $type = 'Repository';
 
@@ -28,7 +28,7 @@ class MakeRepository extends GeneratorCommand implements PromptsForMissingInput
     {
         $ormOption = $this->getOrmOption();
 
-        if (!$this->isOrmDriverSupported() && filled($ormOption)) {
+        if (!$this->isOrmDriverSupported() && $this->isOrmOptionFilled()) {
             $this->error("\n The '$ormOption' orm option is NOT supported. \n");
 
             return;
