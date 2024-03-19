@@ -105,16 +105,9 @@ class MakeRepository extends GeneratorCommand implements PromptsForMissingInput
 
     private function isOrmDriverSupported(): bool
     {
-        $supportedByFile = fn () => $this->ormStubExists() && $this->isOrmOptionFilled();
-
-        if (!$supportedByFile()) {
-            $this->error("\n The {$this->getOrmStub()} file does not exists \n");
-
-            return false;
-        }
-
         return
             $this->isOrmOptionFilled() &&
-            in_array($this->getOrmOption(), ORMEnginesEnum::toValues());
+            in_array($this->getOrmOption(), ORMEnginesEnum::toValues()) &&
+            $this->ormStubExists();
     }
 }
