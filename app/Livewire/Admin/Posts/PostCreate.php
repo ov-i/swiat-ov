@@ -6,6 +6,7 @@ use App\Data\CreateAttachmentRequest;
 use App\Data\CreatePostRequest;
 use App\Enums\Post\AttachmentAllowedMimeTypesEnum;
 use App\Enums\Post\PostTypeEnum;
+use App\Livewire\Concerns\PostCreateActionState;
 use App\Livewire\Forms\CreatePostForm;
 use App\Models\Posts\Post;
 use App\Repositories\Eloquent\Posts\CategoryRepository;
@@ -27,6 +28,8 @@ class PostCreate extends Component
 
     public CreatePostForm $createPostForm;
 
+    public PostCreateActionState $postCreateState;
+
     private AttachmentService $attachmentService;
 
     private ThumbnailService $thumbnailService;
@@ -38,6 +41,11 @@ class PostCreate extends Component
     private CategoryRepository $categoryRepository;
 
     private TagRepository $tagRepository;
+
+    public function mount(): void
+    {
+        $this->postCreateState = new PostCreateActionState();
+    }
 
     public function boot(
         AttachmentService $attachmentService,
@@ -121,6 +129,24 @@ class PostCreate extends Component
     public function cantBePublished(): bool
     {
         return $this->isEvent() && $this->postRepository->isAnyEventPublished();
+    }
+
+    public function getSaveButtonState(): string
+    {
+        return Str::ucfirst($this->bindSaveButtonState());
+    }
+
+    private function bindSaveButtonState(): string
+    {
+        if ($this->cantBePublished()) {
+            $this->postCreateState->saveButtonContent = 'create';
+        } else if (!$this->cantBePublished() && filled($this->createPostForm->publishableDateTime)) {
+            $this->postCreateState->saveButtonContent = 'delay';
+        } else {
+            $this->postCreateState->saveButtonContent = 'publish';
+        }
+
+        return $this->postCreateState->saveButtonContent;
     }
 
     private function saveThumbnailFile(Post &$post): void

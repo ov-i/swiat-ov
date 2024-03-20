@@ -19,7 +19,12 @@ abstract class SearchableComponent extends Component
      */
     protected $repository;
 
-    protected bool $paginate = true;
+    /**
+     * Determinate if records should be paginated
+     *
+     * @var bool $paginate
+     */
+    protected $paginate = true;
 
     public function __construct(
     ) {
@@ -36,8 +41,8 @@ abstract class SearchableComponent extends Component
     protected function search(): Collection|LengthAwarePaginator
     {
         return $this->repository->searchBy(
-            query: Str::lower($this->state->search), 
-            paginate: $this->state->paginate, 
+            query: Str::lower($this->state->search),
+            paginate: $this->state->paginate,
             perPage: $this->state->perPage
         );
     }

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin\Posts;
 
+use App\Livewire\Contracts\Filterable;
 use App\Livewire\SearchableComponent;
 use App\Repositories\Eloquent\Posts\PostRepository;
 use App\Services\Post\PostService;
@@ -9,13 +10,11 @@ use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\WithPagination;
 
-class Post extends SearchableComponent
+class Post extends SearchableComponent implements Filterable
 {
     use WithPagination;
 
     protected $repository = PostRepository::class;
-
-    protected bool $paginate = true;
 
     private PostService $postService;
 
@@ -39,5 +38,13 @@ class Post extends SearchableComponent
         $this->authorize('delete', [$post]);
 
         $this->postService->deletePost($post);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function filters(): array
+    {
+        return [];
     }
 }

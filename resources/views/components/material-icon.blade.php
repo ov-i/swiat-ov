@@ -1,7 +1,7 @@
 @props(['classes' => null, 'iconType' => 'material-symbols-outlined'])
 
-<div class="icon">
-    <span {{ $attributes->merge(['class' => "$iconType $classes dark:text-white"]) }}>
+<div class="icon mr-1">
+    <span {{ $attributes->merge(['class' => "$iconType $classes dark:text-white block"]) }}>
         {{ $slot }}
     </span>
 </div>  

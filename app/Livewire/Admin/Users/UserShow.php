@@ -49,7 +49,7 @@ class UserShow extends Component
         event(new UserProfileImageDeleted($user));
     }
 
-    #[Layout('layouts.admin-view')]
+    #[Layout('layouts.admin')]
     public function render(): View
     {
         return view('livewire.admin.users.user-show');
