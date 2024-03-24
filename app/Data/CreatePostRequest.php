@@ -5,6 +5,7 @@ namespace App\Data;
 use App\Enums\Post\AttachmentAllowedMimeTypesEnum;
 use App\Enums\Post\PostTypeEnum;
 use App\Enums\Post\ThumbnailAllowedMimeTypesEnum;
+use App\Rules\AllowOnlySpecificSpecialChars;
 use App\Rules\DateTimeGreaterThanNow;
 use App\Rules\DoesntStartWithANumber;
 use Illuminate\Validation\Rule;
@@ -43,6 +44,7 @@ class CreatePostRequest extends Data
                 'max:120',
                 'doesnt_start_with:<',
                 new DoesntStartWithANumber(),
+                new AllowOnlySpecificSpecialChars(),
                 Rule::unique('posts', 'title'),
                 'required',
             ],

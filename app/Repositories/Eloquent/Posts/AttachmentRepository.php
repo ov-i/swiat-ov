@@ -25,7 +25,7 @@ class AttachmentRepository extends BaseRepository
      *
      * @return bool
      */
-    public function updateAttachment(Attachment &$attachment, array $updateData, bool $onlyDirty = false)
+    public function updateAttachment(Attachment &$attachment, array $updateData = [], bool $onlyDirty = false)
     {
         if ($onlyDirty) {
             return $this->updateDirty($attachment);
@@ -57,13 +57,11 @@ class AttachmentRepository extends BaseRepository
         return $this->findBy('checksum', $checksum);
     }
 
-    public function rename(string $newName): bool
+    public function rename(Attachment &$attachment, string $newName): bool
     {
-        /** @var Attachment $attachment */
-        $attachment = $this->getModel();
         $previousName = $attachment->getFileName();
 
-        $attachment->fileName = $newName;
+        $attachment->filename = $newName;
 
         return $previousName !== $attachment->getFileName();
     }

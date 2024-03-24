@@ -87,7 +87,7 @@ class Post extends Model implements Followable, Stringable, Sluggable
 
     public function getStatus(): string
     {
-        return $this->status;
+        return $this->status ?? PostStatusEnum::unpublished()->value;
     }
 
     public function isArchived(): bool
@@ -97,14 +97,12 @@ class Post extends Model implements Followable, Stringable, Sluggable
 
     public function getArchivedAt(): ?Date
     {
-        if (false === $this->isArchived()) {
+        if (!$this->isArchived()) {
             return null;
         }
 
         /** @var ?Date $archivedAt */
-        $archivedAt = $this->archived_at;
-
-        return $archivedAt;
+        return new Date($this->archived_at);
     }
 
     public function getPublishedAt(): ?DateTime
@@ -200,7 +198,7 @@ class Post extends Model implements Followable, Stringable, Sluggable
 
     public function isDelayed(): bool
     {
-        return null !== $this->getPublishableDate();
+        return filled($this->getPublishableDate());
     }
 
     public function toSearchableArray(): array

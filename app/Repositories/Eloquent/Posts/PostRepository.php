@@ -24,8 +24,6 @@ class PostRepository extends BaseRepository
 
         return $this->create([
             ...$postData,
-            'user_id' => auth()->id(),
-            'status' => PostStatusEnum::unpublished(),
             'slug' => Str::slug($postData['title']),
             'should_be_published_at' => $postData['publishable_date_time'] ?? null,
         ]);
@@ -42,25 +40,15 @@ class PostRepository extends BaseRepository
 
     public function setStatus(Post &$post, PostStatusEnum $status): self
     {
-        if ($status === $post->getStatus()) {
-            throw new \Exception(__("Post {$post->getTitle()} is already {$status->value}"));
+        if ($status->value === $post->getStatus()) {
+            throw new \LogicException(__("Post {$post->getTitle()} is already {$status->value}"));
         }
 
         $post->status = $status;
 
-        switch($status) {
-            case PostStatusEnum::published():
-                $post->published_at = now();
-                break;
-            case PostStatusEnum::archived():
-                $post->archived = true;
-                $post->archived_at = true;
-                break;
-            default:
-                break;
+        if (!$this->bindPostStatusToValue($post, $status)) {
+            throw new \RuntimeException("Something went wrong during updating status");
         }
-
-        $post->update();
 
         return $this;
     }
@@ -92,16 +80,6 @@ class PostRepository extends BaseRepository
     }
 
     /**
-     * Checks if title exists by converting it to sluggable.
-     */
-    private function isTitleDuplicated(string $requestTitle): bool
-    {
-        $slug = $this->findBy('slug', Str::slug($requestTitle));
-
-        return filled($slug);
-    }
-
-    /**
      * Tries to find any already published event or delayed and not published yet.
      */
     public function isAnyEventPublished(): bool
@@ -117,6 +95,34 @@ class PostRepository extends BaseRepository
                         ->whereNotNull('should_be_published_at');
                 });
         })->exists();
+    }
+
+    /**
+     * Binds current post status with it's timestamps / boolean values
+     */
+    private function bindPostStatusToValue(Post &$post, PostStatusEnum $status): bool
+    {
+        switch($status) {
+            case PostStatusEnum::published():
+                $post->published_at = now();
+                break;
+            case PostStatusEnum::archived():
+                $post->archived = true;
+                $post->archived_at = true;
+                break;
+        }
+
+        return $this->updateDirty($post);
+    }
+
+    /**
+     * Checks if title exists by converting it to sluggable.
+     */
+    private function isTitleDuplicated(string $requestTitle): bool
+    {
+        $slug = $this->findBy('slug', Str::slug($requestTitle));
+
+        return filled($slug);
     }
 
     /**

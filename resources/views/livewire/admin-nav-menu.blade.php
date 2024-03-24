@@ -1,4 +1,4 @@
-<aside class="bg-dark h-screen flex flex-col fixed top-0 left-0">
+<aside class="bg-asideMenu h-screen flex flex-col fixed top-0 left-0">
     <!-- Top Icon -->
     <div class="p-4">
         <img src="{{ Vite::asset('resources/images/swiat-ov.svg') }}" alt="Icon" class="w-48">

@@ -5,11 +5,14 @@ namespace App\Models;
 use App\Enums\Auth\BanDurationEnum;
 use App\Enums\Auth\RoleNamesEnum;
 use App\Enums\Auth\UserStatusEnum;
+use App\Observers\UserObserver;
+use App\Traits\HasSettings;
 use Database\Factories\UserFactory;
 use App\Models\License\License;
 use App\Models\Posts\Post;
 use DateTime;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -35,6 +38,9 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $status
  * @property ?string $ban_duration
  */
+#[ObservedBy([
+    UserObserver::class
+])]
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens;
@@ -46,6 +52,7 @@ class User extends Authenticatable implements MustVerifyEmail
     use Searchable;
     use HasRoles;
     use SoftDeletes;
+    use HasSettings;
 
     /**
      * The attributes that are mass assignable.

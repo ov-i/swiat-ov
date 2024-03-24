@@ -18,7 +18,7 @@ interface EloquentRepository
         bool $paginate = true,
         int|null $perPage = null,
         string $orderBy = 'asc',
-        string $orderByColumn = 'id'
+        string $orderByColumn = 'id',
     ): LengthAwarePaginator|Collection|null;
 
     /**
@@ -34,7 +34,7 @@ interface EloquentRepository
     public function findBy(
         string $column,
         array|int|string $condition,
-        string $operator = '='
+        string $operator = '=',
     ): Model|null;
 
     /**
@@ -59,7 +59,7 @@ interface EloquentRepository
         array|string $param,
         string|int|array $condition = null,
         string|null $operator = '=',
-        bool $paginate = false
+        bool $paginate = false,
     ): Collection|LengthAwarePaginator;
 
     /**

@@ -2,42 +2,32 @@
 
 namespace App\Livewire\Admin\Posts;
 
+use App\Livewire\Contracts\Filterable;
+use App\Livewire\SearchableComponent;
 use App\Repositories\Eloquent\Posts\PostRepository;
 use App\Services\Post\PostService;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
-use Livewire\Component;
 use Livewire\WithPagination;
 
-class Post extends Component
+class Post extends SearchableComponent implements Filterable
 {
     use WithPagination;
 
-    public ?int $perPage = null;
-
-    public string $search = '';
-
-    private PostRepository $postRepository;
+    protected $repository = PostRepository::class;
 
     private PostService $postService;
 
     public function boot(
-        PostRepository $postRepository,
         PostService $postService,
     ): void {
-        $this->postRepository = $postRepository;
         $this->postService = $postService;
     }
 
     #[Layout('layouts.admin')]
     public function render(): View
     {
-        $posts = $this->postRepository->all(perPage: $this->perPage);
-
-        if (filled($this->search)) {
-            $posts = $this->postRepository->searchBy(Str::lower($this->search));
-        }
+        $posts = $this->search();
 
         return view('livewire.admin.posts.post', ['posts' => $posts]);
     }
@@ -48,5 +38,13 @@ class Post extends Component
         $this->authorize('delete', [$post]);
 
         $this->postService->deletePost($post);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function filters(): array
+    {
+        return [];
     }
 }

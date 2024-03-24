@@ -38,7 +38,10 @@ class PostService
     {
         throw_if($this->postRepository->postExists($request->title), PostAlreadyExistsException::class);
 
-        $post = $this->postRepository->createPost($request->toArray());
+        $post = $this->postRepository->createPost([
+            ...$request->toArray(),
+            'user_id' => auth()->id()
+        ]);
         $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::created());
 
         $this->syncTags($post, $request);

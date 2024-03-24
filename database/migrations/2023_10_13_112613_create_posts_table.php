@@ -20,7 +20,8 @@ return new class () extends Migration {
             $table->enum('type', PostTypeEnum::toValues());
             $table->string('thumbnail_path')->nullable();
             $table->longText('content');
-            $table->enum('status', PostStatusEnum::toValues());
+            $table->enum('status', PostStatusEnum::toValues())
+                ->default(PostStatusEnum::unpublished());
             $table->boolean('archived')->default(false);
             $table->date('archived_at')->nullable();
             $table->dateTime('published_at')->nullable();

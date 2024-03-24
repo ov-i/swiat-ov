@@ -8,11 +8,20 @@ use App\Services\Auth\AuthService;
 
 class UserObserver
 {
+    public function __construct(
+        private readonly AuthService $authService
+    ) {
+    }
+
     /**
      * Handle the User "created" event.
      */
-    public function created(User $user, AuthService $authService): void
+    public function created(User $user): void
     {
-        $authService->assignRolesFor($user, RoleNamesEnum::user());
+        if (!app()->runningInConsole()) {
+            $this->authService->assignRolesFor($user, RoleNamesEnum::user());
+        }
+
+        $user->settings()->create();
     }
 }
