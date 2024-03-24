@@ -4,3 +4,4 @@
     {{ $value ?? $slot }}
     {!! $required ? '<i class="text-red-500">*</i>' : null !!}
 </label>
+

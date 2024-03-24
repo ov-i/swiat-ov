@@ -12,9 +12,10 @@ use App\Repositories\Eloquent\Auth\UserLockRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 
+uses(RefreshDatabase::class);
+
 describe('User Lock Repository', function () {
     beforeEach(function () {
-        uses(RefreshDatabase::class);
 
         $this->userLockRepository = new UserLockRepository();
     });

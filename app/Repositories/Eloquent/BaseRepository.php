@@ -5,6 +5,7 @@ namespace App\Repositories\Eloquent;
 use App\Contracts\EloquentRepository;
 use App\Enums\ItemsPerPageEnum;
 use App\Exceptions\NotSearchableModelException;
+use App\Exceptions\NotSoftDeleteableModelException;
 use Closure;
 use Illuminate\Contracts\Database\Query\Expression as QueryExpression;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -43,13 +44,23 @@ abstract class BaseRepository implements EloquentRepository
     /**
      * @inheritDoc
      */
-    public function all(bool $paginate = true, ?int $perPage = null, string $orderBy = 'asc', string $orderByColumn = 'id'): LengthAwarePaginator|Collection|null
-    {
-        $models = $this->getModel()
-            ->query()
-            ->orderBy($orderByColumn, $orderBy);
+    public function all(
+        bool $paginate = true,
+        ?int $perPage = null,
+        string $orderBy = 'asc',
+        string $orderByColumn = 'id',
+        bool $withTrashed = false,
+    ): LengthAwarePaginator|Collection|null {
+        $model = $this->getModel()
+            ->query();
 
-        return $paginate ? $this->toPaginated($models) : $models->get();
+        if ($withTrashed) {
+            $model = $this->withTrashed();
+        }
+
+        $model->orderBy($orderByColumn, $orderBy);
+
+        return $paginate ? $this->toPaginated($model) : $model->get();
     }
 
     /**
@@ -101,8 +112,13 @@ abstract class BaseRepository implements EloquentRepository
     public function findBy(
         string $column,
         array|int|string $condition,
-        string $operator = '='
+        string $operator = '=',
+        bool $withTrashed = false,
     ): ?Model {
+        if ($withTrashed) {
+            return $this->withTrashed()->firstWhere($column, $operator, $condition);
+        }
+
         return $this->getModel()
             ->firstWhere($column, $operator, $condition);
     }
@@ -114,9 +130,14 @@ abstract class BaseRepository implements EloquentRepository
         array|string $param,
         null|string|int|array $condition = null,
         ?string $operator = '=',
-        bool $paginate = false
+        bool $paginate = false,
+        bool $withTrashed = false,
     ): Collection|LengthAwarePaginator {
         $records = $this->getModel()->query()->where($param, $operator, $condition);
+
+        if ($withTrashed) {
+            $records = $this->withTrashed();
+        }
 
         if ($paginate) {
             return $this->toPaginated($records);
@@ -132,10 +153,19 @@ abstract class BaseRepository implements EloquentRepository
         array|Closure|string|QueryExpression $params,
         mixed $operator = null,
         mixed $value = null,
-        string $boolean = 'and'
+        string $boolean = 'and',
+        bool $withTrashed = false,
     ): Builder {
-        return $this->getModel()->query()
-            ->where($params, $operator, $value, $boolean);
+        if ($withTrashed) {
+            return $this
+                ->withTrashed()
+                ->where($params, $operator, $value, $boolean);
+        }
+
+        return $this
+                ->getModel()
+                ->query()
+                ->where($params, $operator, $value, $boolean);
     }
 
     protected function update(
@@ -158,6 +188,16 @@ abstract class BaseRepository implements EloquentRepository
             ->with($relations, $callback);
     }
 
+    public function withTrashed(): Builder
+    {
+        $model = $this->getModel();
+        if (!$this->isSoftDeleteable($model)) {
+            throw new NotSoftDeleteableModelException();
+        }
+
+        return $model->withTrashed();
+    }
+
     /**
      * Updates only dirty attributes.
      *
@@ -165,8 +205,10 @@ abstract class BaseRepository implements EloquentRepository
      */
     protected function updateDirty(Model &$model): bool
     {
-        foreach($model->getDirty() as $dirty) {
-            $model->update($dirty);
+        foreach($model->getDirty() as $key => $dirty) {
+            $model->{$key} = $dirty;
+
+            $model->update();
         }
 
         return $model->isClean();

@@ -1,191 +1,252 @@
-<form wire:submit="save">
-    <section class="wrapper-heading flex flex-row items-center justify-between w-2/3 mb-3 font-primary">
-        <article class="wrapper-header mb-3">
-            <h1 class="font-secondary text-2xl">{{ __('Create Post') }}</h1>
-            @if (filled($this->createPostForm->title))
-                <p class="text-sm text-gray-600">{{ $this->getPostPublicUri() }}</p>
-            @endif
-        </article>
-        <article class="cta flex flex-row justify-right items-center">
-            <button class="button-outlined mr-3" wire:click.confirm="resetForm">{{ __('Reset form') }}</button>
-            <button 
-                class="button-info-outlined flex items-center" 
-                type="submit" 
-                wire:loading.remove 
-                wire:target="save">
-                {{ __($this->getSaveButtonState()) }}
-            </button>
-            <button class="button-info-outlined flex items-center" wire:loading wire:target="save">
-                <x-material-icon classes="animate-spin">
-                    sync
-                </x-material-icon>
-            </button>
-        </article>
-    </section>
-    <div class="wrapper-main flex flex-row items-start justify-between font-secondary">
-        <section class="left-side-wrapper w-2/3">
-            <section class="left-side w-full bg-white border-1 border-gray-300 rounded shadow-md p-3">
-                <!-- Title -->
-                <div class="input-group my-3 last:mb-0 first:mt-0">
-                    <x-label for="title" :value="__('Title')" class="uppercase" required />
-                    <input type="text" 
-                        name="title" 
-                        autocomplete="off" 
-                        id='title' 
-                        class="border-1 border-gray-300 rounded block w-full"
-                        required 
-                        autofocus
-                        minlength="3" 
-                        maxlength="120"
-                        spellcheck="true" 
-                        wire:model.blur="createPostForm.title"  />
-
-                    <x-input-error for='createPostForm.title' />
+<form wire:submit="save" 
+    wire:keydown.document.stop.ctrl.enter.throttle.1000ms="save"
+    wire:keydown.document.stop.cmd.enter.throttle.1000ms="save">
+    <section>
+        <x-admin-card :title="__('Create Post')">
+            <x-slot name="actions">
+                <div class="buttons sm:flex flex-row items-center mb-3 hidden ">
+                    <button 
+                        class="button-outlined mr-3" 
+                        wire:click.confirm="resetForm">
+                        {{ __('Reset form') }}
+                    </button>
+                    <button 
+                        class="button-info-outlined flex items-center" 
+                        type="submit" 
+                        wire:loading.remove
+                        wire:target="save">
+                        {{ __($this->getSaveButtonState()) }}
+                    </button>
+                    <button class="button-info-outlined flex items-center" wire:loading wire:target="save">
+                        <x-material-icon classes="animate-spin">
+                            sync
+                        </x-material-icon>
+                    </button>
                 </div>
+            </x-slot>
 
-                <!-- Type -->
-                <div class="input-group my-3 last:mb-0 first:mt-0">
-                    <x-label for="type" class="uppercase" :value="__('Type')" required />
-                    <select name="type" id="type" class="border-1 rounded border-gray-300 w-full block" required
-                        wire:model.live="createPostForm.type">
-                        <option readonly selected value="" class="text-gray-100">
-                            -- {{ __('Select post type') }} --
-                        </option>
-                        @foreach ($this->getPostTypesOptions as $postType)
-                            <option value="{{ $postType }}">{{ ucfirst($postType->value) }}</option>
-                        @endforeach
-                    </select>
+            <x-admin-card-form>
+                <x-slot name="formInputs">
 
-                    <x-input-error for='createPostForm.type' />
-                </div>
-
-                <!-- Excerpt -->
-                @if (!$this->isEvent())
+                    <!-- Title -->
                     <div class="input-group my-3 last:mb-0 first:mt-0">
-                        <x-label for="excerpt" class="uppercase" :value="__('Excerpt')" required />
-                        <textarea 
-                            name="excerpt" 
-                            id="excerpt" 
+                        <x-label for="title" :value="__('Title')" class="uppercase" required />
+                        <x-input type="text" 
+                            name="title" 
+                            autocomplete="off" 
+                            id='title' 
+                            inputClasses="block w-full"
                             required 
-                            class="border-1 border-gray-300 rounded block w-full"
-                            wire:model.blur="createPostForm.excerpt"></textarea>
+                            autofocus
+                            minlength="3" 
+                            maxlength="120"
+                            spellcheck="true" 
+                            wire:model.blur="createPostForm.title" />
 
-                        <x-input-error for='createPostForm.excerpt' />
+                        @if (filled($this->createPostForm->title))
+                            <p class="text-sm text-gray-600">{{ $this->getPostPublicUri() }}</p>
+                        @endif
+
+                        <x-input-error for='createPostForm.title' />
                     </div>
-                @endif
 
-                <!-- Content -->
-                <div class="input-group my-3 last:mb-0 first:mt-0">
-                    <x-label for="content-form" class="uppercase" :value="__('Content')" required />
-                    @if ($this->isEvent())
-                        <input 
-                            name="content" 
-                            id="content-form" 
-                            class="border-1 border-gray-300 rounded block w-full"
-                            required wire:model.blur="createPostForm.content" />
-                    @else
-                        <textarea 
-                            name="content" 
-                            id="content-form" 
-                            class="border-1 border-gray-300 rounded block w-full" 
-                            rows="10" 
+                    <!-- Type -->
+                    <div class="input-group my-3 last:mb-0 first:mt-0">
+                        <x-label for="type" class="uppercase" :value="__('Type')" required />
+                        <x-select
+                            name="type"
+                            id="type" 
+                            inputClasses="w-full block" 
                             required
-                            wire:model.blur="createPostForm.content"></textarea>
+                            wire:model.live="createPostForm.type">
+                            <option readonly selected value="" class="text-gray-100">
+                                -- {{ __('Select post type') }} --
+                            </option>
+                            @foreach ($this->getPostTypesOptions as $postType)
+                                <option value="{{ $postType }}">{{ ucfirst($postType->value) }}</option>
+                            @endforeach
+                        </x-select>
+
+                        <x-input-error for='createPostForm.type' />
+                    </div>
+
+                    <!-- Excerpt -->
+                    @if (!$this->isEvent())
+                        <div class="input-group my-3 last:mb-0 first:mt-0">
+                            <x-label for="excerpt" class="uppercase" :value="__('Excerpt')" required />
+                            <x-textarea 
+                                name="excerpt" 
+                                id="excerpt" 
+                                required 
+                                inputClasses="block w-full"
+                                rows="5"
+                                wire:model.blur="createPostForm.excerpt"></x-textarea>
+
+                            <x-input-error for='createPostForm.excerpt' />
+                        </div>
                     @endif
 
-                    <x-input-error for='createPostForm.content' />
-                </div>
-            </section>
+                    <!-- Content -->
+                    <div class="input-group my-3 last:mb-0 first:mt-0">
+                        <x-label for="content-form" class="uppercase" :value="__('Content')" required />
+                        @if ($this->isEvent())
+                            <x-input 
+                                name="content" 
+                                id="content-form" 
+                                inputClasses="block w-full"
+                                required 
+                                wire:model.blur="createPostForm.content" />
+                        @else
+                            <x-textarea 
+                                name="content" 
+                                id="content-form" 
+                                inputClasses="block w-full" 
+                                rows="10" 
+                                required
+                                wire:model.blur="createPostForm.content"></x-textarea>
+                        @endif
 
-            <!-- Attachments -->
-            @if (!$this->isEvent())
-                <section class="attachments">
-                    <div class="w-full bg-white border-1 border-gray-300 rounded shadow-md p-3 mt-3">
-                        <h3 class="text-2xl text-gray-600 mb-3">{{ __('Add attachment') }}</h3>
-
-                        <input type="file" name="attachments[]" id="attachments"
-                            accept="{{ implode(',', $this->getAcceptedMimeTypes()) }}"
-                            size="{{ config('swiatov.max_file_size') }}" wire:model="createPostForm.attachments"
-                            multiple>
-                        <x-input-error for='createPostForm.attachments.*' />
+                        <x-input-error for='createPostForm.content' />
                     </div>
-                </section>
-            @endif
-        </section>
-        <section class="right-side w-1/4 font-primary">
-            <!-- Category -->
-            <aside class="aside-card">
-                <h3 class="text-md pt-0 mt-0 uppercase">
-                    {{ __('Choose category') }}
-                    <i class="text-red-600">*</i>
-                </h3>
+                </x-slot>
 
-                <select name="category" id="category" required wire:model="createPostForm.categoryId"
-                    class="w-full mt-3">
-                    <option readonly selected value="">-- {{ __('Select category') }} -- </option>
-                    @forelse ($categories as $category)
-                        <option value="{{ $category->getKey() }}">{{ ucfirst($category->getName()) }}</option>
-                    @endforeach
-                </select>
+                <x-slot name="underInputs">
+                    <!-- Attachments -->
+                    @if (!$this->isEvent())
+                        <section class="attachments">
+                            <div class="w-full pt-3 pb-5 mt-3 border-b border-gray-200 dark:border-gray-700 xl:border-none">
+                                <x-label for="attachments" class="uppercase" :value="__('Add attachment')" />
+                                <x-input 
+                                    type="file" 
+                                    name="attachments[]" 
+                                    id="attachments"
+                                    inputClasses="w-full shadow-none"
+                                    accept="{{ implode(',', $this->getAcceptedMimeTypes()) }}"
+                                    size="{{ config('swiatov.max_file_size') }}" 
+                                    wire:model="createPostForm.attachments"
+                                    multiple />
+                                <x-input-error for='createPostForm.attachments.*' />
+                            </div>
+                        </section>
+                    @endif
+                </x-slot>
 
-                <x-input-error for='createPostForm.categoryId' />
+                <x-slot name="rightSide">
+                    <!-- Category -->
+                    <aside class="aside-card">
+                        <x-label for="category" :value="__('Choose category')" class="uppercase" required />
 
-                <button type="button"
-                    class="outline-none bg-none text-cyan-500 hover:text-cyan-600 active:text-cyan-800 dark:text-white mt-3 flex items-center">
-                    <span class="material-symbols-outlined text-base mr-1">
-                        add_circle
-                    </span>
-                    <span class="text-base">{{ __('create new category') }}</span>
+                        <x-select name="category" id="category" required wire:model="createPostForm.categoryId"
+                            class="w-full mt-3">
+                            <option readonly selected value="">-- {{ __('Select category') }} -- </option>
+                            @forelse ($categories as $category)
+                                <option value="{{ $category->getKey() }}">{{ ucfirst($category->getName()) }}</option>
+                            @endforeach
+                        </x-select>
+
+                        <x-input-error for='createPostForm.categoryId' />
+
+                        <button type="button"
+                            class="outline-none bg-none text-cyan-500 hover:text-cyan-600 active:text-cyan-800 dark:text-white mt-3 flex items-center">
+                            <span class="material-symbols-outlined text-base mr-1">
+                                add_circle
+                            </span>
+                            <span class="text-base">{{ __('create new category') }}</span>
+                        </button>
+                    </aside>
+
+                    <!-- Tags -->
+                    <aside class="aside-card">
+                        <x-label 
+                            for="tags" 
+                            :value="__('Select tags')" 
+                            class="text-md pt-0 mt-0 uppercase text-gray-600" />
+
+                        <x-select
+                            name="tags" 
+                            id="tags" 
+                            wire:model.throttle.live="createPostForm.tags"
+                            inputClasses="w-full mt-3" 
+                            multiple
+                        >
+                            @forelse ($tags as $tag)
+                                <option value="{{ $tag->getKey() }}">{{ ucfirst($tag->getName()) }}</option>
+                            @endforeach
+                        </x-select>
+
+                        <x-input-error for='createPostForm.tags' />
+                    </aside>
+
+                    <!-- Thumbnail -->
+                    @if (!$this->isEvent())
+                        <!-- @TODO: Thumbnail should be selected by attachments tab. -->
+                        <aside class="aside-card">
+                            <div class="thumbnail-url">
+                                <x-label 
+                                    for="thumbnail_url" 
+                                    :value="__('Select thumbnail')" 
+                                    class="text-md pt-0 mt-0 uppercase text-gray-600" />
+
+                                <x-input 
+                                    type="file" 
+                                    name="thumbnail_url" 
+                                    id="thumbnail_url" 
+                                    inputClasses="from-control mt-3 shadow-none"
+                                    accept="image/png, image/jpgeg, image/svg, image/tiff, image/bmp"
+                                    wire:model="createPostForm.thumbnailPath" />
+
+                                @error('createPostForm.thumbnailPath')
+                                    <span class="text-red-600 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </aside>
+                    @endif
+
+                    <!-- Publishable date time -->
+                    @if (!$this->cantBePublished())
+                        <aside class="aside-card">
+                            <div class="publishable-date">
+                                <x-label 
+                                    for="publishableDateTime" 
+                                    :value="__('Delay')" 
+                                    class="text-md pt-0 mt-0 uppercase text-gray-600" />
+
+                                <x-input 
+                                    type="datetime-local" 
+                                    name="publishableDateTime" 
+                                    id="publishableDateTime"
+                                    inputClasses="from-control mt-3" 
+                                    wire:model="createPostForm.publishableDateTime" />
+
+                                <x-input-error for='createPostForm.publishableDateTime' />
+                                @error('createPostForm.publishableDateTime')
+                                    <span class="text-red-600 text-sm block">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </aside>
+                    @endif
+                </x-slot>
+            </x-admin-card-form>
+
+            <div class="buttons flex flex-row w-full items-center mt-6 sm:hidden">
+                <button 
+                    class="button-outlined mr-3" 
+                    wire:click.confirm="resetForm">
+                    {{ __('Reset form') }}
                 </button>
-            </aside>
-
-            <!-- Tags -->
-            <aside class="aside-card">
-                <h3 class="text-md pt-0 mt-0 uppercase">{{ __('Select tags') }}</h3>
-
-                <select name="tags" id="tags" wire:model="createPostForm.tags" class="w-full mt-3" multiple>
-                    @forelse ($tags as $tag)
-                        <option value="{{ $tag->getKey() }}">{{ ucfirst($tag->getName()) }}</option>
-                    @endforeach
-                </select>
-
-                <x-input-error for='createPostForm.tags' />
-            </aside>
-
-            <!-- Thumbnail -->
-            @if (!$this->isEvent())
-                <!-- @TODO: Thumbnail should be selected by attachments tab. -->
-                <aside class="aside-card">
-                    <div class="thumbnail-url">
-                        <h3 class="text-md pt-0 mt-0 uppercase">{{ __('Select thumbnail') }}</h3>
-
-                        <input type="file" name="thumbnail_url" id="thumbnail_url" class="from-control mt-3"
-                            accept="image/png, image/jpgeg, image/svg, image/tiff, image/bmp"
-                            wire:model="createPostForm.thumbnailPath">
-
-                        @error('createPostForm.thumbnailPath')
-                            <span class="text-red-600 text-sm">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </aside>
-            @endif
-
-            <!-- Publishable date time -->
-            @if (!$this->cantBePublished())
-                <aside class="aside-card">
-                    <div class="publishable-date">
-                        <h3 class="text-md pt-0 mt-0 uppercase">{{ __('Delay post publishing') }}</h3>
-
-                        <input type="datetime-local" name="publishableDateTime" id="publishableDateTime"
-                            class="from-control mt-3" wire:model="createPostForm.publishableDateTime">
-
-                        <x-input-error for='createPostForm.publishableDateTime' />
-                        @error('createPostForm.publishableDateTime')
-                            <span class="text-red-600 text-sm block">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </aside>
-            @endif
-        </section>
-    </div>
+                <button 
+                    class="button-info-outlined flex items-center" 
+                    type="submit" 
+                    wire:loading.remove
+                    wire:target="save">
+                    {{ __($this->getSaveButtonState()) }}
+                </button>
+                <button class="button-info-outlined flex items-center" wire:loading wire:target="save">
+                    <x-material-icon classes="animate-spin">
+                        sync
+                    </x-material-icon>
+                </button>
+            </div>
+        </x-admin-card>
+    </section>
 </form>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="{{ auth()->user()->getTheme() }}">
 
 <head>
     <meta charset="utf-8">
@@ -126,7 +126,7 @@
                     <article class="profile-info flex flex-row space-x-2 items-center">
                         <div class="icons-wrapper flex flex-row space-x-2 items-center">
                             <x-material-icon classes="text-2xl">translate</x-material-icon>
-                            <x-material-icon classes="text-2xl">light_mode</x-material-icon>
+                            <livewire:theme-switcher />
                             <x-material-icon classes="text-2xl">dashboard_customize</x-material-icon>
                             <x-material-icon classes="text-2xl">notifications</x-material-icon>
                         </div>

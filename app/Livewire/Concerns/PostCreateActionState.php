@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Livewire\Concerns;
+
 use Livewire\Wireable;
 
 class PostCreateActionState implements Wireable

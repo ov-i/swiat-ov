@@ -41,7 +41,7 @@ class Attachment extends Model
 
     public function getMimeType(): string
     {
-        return $this->mimeType;
+        return $this->mimetype;
     }
 
     public function getSize(): string

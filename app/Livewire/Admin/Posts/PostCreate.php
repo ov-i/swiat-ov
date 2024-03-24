@@ -89,6 +89,8 @@ class PostCreate extends Component
 
         $this->saveThumbnailFile($post);
 
+        $this->createPostForm->reset();
+
         $this->redirectRoute('admin.posts.edit', ['post' => $post], navigate: true);
     }
 
@@ -140,7 +142,7 @@ class PostCreate extends Component
     {
         if ($this->cantBePublished()) {
             $this->postCreateState->saveButtonContent = 'create';
-        } else if (!$this->cantBePublished() && filled($this->createPostForm->publishableDateTime)) {
+        } elseif (!$this->cantBePublished() && filled($this->createPostForm->publishableDateTime)) {
             $this->postCreateState->saveButtonContent = 'delay';
         } else {
             $this->postCreateState->saveButtonContent = 'publish';

@@ -55,13 +55,17 @@ class PostFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => PostStatusEnum::unpublished(),
+            'archived_at' => null,
+            'archived' => false
         ]);
     }
 
-    public function published(): static
+    public function published(?PostTypeEnum $type = null): static
     {
         return $this->state(fn (array $attributes) => [
             'status' => PostStatusEnum::published(),
+            'published_at' => now(),
+            'type' => $type ?? PostTypeEnum::post()
         ]);
     }
 }
