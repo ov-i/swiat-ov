@@ -5,29 +5,28 @@
         <x-admin-card :title="__('Create Post')">
             <x-slot name="actions">
                 <div class="buttons sm:flex flex-row items-center mb-3 hidden ">
-                    <button 
-                        class="button-outlined mr-3" 
+                    <x-button 
+                        type="button"
+                        component="button-zinc-outlined mr-3" 
                         wire:click.confirm="resetForm">
                         {{ __('Reset form') }}
-                    </button>
-                    <button 
-                        class="button-info-outlined flex items-center" 
+                    </x-button>
+                    <x-button 
                         type="submit" 
                         wire:loading.remove
                         wire:target="save">
                         {{ __($this->getSaveButtonState()) }}
-                    </button>
-                    <button class="button-info-outlined flex items-center" wire:loading wire:target="save">
+                    </x-button>
+                    <x-button wire:loading wire:target="save">
                         <x-material-icon classes="animate-spin">
                             sync
                         </x-material-icon>
-                    </button>
+                    </x-button>
                 </div>
             </x-slot>
 
             <x-admin-card-form>
                 <x-slot name="formInputs">
-
                     <!-- Title -->
                     <div class="input-group my-3 last:mb-0 first:mt-0">
                         <x-label for="title" :value="__('Title')" class="uppercase" required />
@@ -229,23 +228,23 @@
             </x-admin-card-form>
 
             <div class="buttons flex flex-row w-full items-center mt-6 sm:hidden">
-                <button 
-                    class="button-outlined mr-3" 
+                <x-button 
+                    type="button"
+                    component="button-zinc-outlined mr-3" 
                     wire:click.confirm="resetForm">
                     {{ __('Reset form') }}
-                </button>
-                <button 
-                    class="button-info-outlined flex items-center" 
+                </x-button>
+                <x-button 
                     type="submit" 
                     wire:loading.remove
                     wire:target="save">
                     {{ __($this->getSaveButtonState()) }}
-                </button>
-                <button class="button-info-outlined flex items-center" wire:loading wire:target="save">
+                </x-button>
+                <x-button wire:loading wire:target="save">
                     <x-material-icon classes="animate-spin">
                         sync
                     </x-material-icon>
-                </button>
+                </x-button>
             </div>
         </x-admin-card>
     </section>

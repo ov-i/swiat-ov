@@ -15,14 +15,6 @@
     @apply text-white p-3 rounded-md shadow w-11/12 mx-auto text-center;
 }
 
-.button-outlined {
-    @apply border border-zinc-600 rounded p-2 bg-transparent hover:bg-gray-500 hover:text-white active:bg-gray-600  dark:bg-gray-700 dark:text-white dark:hover:bg-gray-800  dark:hover:text-white  dark:active:bg-zinc-900 transition-colors duration-75;
-}
-
-.button-info-outlined {
-    @apply border border-cyan-600 rounded p-2 bg-cyan-600 text-white dark:bg-cyan-800 transition-colors duration-75 active:bg-cyan-700 active:text-white hover:bg-cyan-500 hover:border-cyan-500 dark:border-cyan-900 dark:active:border-cyan-900;
-}
-
 .show-wrapper {
     @apply bg-white font-secondary rounded-md w-full xl:w-10/12 v-large:w-7/12 shadow p-3;
 }
@@ -33,8 +25,4 @@
 
 .aside-card {
     @apply font-primary my-3 last:mb-0 text-xl w-full mx-auto sm:w-96 sm:mx-0 xl:w-full 2xl:w-5/6 2xl:pr-4;
-}
-
-.input-group {
-    @apply font-primary;
 }

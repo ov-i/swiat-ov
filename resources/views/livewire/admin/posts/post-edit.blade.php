@@ -6,16 +6,17 @@
         <x-admin-card title="{{ $this->post() }}">
             <x-slot name="actions">
                 <div class="buttons sm:flex flex-row items-center mb-3 hidden ">
-                    <button
-                        class="button-info-outlined disabled:cursor-not-allowed disabled:bg-transparent disabled:text-gray-400 hover:border-initial"
-                        {{ $this->isFormUnTouched() ? 'disabled' : null }}>
+                    <x-button 
+                        type="button" 
+                        class="disabled:cursor-not-allowed disabled:bg-transparent disabled:text-gray-400 disabled:hover:border-gray-200 hover:border-initial" 
+                        :disabled="$this->isFormUnTouched()">
                         {{ $this->isFormUnTouched() ? __('Form untouched') : __('Edit') }}
-                    </button>
-                    <button class="button-info-outlined flex items-center" wire:loading wire:target="edit">
+                    </x-button>
+                    <x-button wire:loading wire:target="edit">
                         <x-material-icon classes="animate-spin">
                             sync
                         </x-material-icon>
-                    </button>
+                    </x-button>
                 </div>
             </x-slot>
             
@@ -181,16 +182,17 @@
             </x-admin-card-form>
             
             <div class="buttons flex flex-row w-full items-center mt-6 sm:hidden">
-                <button
-                    class="button-info-outlined disabled:cursor-not-allowed disabled:bg-transparent disabled:text-gray-400 hover:border-initial"
-                    {{ $this->isFormUnTouched() ? 'disabled' : null }}>
+                <x-button 
+                    type="button" 
+                    class="disabled:cursor-not-allowed disabled:bg-transparent disabled:text-gray-400 disabled:hover:border-gray-200 hover:border-initial" 
+                    :disabled="$this->isFormUnTouched()">
                     {{ $this->isFormUnTouched() ? __('Form untouched') : __('Edit') }}
-                </button>
-                <button class="button-info-outlined flex items-center" wire:loading wire:target="save">
+                </x-button>
+                <x-button wire:loading wire:target="edit">
                     <x-material-icon classes="animate-spin">
                         sync
                     </x-material-icon>
-                </button>
+                </x-button>
             </div>
         </x-admin-card>
     </section>

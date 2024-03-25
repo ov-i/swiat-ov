@@ -1,16 +1,16 @@
 <section class="show-wrapper">
     <!-- error alerts -->
-        @if (session()->has('userUnlocked'))
-            <div class="bg-green-500 flash-alert">
-                {{ session()->get('userUnlocked') }}
-            </div>
-        @endif
+    @if (session()->has('userUnlocked'))
+        <div class="bg-green-500 flash-alert">
+            {{ session()->get('userUnlocked') }}
+        </div>
+    @endif
 
-        @if (session()->has('userLocked'))
-            <div class="bg-green-500 flash-alert">
-                {{ session()->get('userLocked') }}
-            </div>
-        @endif
+    @if (session()->has('userLocked'))
+        <div class="bg-green-500 flash-alert">
+            {{ session()->get('userLocked') }}
+        </div>
+    @endif
 
     <!-- Info card -->
     <article class="show-card">
@@ -18,7 +18,12 @@
             <img src="{{ $this->user->profile_photo_url }}" alt="" class="w-80 v-large:w-96 rounded-md hover:-z-10">
 
             <div class="delete-image w-full">
-                <button class="w-full mt-3 button-outlined" wire:click="deleteImage">{{ __('Delete image') }} </button>
+                <x-button 
+                    component="button-zinc-outlined" 
+                    class="w-full block my-2"
+                    wire:click="deleteImage">
+                    {{ __('Delete image') }}
+                </x-button>
             </div>
         </figure>
         <div class="info-card__details w-full lg:w-1/2 xl:w-2/3 2xl:w-1/2 pr-3 mx-auto">

@@ -14,9 +14,7 @@ class UserLock extends Component
 {
     public User $user;
 
-    public bool $userLockModalOpened = false;
-
-    public const REASON_MIN_CHARS = 50;
+    public bool $lockUserConfirmation = false;
 
     public LockForm $lockForm;
 
@@ -30,21 +28,6 @@ class UserLock extends Component
         $this->userLockService = $userLockService;
     }
 
-    public function openLockingModal(): void
-    {
-        if (true === $this->userLockModalOpened) {
-            $this->userLockModalOpened = false;
-            return;
-        }
-
-        $this->userLockModalOpened = true;
-    }
-
-    public function closeLockingModal(): void
-    {
-        $this->userLockModalOpened = false;
-    }
-
     public function lockUser(): void
     {
         $this->lockForm->validate();
@@ -52,21 +35,12 @@ class UserLock extends Component
         /** @var User $user */
         $user = $this->user;
 
-        $reasonLength = strlen($this->lockForm->reason);
-
-        if (self::REASON_MIN_CHARS > $reasonLength) {
-            session()->flash('notEnoughChars', __('Please provide min. 50 chars'));
-            return;
-        }
-
         $lockDuration = BanDurationEnum::from($this->lockForm->lockDuration);
         $reason = $this->lockForm->reason;
 
         $this->userLockService->lockUser($user, new LockOption($lockDuration, $reason));
 
-        session()->flash('userLocked', __("User [{$user->name}] has been locked successfully"));
-
-        $this->closeLockingModal();
+        $this->lockUserConfirmation = false;
 
         $this->redirectRoute('admin.users.show', ['user' => $user], true, true);
     }
