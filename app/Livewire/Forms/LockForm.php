@@ -2,14 +2,31 @@
 
 namespace App\Livewire\Forms;
 
-use Livewire\Attributes\Validate;
+use App\Enums\Auth\BanDurationEnum;
+use App\Enums\Auth\LockReasonEnum;
+use Illuminate\Validation\Rule;
 use Livewire\Form;
 
 class LockForm extends Form
 {
-    #[Validate('required', 'min:50')]
     public string $reason = '';
 
-    #[Validate('required')]
     public string $lockDuration = '';
+
+    /**
+     * @return non-empty-list<array-key, mixed>
+     */
+    public function rules(): array
+    {
+        return [
+            'reason' => [
+                Rule::in(LockReasonEnum::toValues()),
+                'required',
+            ],
+            'lockDuration' => [
+                Rule::in(BanDurationEnum::toValues()),
+                'required'
+            ]
+        ];
+    }
 }

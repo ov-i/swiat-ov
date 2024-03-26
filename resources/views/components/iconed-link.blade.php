@@ -8,7 +8,7 @@
     ]) 
   }}
 >
-  <x-material-icon classes="text-{{$icon_size}} flex items-center">
+  <x-material-icon classes="text-{{$icon_size}} flex items-center mr">
     {{$icon}}
   </x-material-icon>
 

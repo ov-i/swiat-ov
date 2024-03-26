@@ -18,4 +18,3 @@
     {{ $slot }}
   </tbody>
 </table>
-              

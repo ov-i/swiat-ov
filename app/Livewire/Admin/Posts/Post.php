@@ -16,6 +16,8 @@ class Post extends SearchableComponent implements Filterable
 
     protected $repository = PostRepository::class;
 
+    protected $paginateSearch = false;
+
     private PostService $postService;
 
     public function boot(
@@ -27,14 +29,18 @@ class Post extends SearchableComponent implements Filterable
     #[Layout('layouts.admin')]
     public function render(): View
     {
-        $posts = $this->search();
+        $posts = $this->repository->all();
+
+        if (filled($this->state->search)) {
+            $posts = $this->search();
+        }
 
         return view('livewire.admin.posts.post', ['posts' => $posts]);
     }
 
     public function delete(int $postId): void
     {
-        $post = $this->postRepository->find($postId);
+        $post = $this->repository->find($postId);
         $this->authorize('delete', [$post]);
 
         $this->postService->deletePost($post);

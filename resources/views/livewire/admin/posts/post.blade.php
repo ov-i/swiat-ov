@@ -1,23 +1,27 @@
 <section>
+    <x-back-button :to="route('admin.dashboard')">
+        {{ __('Back to dashboard') }}
+    </x-back-button>
+
     <x-admin-card title="Posts">
         <x-slot name="actions">
             <x-iconed-link 
                 :link="route('admin.posts.create')" 
                 icon="add" 
                 icon_size="text-[2rem]"
-                classes="button-info-outlined p-1 flex flex-row items-center">
+                classes="button-info">
                 {{ __('new') }}
             </x-iconed-link>
         </x-slot>
         
-        <section class="py-4 border-b border-gray-200">
+        <section class="py-4 border-b border-gray-200 dark:border-gray-600">
             <h3 class="text-lg font-secondary font-semibold text-gray-600 dark:text-zinc-300">
                 {{ __('Search & Filters') }}
             </h3>
         </section>
 
         <section class="searchable-actions">
-            <x-search-model :state="$state"/>            
+            <x-search-model :state="$state"/>
         </section>
 
         <section class="post-table overflow-x-hidden 2xl:overflow-x-visible">
@@ -44,13 +48,10 @@
                 </x-slot>
 
                 @foreach ($posts as $post)
-                    <tr 
-                        class="bg-white border-b last:border-none dark:bg-white dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-white"
-                        wire:key="{{ $post->getKey() }}"
-                    >
+                    <tr class="resource-tr" wire:key="{{ $post->getKey() }}">
                         <td class="w-4 p-4">
                             <div class="flex items-center">
-                                <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
+                                <x-label for="checkbox-table-search-1" class="sr-only" value="Checkbox" />
                                 <x-checkbox id="checkbox-table-search-1" />
                             </div>
                         </td>
@@ -59,7 +60,7 @@
                             <div class="ps-3">
                                 <div class="text-base font-semibold">
                                     <a href="{{ route('admin.posts.edit', ['post' => $post]) }}"
-                                        class="hover:text-gray-700 active:text-gray-800 transition duration-100">
+                                        class="hover:text-gray-700 dark:hover:text-zinc-300 active:text-gray-800 transition duration-100">
                                         {{ $post->getTitle() }}
                                     </a>
                                 </div>
@@ -79,42 +80,29 @@
                             {{ $post->getType() }}
                         </td>
                         <td class="px-6 py-4">
-                            <x-dropdown align="left">
-                                <x-slot name="trigger">
-                                    <button type="button">
-                                        <x-material-icon classes="text-xl cursor-pointer">
-                                            more_vert
+                            <div class="flex items-center text-center">
+                                <section class="mr-2">
+                                    <x-button
+                                    type="button"
+                                    component="button-danger"
+                                    class="flex items-center"
+                                    wire:click="delete({{ $post->getKey() }})"
+                                    wire:confirm="Soft delete this post?">
+                                    <x-material-icon class="mr-0">
+                                        delete
+                                    </x-material-icon>
+                                </x-button>
+                                </section>
+                                <section>
+                                    <a href="{{ route('admin.posts.edit', ['post' => $post]) }}" class="flex items-center button-info">
+                                        <x-material-icon 
+                                            link="{{ route('admin.posts.edit', ['post' => $post]) }}"
+                                            class="mr-0">
+                                            edit
                                         </x-material-icon>
-                                    </button>
-                                </x-slot>
-                                <x-slot name="content">
-                                    <!-- Actions list -->
-                                    <ul class="space-y-2 text-md">
-                                        <!-- single list item -->
-                                        <li>
-                                            <x-iconed-link 
-                                                icon="edit"
-                                                class="mr-1"
-                                                link="{{ route('admin.posts.edit', ['post' => $post]) }}">
-                                                {{ __('Edit post') }}
-                                            </x-iconed-link>
-                                        </li> <!-- end item -->
-
-                                        <!-- single list item -->
-                                        <li>
-                                            <div class="flex cursor-pointer hover:text-gray-600 flex-row items-center text-md"
-                                                wire:click="delete({{ $post->getKey() }})"
-                                                wire:confirm="Soft delete this post?">
-                                                <span class="material-symbols-outlined text-sm mr-2">
-                                                    delete
-                                                </span>
-
-                                                {{ __('Delete post') }}
-                                            </div>
-                                        </li> <!-- end item -->
-                                    </ul> <!-- end actions list -->
-                                </x-slot>
-                            </x-dropdown>
+                                    </a>
+                                </section>                                 
+                            </div>
                         </td>
                     </tr>
                 @endforeach

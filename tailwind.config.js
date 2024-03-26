@@ -1,6 +1,7 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
 import typography from '@tailwindcss/typography';
+import { buttons } from './resources/js/tailwindcss/plugins/components/buttons';
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -22,6 +23,7 @@ export default {
 
             colors: {
                 asideMenu: '#1e293b',
+                darkAsideMenu: '#1c2637',
                 dark: '#323232',
                 gray_accent: '#C1C1C1'
             },
@@ -32,5 +34,5 @@ export default {
         },
     },
 
-    plugins: [forms, typography],
+    plugins: [forms, typography, buttons],
 };

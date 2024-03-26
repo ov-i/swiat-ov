@@ -108,7 +108,7 @@ class PostRepository extends BaseRepository
                 break;
             case PostStatusEnum::archived():
                 $post->archived = true;
-                $post->archived_at = true;
+                $post->archived_at = now()->toDateTime();
                 break;
         }
 
