@@ -24,7 +24,7 @@ abstract class SearchableComponent extends Component
      *
      * @var bool $paginate
      */
-    protected $paginate = true;
+    protected $paginateSearch = true;
 
     public function __construct(
     ) {
@@ -35,7 +35,7 @@ abstract class SearchableComponent extends Component
 
     public function mount()
     {
-        $this->state = new SearchModelState(paginate: $this->paginate);
+        $this->state = new SearchModelState(paginate: $this->paginateSearch);
     }
 
     protected function search(): Collection|LengthAwarePaginator

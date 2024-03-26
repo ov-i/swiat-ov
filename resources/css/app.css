@@ -26,3 +26,7 @@
 .aside-card {
     @apply font-primary my-3 last:mb-0 text-xl w-full mx-auto sm:w-96 sm:mx-0 xl:w-full 2xl:w-5/6 2xl:pr-4;
 }
+
+.resource-tr {
+    @apply bg-white border-b last:border-none dark:bg-asideMenu dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-darkAsideMenu;
+}

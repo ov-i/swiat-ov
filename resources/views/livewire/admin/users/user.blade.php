@@ -1,4 +1,8 @@
 <section>
+    <x-back-button :to="route('admin.dashboard')">
+        {{ __('Back to dashboard') }}
+    </x-back-button>
+
     <x-admin-card title="Users">
         <section class="py-4 border-b border-gray-200">
             <h3 class="text-lg font-secondary font-semibold text-gray-600 dark:text-zinc-300">

@@ -4,7 +4,7 @@ import { buttonStyles } from '../config'
 /**
  * Add new button styles for better code readability
  */
-export default plugin(function ({ addComponents, theme }) {
+export const buttons = plugin(function ({ addComponents, theme }) {
   addComponents({
     '.button-info': {
       ...buttonStyles(theme),
