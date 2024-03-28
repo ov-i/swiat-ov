@@ -8,6 +8,7 @@ use App\Enums\Post\AttachmentAllowedMimeTypesEnum;
 use App\Enums\Post\PostTypeEnum;
 use App\Livewire\Concerns\PostCreateActionState;
 use App\Livewire\Forms\CreatePostForm;
+use App\Livewire\Resource;
 use App\Models\Posts\Post;
 use App\Repositories\Eloquent\Posts\CategoryRepository;
 use App\Repositories\Eloquent\Posts\PostRepository;
@@ -15,28 +16,23 @@ use App\Repositories\Eloquent\Posts\TagRepository;
 use App\Services\Post\AttachmentService;
 use App\Services\Post\PostService;
 use App\Services\Post\ThumbnailService;
-use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
-use Livewire\Attributes\Layout;
-use Livewire\Component;
-use Livewire\Features\SupportFileUploads\WithFileUploads;
 
-class PostCreate extends Component
+class PostCreate extends Resource
 {
-    use WithFileUploads;
-
     public CreatePostForm $createPostForm;
 
     public PostCreateActionState $postCreateState;
+
+    /** @var PostRepository $repository */
+    protected $repository = PostRepository::class;
 
     private AttachmentService $attachmentService;
 
     private ThumbnailService $thumbnailService;
 
     private PostService $postService;
-
-    private PostRepository $postRepository;
 
     private CategoryRepository $categoryRepository;
 
@@ -51,25 +47,14 @@ class PostCreate extends Component
         AttachmentService $attachmentService,
         ThumbnailService $thumbnailService,
         PostService $postService,
-        PostRepository $postRepository,
         CategoryRepository $categoryRepository,
         TagRepository $tagRepository,
     ) {
         $this->attachmentService = $attachmentService;
         $this->thumbnailService = $thumbnailService;
         $this->postService = $postService;
-        $this->postRepository = $postRepository;
         $this->categoryRepository = $categoryRepository;
         $this->tagRepository = $tagRepository;
-    }
-
-    #[Layout('layouts.admin')]
-    public function render(): View
-    {
-        $categories = $this->categoryRepository->all(paginate: false);
-        $tags = $this->tagRepository->all(paginate: false);
-
-        return view('livewire.admin.posts.post-create', ['categories' => $categories, 'tags' => $tags]);
     }
 
     public function save(): void
@@ -77,7 +62,7 @@ class PostCreate extends Component
         $this->authorize('writePost');
 
         $validated = $this->createPostForm->validate();
-        if ($this->postRepository->postExists($validated['title'])) {
+        if ($this->repository->postExists($validated['title'])) {
             $this->createPostForm->addError('title', __('The title has already been taken.'));
 
             return;
@@ -130,12 +115,28 @@ class PostCreate extends Component
 
     public function cantBePublished(): bool
     {
-        return $this->isEvent() && $this->postRepository->isAnyEventPublished();
+        return $this->isEvent() && $this->repository->isAnyEventPublished();
     }
 
     public function getSaveButtonState(): string
     {
         return Str::ucfirst($this->bindSaveButtonState());
+    }
+
+    protected function getView(): string
+    {
+        return 'posts.post-create';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getViewAttributes(): array
+    {
+        return [
+            'categories' => $this->categoryRepository->all(paginate: false),
+            'tags' => $this->tagRepository->all(paginate: false)
+        ];
     }
 
     private function bindSaveButtonState(): string
@@ -166,7 +167,7 @@ class PostCreate extends Component
 
         $thumbnailFile->storeOnDisk();
 
-        $this->postRepository->updateThumbnailPath($post, path: $thumbnailFile->getPublicUrl());
+        $this->repository->updateThumbnailPath($post, path: $thumbnailFile->getPublicUrl());
     }
 
     /**

@@ -8,33 +8,22 @@ use App\Livewire\Concerns\SearchModelState;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
-use Livewire\Component;
 
-abstract class SearchableComponent extends Component
+abstract class SearchableResource extends Resource
 {
     public SearchModelState $state;
-
-    /**
-     * @param class-string<\App\Repositories\Eloquent\BaseRepository>
-     */
-    protected $repository;
 
     /**
      * Determinate if records should be paginated
      *
      * @var bool $paginate
      */
-    protected $paginateSearch = true;
+    protected $paginateSearch = false;
 
-    public function __construct(
-    ) {
-        $modelable = new $this->repository();
-
-        $this->repository = app($modelable::class);
-    }
-
-    public function mount()
+    public function __construct()
     {
+        parent::__construct();
+
         $this->state = new SearchModelState(paginate: $this->paginateSearch);
     }
 
@@ -45,5 +34,17 @@ abstract class SearchableComponent extends Component
             paginate: $this->state->paginate,
             perPage: $this->state->perPage
         );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getViewAttributes(): array
+    {
+        if (filled($this->state->search)) {
+            return ['resource' => $this->search()];
+        }
+
+        return parent::getViewAttributes();
     }
 }

@@ -34,7 +34,7 @@
                     </th>
                 </x-slot>
 
-                @foreach ($users as $user)
+                @foreach ($resource as $user)
                     <tr 
                         class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                         wire:key="{{ $user->getKey() }}"
@@ -62,13 +62,13 @@
                             </div>
                         </td>
                         <td class="px-6 py-4">
-                            <x-user-activity :activityService="$activityService" :user="$user" />
+                            <livewire:user-activity :$user />
                         </td>
                         <td class="px-6 py-4">
                             {{ $user->getIp() }}
                         </td>
                         <td class="px-6 py-4">
-                            <x-user-locked :user="$user" />
+                            <x-user-locked :$user />
                         </td>
                         <td class="px-6 py-4">
                             <x-dropdown align="left">
@@ -126,5 +126,5 @@
         </section>
     </x-admin-card>
 
-    <x-pagination-links :resource="$users" :state="$state" />
+    <x-pagination-links :$resource />
 </section>

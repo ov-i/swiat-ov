@@ -12,6 +12,6 @@ class AttachmentTableSeeder extends Seeder
      */
     public function run(): void
     {
-        Attachment::factory()->count(3);
+        Attachment::factory()->count(3)->create();
     }
 }

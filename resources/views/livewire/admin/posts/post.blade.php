@@ -47,7 +47,7 @@
                     </th>
                 </x-slot>
 
-                @foreach ($posts as $post)
+                @foreach ($resource as $post)
                     <tr class="resource-tr" wire:key="{{ $post->getKey() }}">
                         <td class="w-4 p-4">
                             <div class="flex items-center">
@@ -109,7 +109,7 @@
             </x-resource-table>
         </section>
 
-        @if (blank($posts))
+        @if (blank($resource))
             <h3 class="font-primary text-lg text-gray-600 lowercase text-center my-5">
                 {{ __('No posts found, ') }}
                 <a href="{{ route('admin.posts.create') }}"
@@ -120,6 +120,6 @@
         @endempty
     </x-admin-card>
 
-    <x-pagination-links :resource="$posts" :state="$state" />
+    <x-pagination-links :$resource />
 </section>
 
