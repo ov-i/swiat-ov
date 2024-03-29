@@ -31,14 +31,15 @@
                 </x-label>
                 
                 <x-button 
-                    x-show="$wire.addAttachmentForm.attachments.length" class="mb-4"
+                    x-show="$wire.addAttachmentForm.attachments.length" 
+                    class="mb-4"
                     wire:loading.remove>
                     {{ __('submit') }}
                 </x-button>
             
                 <x-button 
                     wire:loading
-                    wire:loading.target="addAttachments">
+                    wire:target="addAttachments">
                     <x-material-icon class="animate-spin">
                         sync
                     </x-material-icon>
