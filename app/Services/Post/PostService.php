@@ -45,7 +45,7 @@ class PostService
         $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::created());
 
         $this->syncTags($post, $request);
-        $this->syncAttachments($post, $request);
+        $this->syncAttachments($post, $request->attachments);
 
         return $post;
     }
@@ -68,7 +68,7 @@ class PostService
         }
 
         $this->syncTags($post, $updateData);
-        $this->syncAttachments($post, $updateData);
+        $this->syncAttachments($post, $updateData->attachments);
 
         $editedPost = $this->postRepository->editPost($post, $updateData->toArray());
         $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::updated());
@@ -139,29 +139,17 @@ class PostService
     }
 
     /**
-     * Checks if attachments are available in request. If so, syncs'em without detaching with post.
-     *
-     * @param \App\Models\Posts\Post $post
-     * @param \App\Data\CreatePostRequest|\App\Data\UpdatePostData $data
-     *
-     * @return void
+     * Checks if there are any attachments that should be synced, syncs
+     * them if so.
+     * 
+     * @param array<array-key, \App\Models\Posts\Attachment|int> $attachments
      */
-    private function syncAttachments(Post &$post, Data &$data)
+    private function syncAttachments(Post &$post, array $attachments): void
     {
-        /** @var UploadedFile[]|null $attachments */
-        $attachments = $data->attachments;
-        if (blank($attachments)) {
+        if (!filled($attachments)) {
             return;
         }
 
-        foreach ($attachments as $attachment) {
-            $file = $this->attachmentService->setFile($attachment);
-            $existingAttachment = $this->attachmentRepository->findAttachmentViaChecksum($file->getChecksum());
-            if (blank($existingAttachment)) {
-                return;
-            }
-
-            $post->attachments()->syncWithoutDetaching($existingAttachment->getKey());
-        }
+        $post->attachments()->sync($attachments);
     }
 }

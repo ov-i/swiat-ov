@@ -2,12 +2,17 @@
 
 namespace App\Livewire\Admin\Posts;
 
-use Livewire\Component;
+use App\Livewire\Resource;
+use App\Repositories\Eloquent\Posts\AttachmentRepository;
 
-class Attachment extends Component
+
+class Attachment extends Resource
 {
-    public function render()
+    /** @var AttachmentRepository $repository */
+    protected $repository = AttachmentRepository::class;
+
+    protected function getView(): string
     {
-        return view('livewire.admin.resources.posts.attachment');
+        return 'posts.attachment';
     }
 }

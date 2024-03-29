@@ -82,14 +82,12 @@ abstract class UploadedFileService implements Arrayable
     }
 
     /**
-     * Gets file data if it has been set previously.
-     *
-     * @throws \Exception If file has not been set.
+     * @throws \RuntimeException If file has not been set.
      */
     public function getContent(): UploadedFile
     {
         if(blank($this->file)) {
-            throw new \Exception('File has not been set. Please use setFile method first.');
+            throw new \RuntimeException('File has not been set. Please use setFile method first.');
         }
 
         return $this->file;

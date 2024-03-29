@@ -1,6 +1,6 @@
 import './bootstrap';
 
-Livewire.on('app.theme-change', ([{theme}]) => {
+Livewire.on('app.theme-change', ([{ theme }]) => {
   const htmlTag = document.querySelector('html');
 
   if (htmlTag.classList.contains('light')) {

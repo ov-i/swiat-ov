@@ -1,4 +1,6 @@
 <?php
+use App\Enums\Post\AttachmentAllowedMimeTypesEnum;
+use App\Enums\Post\ThumbnailAllowedMimeTypesEnum;
 
 return [
     /*

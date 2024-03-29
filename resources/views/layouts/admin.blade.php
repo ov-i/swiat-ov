@@ -114,7 +114,7 @@
                             </p>
                         </section>
                         <article class="search-input flex items-center space-x-2 relative dark:text-white">
-                            <x-material-icon classes="absolute text-2xl bottom-1 -translate-y-0.5 left-5">
+                            <x-material-icon class="absolute text-2xl bottom-1 -translate-y-0.5 left-5">
                                 manage_search
                             </x-material-icon>
 

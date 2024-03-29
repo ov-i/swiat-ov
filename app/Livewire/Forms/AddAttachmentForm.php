@@ -1,29 +1,28 @@
 <?php
 
-namespace App\Data;
+namespace App\Livewire\Forms;
 
 use App\Enums\Post\AttachmentAllowedMimeTypesEnum;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
-use Spatie\LaravelData\Data;
+use Livewire\Form;
 
-class CreateAttachmentRequest extends Data
+class AddAttachmentForm extends Form
 {
-    public function __construct(
-        public readonly UploadedFile $attachment,
-    ) {
-    }
+    /** @var array<array-key, \Illuminate\Http\UploadedFile> $attachments */
+    public array $attachments = [];
 
-    public static function rules(): array
+    /**
+     * @return non-empty-list<string, array<array-key, mixed>>
+     */
+    public function rules(): array
     {
         $allowedAttachments = AttachmentAllowedMimeTypesEnum::toLabels();
-
         return [
-            'attachment' => [
+            'attachments.*' => [
                 'required',
                 sprintf('mimetypes:%s', implode(',', AttachmentAllowedMimeTypesEnum::toValues())),
                 Rule::file()
-                    ->extensions($allowedAttachments)
+                    ->extensions([...$allowedAttachments])
                     ->max(config('swiatov.max_file_size'))
             ]
         ];

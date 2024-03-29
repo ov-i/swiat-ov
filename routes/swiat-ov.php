@@ -2,6 +2,7 @@
 
 use App\Livewire\Admin\Dashboards\Main;
 use App\Livewire\Admin\Posts\Attachment;
+use App\Livewire\Admin\Posts\AttachmentView;
 use App\Livewire\Admin\Posts\Category;
 use App\Livewire\Admin\Posts\Comment;
 use App\Livewire\Admin\Posts\Post;
@@ -29,11 +30,11 @@ Route::prefix('admin')->middleware($middlewares)->group(function () {
         Route::get('/', Post::class)->name('admin.posts');
         Route::get('/create', PostCreate::class)->name('admin.posts.create');
         Route::get('/edit/{post:slug}', PostEdit::class)->name('admin.posts.edit');
-        // Route::get('/post/{post:slug}', Post::class)->name('admin.posts');
         Route::get('/categories', Category::class)->name('admin.categories');
         Route::get('/comments', Comment::class)->name('admin.comments');
         Route::get('/tags', Tag::class)->name('admin.tags');
         Route::get('/attachments', Attachment::class)->name('admin.attachments');
+        Route::get('/attachments/view/{attachment}', AttachmentView::class)->name('admin.posts.attachments.show');
     });
 
     Route::prefix('resource/support')->group(function () {

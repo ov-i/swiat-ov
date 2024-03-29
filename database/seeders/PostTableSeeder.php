@@ -16,9 +16,9 @@ class PostTableSeeder extends Seeder
     public function run(): void
     {
         Post::factory()
-            ->has(LangPost::factory()->count(3))
+            ->has(LangPost::factory())
             ->has(Tag::factory())
-            ->has(Comment::factory()->count(10))
+            ->has(Comment::factory())
             ->create();
     }
 }

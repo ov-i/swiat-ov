@@ -37,7 +37,7 @@ class PostFactory extends Factory
             null;
 
         return [
-            'user_id' => User::factory(),
+            'user_id' => 1,
             'category_id' => Category::factory(),
             'title' => fake()->unique()->realText(30),
             'slug' => fake()->unique()->slug(),
