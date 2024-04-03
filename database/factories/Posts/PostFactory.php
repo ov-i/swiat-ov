@@ -6,7 +6,6 @@ use App\Enums\Post\PostStatusEnum;
 use App\Enums\Post\PostTypeEnum;
 use App\Models\Posts\Category;
 use App\Models\Posts\Post;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -37,7 +36,7 @@ class PostFactory extends Factory
             null;
 
         return [
-            'user_id' => User::factory(),
+            'user_id' => 1,
             'category_id' => Category::factory(),
             'title' => fake()->unique()->realText(30),
             'slug' => fake()->unique()->slug(),

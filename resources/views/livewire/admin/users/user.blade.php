@@ -14,9 +14,12 @@
             <x-search-model :state="$state" />
         </section>
 
-        <section class="overflow-x-hidden 2xl:overflow-x-visible">
+        <section>
             <x-resource-table>
                 <x-slot name="tableHead">
+                    <th scope="col" class="px-6 py-3">
+                        {{ __('#') }}
+                    </th>
                     <th scope="col" class="px-6 py-3">
                         {{ __('Name') }}
                     </th>
@@ -34,17 +37,8 @@
                     </th>
                 </x-slot>
 
-                @foreach ($users as $user)
-                    <tr 
-                        class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-                        wire:key="{{ $user->getKey() }}"
-                    >
-                        <td class="w-4 p-4">
-                            <div class="flex items-center">
-                                <label for="checkbox-table-search-1" class="sr-only">checkbox</label>
-                                <x-checkbox id="checkbox-table-search-1" />
-                            </div>
-                        </td>
+                @foreach ($resource as $user)
+                    <tr class="resource-tr" wire:key="{{ $user->getKey() }}">
                         <td class="w-4 p-4">{{ $user->getKey() }}</td>
                         <td
                             scope="row"
@@ -62,13 +56,13 @@
                             </div>
                         </td>
                         <td class="px-6 py-4">
-                            <x-user-activity :activityService="$activityService" :user="$user" />
+                            <livewire:user-activity :$user />
                         </td>
                         <td class="px-6 py-4">
                             {{ $user->getIp() }}
                         </td>
                         <td class="px-6 py-4">
-                            <x-user-locked :user="$user" />
+                            <x-user-locked :$user />
                         </td>
                         <td class="px-6 py-4">
                             <x-dropdown align="left">
@@ -126,5 +120,5 @@
         </section>
     </x-admin-card>
 
-    <x-pagination-links :resource="$users" :state="$state" />
+    <x-pagination-links :$resource />
 </section>

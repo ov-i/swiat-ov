@@ -89,9 +89,15 @@ abstract class BaseRepository implements EloquentRepository
     /**
      * @inheritDoc
      */
-    public function find(string|int $id): ?Model
+    public function find(string|int $id, bool $withTrashed = false): ?Model
     {
-        return $this->getModel()->query()->find($id);
+        $model = $this->getModel();
+
+        if($withTrashed) {
+            $model = $this->withTrashed();
+        }
+
+        return $model->find($id);
     }
 
     /**

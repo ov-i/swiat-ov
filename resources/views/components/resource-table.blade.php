@@ -1,20 +1,14 @@
-<table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-white">
-  <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-asideMenu dark:text-zinc-500 dark:border-zinc-700 dark:border-t-2">
-    <tr>
-      <th scope="col" class="p-4">
-        <div class="flex items-center">
-            <label for="checkbox-all-search" class="sr-only">
-              checkbox
-            </label>
-          <x-checkbox id="checkbox-all-search" />
-        </div>
-      </th>
-      <th scope="col" class="px-6 py-3 text-md">#</th>
+@props(['withId' => null])
 
-      {{ $tableHead }}
-    </tr>
-  </thead>
-  <tbody>
-    {{ $slot }}
-  </tbody>
-</table>
+<section class="overflow-x-scroll lg:overflow-x-visible">
+  <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-white">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-asideMenu dark:text-zinc-500 dark:border-none dark:border-t-2">
+      <tr>
+        {{ $tableHead }}
+      </tr>
+    </thead>
+    <tbody class="">
+      {{ $slot }}
+    </tbody>
+  </table>
+</section>

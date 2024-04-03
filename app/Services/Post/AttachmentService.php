@@ -11,8 +11,8 @@ use App\Exceptions\ForbiddenFileTypeException;
 use App\Models\Posts\Attachment;
 use App\Repositories\Eloquent\Posts\AttachmentRepository;
 use App\Services\UploadedFileService;
-use Illuminate\Support\Number;
 use App\Traits\IntersectsArray;
+use Illuminate\Support\Number;
 
 class AttachmentService extends UploadedFileService implements PubliclyAccessable
 {
@@ -74,9 +74,8 @@ class AttachmentService extends UploadedFileService implements PubliclyAccessabl
     public function createAttachment(CreateAttachmentRequest $request): Attachment|bool
     {
         $this->makeUploadDir();
-        $file = $this->setFile($request->attachment);
 
-        $file->setUploadDir($this->getCurrentDate())
+        $this
             ->storeOnDisk();
 
         $fileInfo = $this->toArray();
@@ -92,7 +91,7 @@ class AttachmentService extends UploadedFileService implements PubliclyAccessabl
             );
         }
 
-        $attachment = $this->attachmentRepository->createAttachment($fileInfo);
+        $attachment = $this->attachmentRepository->createAttachment([...$fileInfo, 'user_id' => auth()->id()]);
 
         return $attachment;
     }

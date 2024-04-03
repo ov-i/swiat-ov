@@ -30,3 +30,7 @@
 .resource-tr {
     @apply bg-white border-b last:border-none dark:bg-asideMenu dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-darkAsideMenu;
 }
+
+.resource-detail {
+    @apply border-b py-4 border-zinc-100 w-full grid grid-cols-2 v-large:grid-cols-3 last:border-none items-center dark:border-gray-700;
+}

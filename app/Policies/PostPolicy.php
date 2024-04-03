@@ -14,7 +14,7 @@ class PostPolicy
      */
     public function viewAny(User $user): bool
     {
-        return Gate::allows('viewAdmin', [$user]);
+        return true;
     }
 
     /**

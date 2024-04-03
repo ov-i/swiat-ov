@@ -3,20 +3,13 @@
 namespace App\Livewire\Admin\Posts;
 
 use App\Livewire\Contracts\Filterable;
-use App\Livewire\SearchableComponent;
+use App\Livewire\SearchableResource;
 use App\Repositories\Eloquent\Posts\PostRepository;
 use App\Services\Post\PostService;
-use Illuminate\Contracts\View\View;
-use Livewire\Attributes\Layout;
-use Livewire\WithPagination;
 
-class Post extends SearchableComponent implements Filterable
+class Post extends SearchableResource implements Filterable
 {
-    use WithPagination;
-
     protected $repository = PostRepository::class;
-
-    protected $paginateSearch = false;
 
     private PostService $postService;
 
@@ -26,16 +19,9 @@ class Post extends SearchableComponent implements Filterable
         $this->postService = $postService;
     }
 
-    #[Layout('layouts.admin')]
-    public function render(): View
+    public function mount(): void
     {
-        $posts = $this->repository->all();
-
-        if (filled($this->state->search)) {
-            $posts = $this->search();
-        }
-
-        return view('livewire.admin.posts.post', ['posts' => $posts]);
+        $this->authorize('view-posts', auth()->user());
     }
 
     public function delete(int $postId): void
@@ -52,5 +38,10 @@ class Post extends SearchableComponent implements Filterable
     public function filters(): array
     {
         return [];
+    }
+
+    protected function getView(): string
+    {
+        return 'posts.post';
     }
 }

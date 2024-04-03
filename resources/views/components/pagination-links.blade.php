@@ -1,6 +1,6 @@
 @props(['resource', 'state' => null])
 
-@if (isset($state) && filled($state) && $state->paginate)
+@if ($resource instanceof \Illuminate\Pagination\LengthAwarePaginator)
     <section class="table-pagination">
         {{ $resource->links() }}
     </section>

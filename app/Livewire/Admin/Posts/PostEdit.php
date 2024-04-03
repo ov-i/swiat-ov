@@ -83,7 +83,7 @@ class PostEdit extends Component
     {
         $post = $this->post();
 
-        $this->authorize('canEditPost', $post);
+        $this->authorize('can-edit-post', $post);
 
         if ($this->isFormUnTouched()) {
             return;

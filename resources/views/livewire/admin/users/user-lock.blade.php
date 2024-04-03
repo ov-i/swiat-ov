@@ -1,14 +1,14 @@
 <div class="info-card__actions flex flex-row space-x-2 items-center py-6 text-sm">
     <div class="action-button">
-            <x-button>
-                <x-iconed-link
-                    link="{{ route('admin.users.edit', ['user' => $user]) }}"
-                    icon='person'
-                    icon_size='md'>
-                    {{ __('Edit user') }}
-                </x-iconed-link>
-            </x-button>
-        </div>
+        <x-button>
+            <x-iconed-link
+                link="{{ route('admin.users.edit', ['user' => $user]) }}"
+                icon='person'
+                icon_size='md'>
+                {{ __('Edit user') }}
+            </x-iconed-link>
+        </x-button>
+    </div>
     <div class="action-button">
         @if (!$user->isAdmin() && !$user->isBlocked())
             <x-button 
@@ -36,7 +36,7 @@
                 {{ __('Unlock user') }}
             </x-button>
 
-            <x-material-icon class="animate-spin" wire:loading wire:loading.target="unlockUser">
+            <x-material-icon class="animate-spin" wire:loading wire:target="unlockUser">
                 sync
             </x-material-icon>
         @endif
@@ -47,7 +47,7 @@
                 <h3>
                     {{ __("You're trying to lock a user with name") }}
                     <strong class="capitalize">
-                        '{{ $user->name }}'
+                        '{{ $user->getName() }}'
                     </strong>
                 </h3>
                 <p class="pb-4 border-b">{{ __('Please provide informations about reason and duration.') }}</p>

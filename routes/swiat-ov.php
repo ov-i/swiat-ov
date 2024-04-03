@@ -2,11 +2,15 @@
 
 use App\Livewire\Admin\Dashboards\Main;
 use App\Livewire\Admin\Posts\Attachment;
+use App\Livewire\Admin\Posts\AttachmentEdit;
+use App\Livewire\Admin\Posts\AttachmentShow;
 use App\Livewire\Admin\Posts\Category;
+use App\Livewire\Admin\Posts\CategoryShow;
 use App\Livewire\Admin\Posts\Comment;
 use App\Livewire\Admin\Posts\Post;
 use App\Livewire\Admin\Posts\PostCreate;
 use App\Livewire\Admin\Posts\PostEdit;
+use App\Livewire\Admin\Posts\PostShow;
 use App\Livewire\Admin\Posts\Tag;
 use App\Livewire\Admin\Users\Role;
 use App\Livewire\Admin\Users\User;
@@ -29,17 +33,24 @@ Route::prefix('admin')->middleware($middlewares)->group(function () {
         Route::get('/', Post::class)->name('admin.posts');
         Route::get('/create', PostCreate::class)->name('admin.posts.create');
         Route::get('/edit/{post:slug}', PostEdit::class)->name('admin.posts.edit');
-        // Route::get('/post/{post:slug}', Post::class)->name('admin.posts');
-        Route::get('/categories', Category::class)->name('admin.categories');
+        Route::get('/show/{post:slug}', PostShow::class)->name('admin.posts.show');
+        Route::get('/categories', Category::class)->name('admin.posts.categories');
+        Route::get('categories/show/{category}', CategoryShow::class)->name('admin.posts.categories.show');
         Route::get('/comments', Comment::class)->name('admin.comments');
         Route::get('/tags', Tag::class)->name('admin.tags');
         Route::get('/attachments', Attachment::class)->name('admin.attachments');
+        Route::get('/attachments/show/{attachment:checksum}', AttachmentShow::class)->name('admin.attachments.show');
+        Route::get('/attachments/edit/{attachment:checksum}', AttachmentEdit::class)->name('admin.attachments.edit');
     });
 
     Route::prefix('resource/support')->group(function () {
         Route::get('/users', User::class)->name('admin.users');
-        Route::get('/users/edit/{user}', UserEdit::class)->name('admin.users.edit');
-        Route::get('/users/show/{user}', UserShow::class)->name('admin.users.show');
+        Route::get('/users/edit/{user}', UserEdit::class)
+            ->name('admin.users.edit')
+            ->withTrashed();
+        Route::get('/users/show/{user}', UserShow::class)
+            ->name('admin.users.show')
+            ->withTrashed();
         Route::get('/roles', Role::class)->name('admin.roles');
     });
 });

@@ -3,40 +3,27 @@
 namespace App\Livewire\Admin\Users;
 
 use App\Livewire\Contracts\Filterable;
-use App\Livewire\SearchableComponent;
+use App\Livewire\SearchableResource;
 use App\Repositories\Eloquent\Users\UserRepository;
-use App\Services\UserActivity\UserActivityService;
 use App\Services\Users\UserService;
-use Illuminate\Contracts\View\View;
-use Livewire\Attributes\Layout;
-use Livewire\WithPagination;
 
-class User extends SearchableComponent implements Filterable
+class User extends SearchableResource implements Filterable
 {
-    use WithPagination;
-
     protected $repository = UserRepository::class;
+
+    public bool $withTrashed = true;
 
     private UserService $userService;
 
-    private UserActivityService $userActivityService;
-
     public function boot(
         UserService $userService,
-        UserActivityService $userActivityService,
     ): void {
         $this->userService = $userService;
-        $this->userActivityService = $userActivityService;
     }
 
-    #[Layout('layouts.admin')]
-    public function render(): View
+    public function mount(): void
     {
-        $users = $this->search();
-        return view('livewire.admin.users.user', [
-            'users' => $users,
-            'activityService' => $this->userActivityService,
-        ]);
+        $this->authorize('viewAny', auth()->user());
     }
 
     /**
@@ -60,5 +47,10 @@ class User extends SearchableComponent implements Filterable
         $this->userService->deleteUser($user);
 
         session()->flash('user-deleted', "User with id [{$userId}] has been deleted.");
+    }
+
+    protected function getView(): string
+    {
+        return 'users.user';
     }
 }

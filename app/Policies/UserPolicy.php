@@ -20,7 +20,7 @@ class UserPolicy
      */
     public function view(User $user): bool
     {
-        return $user->can((string) PermissionsEnum::userRead()->value);
+        return $user->can(PermissionsEnum::userRead()->value);
     }
 
     /**

@@ -156,4 +156,6 @@ return [
     */
 
     'pagination_theme' => 'tailwind',
+
+    'admin_view_path' => 'livewire/admin/',
 ];

@@ -17,17 +17,17 @@ class UserActivityService
      * Gets current session status. Checks if user is perfoms some actions
      * or is logged in. However activity is more important.
      *
-     * @return string Returns Offline or Active.
+     * @return UserActivityEnum Returns Offline or Active.
      */
     public function getStatus(User &$user)
     {
         $session = $this->sessionService->getSessionFromUser($user);
 
         if ($this->isInactive($session) || blank($session->user_id)) {
-            return UserActivityEnum::offline()->value;
+            return UserActivityEnum::offline();
         }
 
-        return UserActivityEnum::active()->value;
+        return UserActivityEnum::active();
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\Auth\BanDurationEnum;
 use App\Enums\Auth\RoleNamesEnum;
 use App\Enums\Auth\UserStatusEnum;
+use App\Models\Posts\Attachment;
 use App\Observers\UserObserver;
 use App\Traits\HasSettings;
 use Database\Factories\UserFactory;
@@ -92,6 +93,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'profile_photo_url',
     ];
 
+    public function __toString(): string
+    {
+        return $this->getName();
+    }
+
     /**
      * @return list<string, string>
      */
@@ -136,6 +142,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function posts(): HasMany
     {
         return $this->hasMany(Post::class);
+    }
+
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(Attachment::class);
     }
 
     /**

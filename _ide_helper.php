@@ -5,7 +5,7 @@
 
 /**
  * A helper file for Laravel, to provide autocomplete information to your IDE
- * Generated for Laravel 11.0.3.
+ * Generated for Laravel 11.2.0.
  *
  * This file should not be included in your code, only analyzed by your IDE!
  *
@@ -3532,7 +3532,7 @@ namespace Illuminate\Support\Facades {
          * @param array $config
          * @return \Illuminate\Cache\Repository 
          * @static 
-         */        public static function repository($store, $config)
+         */        public static function repository($store, $config = [])
         {
                         /** @var \Illuminate\Cache\CacheManager $instance */
                         return $instance->repository($store, $config);
@@ -4479,23 +4479,25 @@ namespace Illuminate\Support\Facades {
          * Retrieve the given key's value.
          *
          * @param string $key
+         * @param mixed $default
          * @return mixed 
          * @static 
-         */        public static function get($key)
+         */        public static function get($key, $default = null)
         {
                         /** @var \Illuminate\Log\Context\Repository $instance */
-                        return $instance->get($key);
+                        return $instance->get($key, $default);
         }
                     /**
          * Retrieve the given key's hidden value.
          *
          * @param string $key
+         * @param mixed $default
          * @return mixed 
          * @static 
-         */        public static function getHidden($key)
+         */        public static function getHidden($key, $default = null)
         {
                         /** @var \Illuminate\Log\Context\Repository $instance */
-                        return $instance->getHidden($key);
+                        return $instance->getHidden($key, $default);
         }
                     /**
          * Retrieve only the values of the given keys.
@@ -4595,6 +4597,7 @@ namespace Illuminate\Support\Facades {
          * @param string $key
          * @param mixed $values
          * @return \Illuminate\Log\Context\Repository 
+         * @throws \RuntimeException
          * @static 
          */        public static function push($key, ...$values)
         {
@@ -4607,6 +4610,7 @@ namespace Illuminate\Support\Facades {
          * @param string $key
          * @param mixed $values
          * @return \Illuminate\Log\Context\Repository 
+         * @throws \RuntimeException
          * @static 
          */        public static function pushHidden($key, ...$values)
         {
@@ -4683,11 +4687,42 @@ namespace Illuminate\Support\Facades {
          * @internal 
          * @param \Illuminate\Log\Context\?array $context
          * @return \Illuminate\Log\Context\Repository 
+         * @throws \RuntimeException
          * @static 
          */        public static function hydrate($context)
         {
                         /** @var \Illuminate\Log\Context\Repository $instance */
                         return $instance->hydrate($context);
+        }
+                    /**
+         * Apply the callback if the given "value" is (or resolves to) truthy.
+         *
+         * @template TWhenParameter
+         * @template TWhenReturnType
+         * @param \Illuminate\Log\Context\(\Closure($this):  TWhenParameter)|TWhenParameter|null  $value
+         * @param \Illuminate\Log\Context\(callable($this,  TWhenParameter): TWhenReturnType)|null  $callback
+         * @param \Illuminate\Log\Context\(callable($this,  TWhenParameter): TWhenReturnType)|null  $default
+         * @return $this|\Illuminate\Log\Context\TWhenReturnType 
+         * @static 
+         */        public static function when($value = null, $callback = null, $default = null)
+        {
+                        /** @var \Illuminate\Log\Context\Repository $instance */
+                        return $instance->when($value, $callback, $default);
+        }
+                    /**
+         * Apply the callback if the given "value" is (or resolves to) falsy.
+         *
+         * @template TUnlessParameter
+         * @template TUnlessReturnType
+         * @param \Illuminate\Log\Context\(\Closure($this):  TUnlessParameter)|TUnlessParameter|null  $value
+         * @param \Illuminate\Log\Context\(callable($this,  TUnlessParameter): TUnlessReturnType)|null  $callback
+         * @param \Illuminate\Log\Context\(callable($this,  TUnlessParameter): TUnlessReturnType)|null  $default
+         * @return $this|\Illuminate\Log\Context\TUnlessReturnType 
+         * @static 
+         */        public static function unless($value = null, $callback = null, $default = null)
+        {
+                        /** @var \Illuminate\Log\Context\Repository $instance */
+                        return $instance->unless($value, $callback, $default);
         }
                     /**
          * Register a custom macro.
@@ -5045,7 +5080,7 @@ namespace Illuminate\Support\Facades {
                     /**
          * Set the previous / legacy encryption keys that should be utilized if decryption fails.
          *
-         * @param array $key
+         * @param array $keys
          * @return \Illuminate\Encryption\Encrypter 
          * @static 
          */        public static function previousKeys($keys)
@@ -12832,6 +12867,16 @@ namespace Illuminate\Support\Facades {
         {
                         return \Illuminate\Http\Request::hasValidSignatureWhileIgnoring($ignoreQuery, $absolute);
         }
+                    /**
+         * 
+         *
+         * @see \Illuminate\Foundation\Providers\FoundationServiceProvider::registerRequestSignatureValidation()
+         * @param mixed $ignoreQuery
+         * @static 
+         */        public static function hasValidRelativeSignatureWhileIgnoring($ignoreQuery = [])
+        {
+                        return \Illuminate\Http\Request::hasValidRelativeSignatureWhileIgnoring($ignoreQuery);
+        }
             }
             /**
      * 
@@ -17694,7 +17739,7 @@ namespace Illuminate\Support\Facades {
                     /**
          * Resolve asset paths using the provided resolver.
          *
-         * @param callable|null $urlResolver
+         * @param callable|null $resolver
          * @return \Illuminate\Foundation\Vite 
          * @static 
          */        public static function createAssetPathsUsing($resolver)
@@ -18726,6 +18771,16 @@ namespace Illuminate\Http {
          */        public static function hasValidSignatureWhileIgnoring($ignoreQuery = [], $absolute = true)
         {
                         return \Illuminate\Http\Request::hasValidSignatureWhileIgnoring($ignoreQuery, $absolute);
+        }
+                    /**
+         * 
+         *
+         * @see \Illuminate\Foundation\Providers\FoundationServiceProvider::registerRequestSignatureValidation()
+         * @param mixed $ignoreQuery
+         * @static 
+         */        public static function hasValidRelativeSignatureWhileIgnoring($ignoreQuery = [])
+        {
+                        return \Illuminate\Http\Request::hasValidRelativeSignatureWhileIgnoring($ignoreQuery);
         }
             }
             /**
@@ -22408,11 +22463,6 @@ namespace  {
     }
 
 
-namespace Facades\Livewire\Features\SupportFileUploads {
-    /**
-     * @mixin \Livewire\Features\SupportFileUploads\GenerateSignedUploadUrl     */
-    class GenerateSignedUploadUrl extends \Livewire\Features\SupportFileUploads\GenerateSignedUploadUrl {}
-}
 
 
 
