@@ -93,6 +93,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'profile_photo_url',
     ];
 
+    public function __toString(): string
+    {
+        return $this->getName();
+    }
+
     /**
      * @return list<string, string>
      */

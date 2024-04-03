@@ -34,15 +34,23 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::define('create-token', [ApiTokenPolicy::class, 'create']);
-
-        Gate::define('create-attachment', [AttachmentPolicy::class, 'create']);
-
         Gate::define('viewAdmin', fn (User $user) => $user->isAdmin() || $user->isModerator());
 
-        Gate::define('writePost', [PostPolicy::class, 'create']);
+        Gate::define('create-token', [ApiTokenPolicy::class, 'create']);
 
-        Gate::define('canEditPost', [PostPolicy::class, 'update']);
+        Gate::define('view-attachments', [AttachmentPolicy::class, 'viewAny']);
+        Gate::define('view-attachment', [AttachmentPolicy::class, 'view']);
+        Gate::define('create-attachment', [AttachmentPolicy::class, 'create']);
+
+        Gate::define('view-users', [UserPolicy::class, 'viewAny']);
+        Gate::define('view-user', [UserPolicy::class, 'view']);
+
+        Gate::define('view-posts', [PostPolicy::class, 'viewAny']);
+        Gate::define('view-post', [PostPolicy::class, 'view']);
+        Gate::define('write-post', [PostPolicy::class, 'create']);
+        Gate::define('delete-post', [PostPolicy::class, 'delete']);
+        Gate::define('can-edit-post', [PostPolicy::class, 'update']);
+        Gate::define('can-close-post', fn (User &$user) => Gate::allows('viewAdmin'));
 
         Gate::define('can-follow', function (User $user, Followable $followable) {
             if (!Auth::check() || $user->isBlocked()) {

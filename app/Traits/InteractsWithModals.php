@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Traits;
 
+use Livewire\Attributes\Modelable;
+
 trait InteractsWithModals
 {
+    #[Modelable]
     public bool $modalOpen = false;
 
     public function closeModal(): void

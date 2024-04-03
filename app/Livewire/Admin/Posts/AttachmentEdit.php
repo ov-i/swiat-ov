@@ -4,10 +4,10 @@ namespace App\Livewire\Admin\Posts;
 
 use Livewire\Component;
 
-class AttachmentView extends Component
+class AttachmentEdit extends Component
 {
     public function render()
     {
-        return view('livewire.admin.posts.attachment-view');
+        return view('livewire.admin.posts.attachment-edit');
     }
 }

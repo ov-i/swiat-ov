@@ -19,6 +19,11 @@ class Post extends SearchableResource implements Filterable
         $this->postService = $postService;
     }
 
+    public function mount(): void
+    {
+        $this->authorize('view-posts', auth()->user());
+    }
+
     public function delete(int $postId): void
     {
         $post = $this->repository->find($postId);

@@ -6,7 +6,6 @@ use App\Enums\Post\PostStatusEnum;
 use App\Enums\Post\PostTypeEnum;
 use App\Models\Posts\Category;
 use App\Models\Posts\Post;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

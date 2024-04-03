@@ -20,7 +20,7 @@ class AttachmentPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Attachment $attachment): bool
+    public function view(User $user): bool
     {
         return $user->can(PermissionsEnum::postAttachmentRead()->value);
     }
@@ -38,7 +38,7 @@ class AttachmentPolicy
      */
     public function update(User $user, Attachment $attachment): bool
     {
-        return 
+        return
             $attachment->user()->getParentKey() === $user->getKey() &&
             $user->can(PermissionsEnum::postAttachmentUpdate()->value);
     }
@@ -48,7 +48,7 @@ class AttachmentPolicy
      */
     public function delete(User $user, Attachment $attachment): bool
     {
-        return 
+        return
             $user->can(PermissionsEnum::postAttachmentDelete()->value) &&
             $attachment->user()->getParentKey() === $user->getKey();
     }

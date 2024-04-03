@@ -15,9 +15,9 @@ trait FormatsString
     }
 
     public function substringIf(
-        string $string, 
-        int $stringLength = 10, 
-        int $offset = 0, 
+        string $string,
+        int $stringLength = 10,
+        int $offset = 0,
         ?int $length = null
     ): string {
         if($length === null) {

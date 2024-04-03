@@ -1,8 +1,8 @@
 <div>
-    <x-button type="button" component="button-zinc-outlined" class="mr-2" wire:click="statusUpdate = true">
+    <x-button type="button" component="button-zinc-outlined" class="mr-2" wire:click="openModal()">
         {{ __('Change status') }}
     </x-button>
-    <x-modal wire:model="statusUpdate">
+    <x-modal wire:model="modalOpen">
         <section class="p-3 mx-auto font-primary">
             <h1 class="font-semibold text-xl border-b border-gray-200 pb-3 mb-3">{{ __('Select status') }}</h1>
 

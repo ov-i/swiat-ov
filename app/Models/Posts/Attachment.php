@@ -27,6 +27,11 @@ class Attachment extends Model
         'public_url'
     ];
 
+    public function __toString(): string
+    {
+        return $this->getFileName();
+    }
+
     public function getOriginalName(): string
     {
         return $this->original_name;

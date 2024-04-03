@@ -24,7 +24,7 @@ interface EloquentRepository
     /**
      * Finds the result based on id
      */
-    public function find(string|int $id): Model|null;
+    public function find(string|int $id, bool $withTrashed = false): Model|null;
 
     /**
      * Finds single record from database that matches condition

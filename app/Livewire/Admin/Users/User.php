@@ -5,23 +5,25 @@ namespace App\Livewire\Admin\Users;
 use App\Livewire\Contracts\Filterable;
 use App\Livewire\SearchableResource;
 use App\Repositories\Eloquent\Users\UserRepository;
-use App\Services\UserActivity\UserActivityService;
 use App\Services\Users\UserService;
 
 class User extends SearchableResource implements Filterable
 {
     protected $repository = UserRepository::class;
 
-    private UserService $userService;
+    public bool $withTrashed = true;
 
-    private UserActivityService $userActivityService;
+    private UserService $userService;
 
     public function boot(
         UserService $userService,
-        UserActivityService $userActivityService,
     ): void {
         $this->userService = $userService;
-        $this->userActivityService = $userActivityService;
+    }
+
+    public function mount(): void
+    {
+        $this->authorize('viewAny', auth()->user());
     }
 
     /**
@@ -50,16 +52,5 @@ class User extends SearchableResource implements Filterable
     protected function getView(): string
     {
         return 'users.user';
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getViewAttributes(): array
-    {
-        return [
-            ...parent::getViewAttributes(),
-            'activityService' => $this->userActivityService,
-        ];
     }
 }

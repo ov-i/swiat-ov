@@ -6,7 +6,9 @@
     <x-admin-card :title="__('Attachments')">
         <x-slot name="actions">
             <section class="hidden md:block">
-                @livewire('admin.posts.add-attachments-modal')
+                @if (auth()->user()->can('create-attachment'))
+                    @livewire('admin.posts.add-attachments-modal')
+                @endif
             </section>
         </x-slot>
 
@@ -21,7 +23,9 @@
                                     attach_file
                                 </x-material-icon>
                                 
-                                <a href="{{ $attachment->getPublicUrl() }}" class="text-md">
+                                <a href="{{ route('admin.attachments.show', [
+                                    'attachment' => $attachment->getChecksum()
+                                ]) }}" class="text-md">
                                     {{ $attachment->getOriginalName() }}
                                 </a>
                             </article>
@@ -41,7 +45,9 @@
                             </article>
                             <article class="lg:hidden flex items-center">
                                 <x-iconed-link 
-                                    :link="route('admin.posts.attachments.show', ['attachment' => $attachment->getKey()])" 
+                                    :link="route('admin.attachments.show', [
+                                        'attachment' => $attachment->getChecksum()
+                                    ])" 
                                     icon="visibility" 
                                     icon_size="md" />
                             </article>

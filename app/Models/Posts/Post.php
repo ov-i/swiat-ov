@@ -20,9 +20,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Laravel\Scout\Searchable;
-use Stringable;
 
-class Post extends Model implements Followable, Stringable, Sluggable
+class Post extends Model implements Followable, Sluggable
 {
     use SoftDeletes;
     use HasFactory;
@@ -72,7 +71,7 @@ class Post extends Model implements Followable, Stringable, Sluggable
 
     public function getThumbnailPath(): ?string
     {
-        return $this->thumbnail_url;
+        return $this->thumbnail_path;
     }
 
     public function getContent(): string
@@ -80,7 +79,7 @@ class Post extends Model implements Followable, Stringable, Sluggable
         return $this->content;
     }
 
-    public function getExcerpt(): string
+    public function getExcerpt(): ?string
     {
         return $this->excerpt;
     }

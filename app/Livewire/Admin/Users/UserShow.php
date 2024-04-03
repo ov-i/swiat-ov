@@ -3,39 +3,36 @@
 namespace App\Livewire\Admin\Users;
 
 use App\Events\User\UserProfileImageDeleted;
+use App\Livewire\Resource;
 use App\Models\User;
 use App\Repositories\Eloquent\Users\UserRepository;
-use Illuminate\Contracts\View\View;
-use Illuminate\Http\Response;
+use App\Services\Users\UserService;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Computed;
-use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Url;
-use Livewire\Component;
 
-class UserShow extends Component
+class UserShow extends Resource
 {
     #[Locked, Url]
-    public int $userId;
+    public User $user;
 
-    private UserRepository $userRepository;
+    /** @var UserRepository $repository */
+    protected $repository = UserRepository::class;
 
-    public function boot(
-        UserRepository $userRepository
+    private UserService $userService;
+
+    public function mount(
+        UserService $userService
     ): void {
-        $this->userRepository = $userRepository;
-
-        $this->userId = request('user');
+        $this->userService = $userService;
     }
 
     #[Computed]
     public function user(): User
     {
-        $user = $this->userRepository->findUserById($this->userId);
-
-        abort_if(blank($user), Response::HTTP_NOT_FOUND);
-
-        return $user;
+        return $this->user;
     }
 
     public function deleteImage(): void
@@ -49,9 +46,35 @@ class UserShow extends Component
         event(new UserProfileImageDeleted($user));
     }
 
-    #[Layout('layouts.admin')]
-    public function render(): View
+    #[Computed]
+    public function getPosts(): ?LengthAwarePaginator
     {
-        return view('livewire.admin.users.user-show');
+        return $this->user()
+            ->posts()
+            ->select(['id', 'title', 'type', 'status', 'slug'])
+            ->paginate($this->perPage);
+    }
+
+    #[Computed]
+    public function getAttachments(): ?LengthAwarePaginator
+    {
+        return $this->user()
+            ->attachments()
+            ->select(['id', 'original_name', 'mimetype', 'size'])
+            ->paginate($this->perPage);
+    }
+
+    #[Computed]
+    public function getRoles(): ?Collection
+    {
+        return $this->user()
+            ->roles()
+            ->select(['name', 'guard_name'])
+            ->get();
+    }
+
+    protected function getView(): string
+    {
+        return 'users.user-show';
     }
 }

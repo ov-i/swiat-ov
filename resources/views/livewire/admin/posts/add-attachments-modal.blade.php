@@ -20,6 +20,7 @@
                         </p>
                         <x-input 
                             type="file" 
+                            
                             name="attachments[]" 
                             id="fileInput"
                             class="hidden"

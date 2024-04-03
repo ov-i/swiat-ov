@@ -5,13 +5,15 @@ namespace App\Livewire;
 use App\Enums\Post\PostStatusEnum;
 use App\Models\Posts\Post;
 use App\Repositories\Eloquent\Posts\PostRepository;
+use App\Traits\InteractsWithModals;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Spatie\LaravelData\Attributes\Validation\In;
 
 class StatusUpdate extends Component
 {
-    public bool $statusUpdate = false;
+    use InteractsWithModals;
 
     public Post $post;
 
@@ -31,14 +33,20 @@ class StatusUpdate extends Component
 
     public function updateStatus(): void
     {
-        $this->authorize('canEditPost', [$this->post]);
+        $this->authorize('can-edit-post', [$this->post]);
         $this->validate();
 
         $postRepository = new PostRepository();
 
+        if ($this->newStatus === PostStatusEnum::closed()->value && !Gate::allows('can-close-post')) {
+            $this->addError('newStatus', __("You're not allowed to close the posts"));
+
+            return;
+        }
+
         $postRepository->setStatus($this->post, PostStatusEnum::from($this->newStatus));
 
-        $this->statusUpdate = false;
+        $this->closeModal();
 
         $this->redirectRoute('admin.posts.edit', ['post' => $this->post]);
     }
@@ -52,9 +60,12 @@ class StatusUpdate extends Component
         $availableStatus = [
             PostStatusEnum::published(),
             PostStatusEnum::archived(),
-            PostStatusEnum::closed(),
             PostStatusEnum::draft()
         ];
+
+        if (Gate::allows('can-close-post')) {
+            $availableStatus[] = PostStatusEnum::closed();
+        }
 
         foreach(PostStatusEnum::cases() as $status) {
             if (!in_array($status->value, $availableStatus, true)) {

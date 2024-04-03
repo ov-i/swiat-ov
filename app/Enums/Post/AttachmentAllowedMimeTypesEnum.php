@@ -7,7 +7,7 @@ namespace App\Enums\Post;
 use Spatie\Enum\Enum;
 
 /**
- * @method static self img()
+ * @method static self png()
  * @method static self jpg()
  * @method static self pdf()
  * @method static self svg()
@@ -22,7 +22,7 @@ final class AttachmentAllowedMimeTypesEnum extends Enum
     protected static function values(): array
     {
         return [
-            'img' => 'image/png',
+            'png' => 'image/png',
             'jpg' => 'image/jpeg',
             'pdf' => 'application/pdf',
             'svg' => 'image/svg+xml',

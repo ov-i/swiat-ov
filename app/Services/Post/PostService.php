@@ -15,7 +15,6 @@ use App\Repositories\Eloquent\Posts\AttachmentRepository;
 use App\Repositories\Eloquent\Posts\PostHistoryRepository;
 use App\Repositories\Eloquent\Posts\PostRepository;
 use App\Traits\IntersectsArray;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use Spatie\LaravelData\Data;
 
@@ -141,7 +140,7 @@ class PostService
     /**
      * Checks if there are any attachments that should be synced, syncs
      * them if so.
-     * 
+     *
      * @param array<array-key, \App\Models\Posts\Attachment|int> $attachments
      */
     private function syncAttachments(Post &$post, array $attachments): void

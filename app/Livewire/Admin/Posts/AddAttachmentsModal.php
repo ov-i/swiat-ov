@@ -35,7 +35,7 @@ class AddAttachmentsModal extends Resource
      * @return void
      */
     public function addAttachments(AttachmentService $attachmentService): void
-    {   
+    {
         $this->authorize('create-attachment', auth()->user());
 
         $this->addAttachmentForm->validate();

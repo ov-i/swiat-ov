@@ -6,6 +6,7 @@ namespace App\Livewire;
 
 use App\Enums\ItemsPerPageEnum;
 use App\Traits\FormatsString;
+use App\Traits\InteractsWithModals;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -13,27 +14,30 @@ use Livewire\WithPagination;
 
 abstract class Resource extends Component
 {
+    use InteractsWithModals;
     use WithPagination;
     use FormatsString;
-    
+
     public int $perPage = ItemsPerPageEnum::DEFAULT;
-    
+
     public bool $paginate = true;
-    
+
     public bool $withTrashed = false;
-    
+
     protected ?string $layout = 'layouts.admin';
-    
-     /** @var class-string<\Illuminate\Database\Eloquent\Model>|null */
+
+    /** @var class-string<\App\Repositories\Eloquent\BaseRepository> $repository */
     protected $repository = null;
 
     abstract protected function getView(): string;
 
     public function __construct()
     {
-        $modelable = new $this->repository();
+        if (filled($this->repository)) {
+            $repository = new $this->repository();
 
-        $this->repository = $modelable;
+            $this->repository = $repository;
+        }
     }
 
     public function render(): View
@@ -52,7 +56,7 @@ abstract class Resource extends Component
     {
         return [
             'resource' => $this->repository->all(
-                paginate: $this->paginate, 
+                paginate: $this->paginate,
                 perPage: $this->perPage,
                 withTrashed: $this->withTrashed,
             ),

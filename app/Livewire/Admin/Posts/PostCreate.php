@@ -59,7 +59,7 @@ class PostCreate extends Resource
 
     public function save(): void
     {
-        $this->authorize('writePost');
+        $this->authorize('write-post');
 
         $validated = $this->createPostForm->validate();
         if ($this->repository->postExists($validated['title'])) {

@@ -1,3 +1,7 @@
+@php
+    $loggedInUser = auth()->user();
+@endphp
+
 <section>
     <x-back-button :to="route('admin.dashboard')">
         {{ __('Back to dashboard') }}
@@ -5,13 +9,15 @@
 
     <x-admin-card title="Posts">
         <x-slot name="actions">
-            <x-iconed-link 
-                :link="route('admin.posts.create')" 
-                icon="add" 
-                icon_size="text-[2rem]"
-                classes="button-info">
-                {{ __('new') }}
-            </x-iconed-link>
+            @if (auth()->user()->can('write-post'))
+                <x-iconed-link 
+                    :link="route('admin.posts.create')" 
+                    icon="add" 
+                    icon_size="text-[2rem]"
+                    class="button-info">
+                    {{ __('new') }}
+                </x-iconed-link>
+            @endif
         </x-slot>
         
         <section class="py-4 border-b border-gray-200 dark:border-gray-600">
@@ -27,6 +33,9 @@
         <section class="post-table overflow-x-hidden 2xl:overflow-x-visible">
             <x-resource-table>
                 <x-slot name="tableHead">
+                    <th scope="col" class="px-6 py-3">
+                        #
+                    </th>
                     <th scope="col" class="px-6 py-3">
                         {{ __('Title') }}
                     </th>
@@ -49,17 +58,11 @@
 
                 @foreach ($resource as $post)
                     <tr class="resource-tr" wire:key="{{ $post->getKey() }}">
-                        <td class="w-4 p-4">
-                            <div class="flex items-center">
-                                <x-label for="checkbox-table-search-1" class="sr-only" value="Checkbox" />
-                                <x-checkbox id="checkbox-table-search-1" />
-                            </div>
-                        </td>
                         <td class="w-4 p-4">{{ $post->getKey() }}</td>
                         <td scope="row" class="text-gray-600 whitespace-nowrap dark:text-white">
                             <div class="ps-3">
                                 <div class="text-base font-semibold">
-                                    <a href="{{ route('admin.posts.edit', ['post' => $post]) }}"
+                                    <a href="{{ route('admin.posts.show', ['post' => $post]) }}"
                                         class="hover:text-gray-700 dark:hover:text-zinc-300 active:text-gray-800 transition duration-100">
                                         {{ $post->getTitle() }}
                                     </a>
@@ -81,27 +84,38 @@
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex items-center text-center">
-                                <section class="mr-2">
-                                    <x-button
-                                    type="button"
-                                    component="button-danger"
-                                    class="flex items-center"
-                                    wire:click="delete({{ $post->getKey() }})"
-                                    wire:confirm="Soft delete this post?">
-                                    <x-material-icon class="mr-0">
-                                        delete
-                                    </x-material-icon>
-                                </x-button>
-                                </section>
-                                <section>
-                                    <a href="{{ route('admin.posts.edit', ['post' => $post]) }}" class="flex items-center button-info">
-                                        <x-material-icon 
-                                            link="{{ route('admin.posts.edit', ['post' => $post]) }}"
-                                            class="mr-0">
-                                            edit
-                                        </x-material-icon>
-                                    </a>
-                                </section>                                 
+                                @if ($loggedInUser->can('view-post'))
+                                    <section>
+                                        <x-iconed-link 
+                                            icon="visibility" 
+                                            :link="route('admin.posts.show', ['post' => $post])" 
+                                            icon_size="md"
+                                            class="button mr-2" />
+                                    </section>
+                                @endif
+                                @if ($loggedInUser->can('can-edit-post', [$post]))
+                                    <section>
+                                        <x-iconed-link 
+                                            icon="edit" 
+                                            :link="route('admin.posts.edit', ['post' => $post])" 
+                                            icon_size="md"
+                                            class="button mr-2" />
+                                    </section>
+                                @endif
+                                @if ($loggedInUser->can('delete-post', [$post]))
+                                    <section class="mr-2">
+                                        <x-button
+                                        type="button"
+                                        component="button"
+                                        class="flex items-center"
+                                        wire:click="delete({{ $post->getKey() }})"
+                                        wire:confirm="Soft delete this post?">
+                                            <x-material-icon class="mr-0 text-md">
+                                                delete
+                                            </x-material-icon>
+                                        </x-button>
+                                    </section>                             
+                                @endif
                             </div>
                         </td>
                     </tr>

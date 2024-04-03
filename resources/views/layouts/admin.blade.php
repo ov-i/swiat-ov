@@ -86,7 +86,7 @@
 
                             <x-nav-section route='comments' icon="chat" />
                             <x-nav-section route='posts' icon='edit_note' />
-                            <x-nav-section route='categories' icon='category' />
+                            <x-nav-section route='posts.categories' icon='category' />
                             <x-nav-section route='tags' icon='tag' />
                             <x-nav-section route='attachments' icon='cloud_upload' />
                         </article>
@@ -99,7 +99,7 @@
         </div>
 
         <!-- Page Content -->
-        <main class="w-full md:w-10/12 2xl:w-9/12 mx-auto p-4 lg:p-0 lg:py-4">
+        <main class="w-full lg:w-10/12 2xl:w-9/12 mx-auto p-4 lg:p-0 lg:py-4">
             <nav class="top-navbar" aria-label="top-navbar fixed top-0">
                 <section class="top-navbar__search flex flex-row justify-between items-center">
                     <article class="flex flex-row items-center">
