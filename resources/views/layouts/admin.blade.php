@@ -87,7 +87,7 @@
                             <x-nav-section route='comments' icon="chat" />
                             <x-nav-section route='posts' icon='edit_note' />
                             <x-nav-section route='posts.categories' icon='category' />
-                            <x-nav-section route='tags' icon='tag' />
+                            <x-nav-section route='posts.tags' icon='tag' />
                             <x-nav-section route='attachments' icon='cloud_upload' />
                         </article>
                     </section>

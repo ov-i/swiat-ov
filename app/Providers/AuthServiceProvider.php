@@ -12,6 +12,7 @@ use App\Policies\ApiTokenPolicy;
 use App\Policies\AttachmentPolicy;
 use App\Policies\CategoryPolicy;
 use App\Policies\PostPolicy;
+use App\Policies\TagPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Auth;
@@ -59,6 +60,10 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('view-category', [CategoryPolicy::class, 'view']);
         Gate::define('write-category', [CategoryPolicy::class, 'create']);
+
+        Gate::define('view-tags', [TagPolicy::class, 'viewAny']);
+        Gate::define('view-tag', [TagPolicy::class, 'view']);
+        Gate::define('write-tag', [TagPolicy::class, 'create']);
 
         Gate::define('can-follow', function (User $user, Followable $followable) {
             if (!Auth::check() || $user->isBlocked()) {

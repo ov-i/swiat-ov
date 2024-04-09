@@ -5,8 +5,6 @@ import { buttonStyles } from '../config'
  * Add new button styles for better code readability
  */
 export const buttons = plugin(function ({ addComponents, theme }) {
-  console.log(theme('borderColor'));
-
   addComponents({
     '.button-info': {
       ...buttonStyles(theme),

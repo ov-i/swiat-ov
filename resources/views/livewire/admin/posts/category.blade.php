@@ -9,7 +9,7 @@
 
     <x-admin-card title="Categories">
         <x-slot name="actions">
-            @if (auth()->user()->can('write-category'))
+            @if ($loggedInUser->can('write-category'))
                 <section>
                     <x-button type="button" class="text-sm md:text-md lg:text-base" wire:click="openModal()">
                     <x-material-icon>

@@ -118,6 +118,14 @@ use Spatie\Enum\Enum;
  * @method static self postCategoryDelete()
  * @method static self postCategoryRestore()
  *
+ * Post Tag
+ * @method static self postTagIndex()
+ * @method static self postTagRead()
+ * @method static self postTagWrite()
+ * @method static self postTagUpdate()
+ * @method static self postTagDelete()
+ * @method static self postTagRestore()
+ *
  */
 final class PermissionsEnum extends Enum
 {

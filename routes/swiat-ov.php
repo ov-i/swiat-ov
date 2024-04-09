@@ -12,6 +12,7 @@ use App\Livewire\Admin\Posts\PostCreate;
 use App\Livewire\Admin\Posts\PostEdit;
 use App\Livewire\Admin\Posts\PostShow;
 use App\Livewire\Admin\Posts\Tag;
+use App\Livewire\Admin\Posts\TagsCreate;
 use App\Livewire\Admin\Users\Role;
 use App\Livewire\Admin\Users\User;
 use App\Livewire\Admin\Users\UserEdit;
@@ -39,7 +40,8 @@ Route::prefix('admin')->middleware($middlewares)->group(function () {
         Route::get('/categories/create', CategoryCreate::class)->name('admin.categories.create');
         Route::get('categories/show/{category}', CategoryShow::class)->name('admin.posts.categories.show');
         Route::get('/comments', Comment::class)->name('admin.comments');
-        Route::get('/tags', Tag::class)->name('admin.tags');
+        Route::get('/tags', Tag::class)->name('admin.posts.tags');
+        Route::get('/tags/create', TagsCreate::class)->name('admin.posts.tags.create');
         Route::get('/attachments', Attachment::class)->name('admin.attachments');
         Route::get('/attachments/show/{attachment:checksum}', AttachmentShow::class)->name('admin.attachments.show');
         Route::get('/attachments/edit/{attachment:checksum}', AttachmentEdit::class)->name('admin.attachments.edit');
