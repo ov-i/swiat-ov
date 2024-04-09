@@ -8,7 +8,9 @@
                 property='user' 
                 :value="$this->getPostUser()" 
                 isLink="true" 
-                :to="route('admin.users.show', ['user' => $this->getPostUser()])"/>
+                :to="route('admin.users.show', ['user' => $this->getPostUser()])"
+                title="{{ $this->getPostUser()->getName()}} ({{ $this->getPostUser()->getEmail() }})"
+            />
 
             <x-resource-detail 
                 property='category' 
@@ -17,6 +19,7 @@
                 :to="route('admin.posts.categories', ['category' => $this->getCategory()])"/>
 
             <x-resource-detail property='title' :value="$this->post()->getTitle()" />
+            @if(filled($this->getThumbnail()))
             <x-resource-detail property='thumbnail'>
                 <x-slot name="value">
                     <x-button component="button" wire:click="showImageModel = true" type="button">
@@ -30,22 +33,29 @@
                     </x-modal>
                 </x-slot>
             </x-resource-detail>
+            @endif
             <x-resource-detail property='slug' :value="$this->post()->toSlug()" />
-            <x-resource-detail property='excerpt' :value="$this->post()->getExcerpt()" />
+            @if (!$this->post()->isEvent())
+                <x-resource-detail property='excerpt' :value="$this->post()->getExcerpt()" />
+            @endif
             <x-resource-detail property='type' :value="$this->post()->getType()" />
             <x-resource-detail property='content'>
                 <x-slot name="value">
-                    <button 
-                        component="button" 
-                        class="text-cyan-500 text-md" 
-                        wire:click="openModal()">
-                        {{ __('Show content') }}
-                    </button>
-                    <x-modal wire:model="modalOpen">
-                        <section class="p-5 font-secondary">
-                            {{ $this->post()->getContent() }}
-                        </section>
-                    </x-modal>
+                    @if ($this->post()->isEvent())
+                        {{ $this->post()->getContent() }}
+                    @else
+                        <button 
+                            component="button" 
+                            class="text-cyan-500 text-md" 
+                            wire:click="openModal()">
+                            {{ __('Show content') }}
+                        </button>
+                        <x-modal wire:model="modalOpen">
+                            <section class="p-5 font-secondary">
+                                {{ $this->post()->getContent() }}
+                            </section>
+                        </x-modal>
+                    @endif
                 </x-slot>
             </x-resource-detail>
             <x-resource-detail property='archived'>
@@ -86,6 +96,8 @@
                 </tr>
             @empty
             @endforelse
+
+            {{-- <x-pagination-links :resource="$this->getAttachments()" /> --}}
         </x-resource-relation>
     </section>
 </section>

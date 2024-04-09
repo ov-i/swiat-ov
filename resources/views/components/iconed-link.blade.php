@@ -5,7 +5,7 @@
   {{ $attributes->merge(['class' => "flex flex-row items-center"]) }} 
   {{ $wired_nav ? 'wire:navigate' : null}}
 >
-  <x-material-icon class="text-{{$icon_size}} flex items-center">
+  <x-material-icon class="text-{{$icon_size}} flex items-center mr-2">
     {{$icon}}
   </x-material-icon>
 

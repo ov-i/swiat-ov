@@ -4,10 +4,13 @@ namespace App\Providers;
 
 use App\Contracts\Followable;
 use App\Enums\Post\PostStatusEnum;
+use App\Models\Posts\Attachment;
+use App\Models\Posts\Category;
 use App\Models\Posts\Post;
 use App\Models\User;
 use App\Policies\ApiTokenPolicy;
 use App\Policies\AttachmentPolicy;
+use App\Policies\CategoryPolicy;
 use App\Policies\PostPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -26,7 +29,8 @@ class AuthServiceProvider extends ServiceProvider
         PersonalAccessToken::class => ApiTokenPolicy::class,
         User::class => UserPolicy::class,
         Post::class => PostPolicy::class,
-        Attachment::class => AttachmentPolicy::class
+        Attachment::class => AttachmentPolicy::class,
+        Category::class => CategoryPolicy::class,
     ];
 
     /**
@@ -51,6 +55,10 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('delete-post', [PostPolicy::class, 'delete']);
         Gate::define('can-edit-post', [PostPolicy::class, 'update']);
         Gate::define('can-close-post', fn (User &$user) => Gate::allows('viewAdmin'));
+        Gate::define('post-sync-attachments', [PostPolicy::class, 'attachAttachments']);
+
+        Gate::define('view-category', [CategoryPolicy::class, 'view']);
+        Gate::define('write-category', [CategoryPolicy::class, 'create']);
 
         Gate::define('can-follow', function (User $user, Followable $followable) {
             if (!Auth::check() || $user->isBlocked()) {

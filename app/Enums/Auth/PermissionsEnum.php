@@ -102,7 +102,6 @@ use Spatie\Enum\Enum;
  * @method static self postCommentRestore()
  * @method static self postCommentForceDelete()
  *
- *
  * Post attachment
  * @method static self postAttachmentRead()
  * @method static self postAttachmentAdd()
@@ -110,6 +109,15 @@ use Spatie\Enum\Enum;
  * @method static self postAttachmentDelete()
  * @method static self postAttachmentRestore()
  * @method static self postAttachmentForceDelete()
+ *
+ * Post Category
+ * @method static self postCategoryIndex()
+ * @method static self postCategoryRead()
+ * @method static self postCategoryWrite()
+ * @method static self postCategoryUpdate()
+ * @method static self postCategoryDelete()
+ * @method static self postCategoryRestore()
+ *
  */
 final class PermissionsEnum extends Enum
 {

@@ -1,3 +1,7 @@
+@php
+    use Illuminate\Support\Str;
+@endphp
+
 <section>
     <x-back-button :to="route('admin.posts')">
         {{ __('Back to posts list') }}
@@ -78,13 +82,23 @@
                         @if (!$this->isEvent())
                             <div class="input-group my-3 last:mb-0 first:mt-0">
                                 <x-label for="excerpt" class="uppercase" :value="__('Excerpt')" required />
-                                <x-textarea 
+                                <section class="relative">
+                                    <x-textarea 
                                     name="excerpt" 
                                     id="excerpt" 
                                     required 
                                     inputClasses="block w-full"
                                     rows="5"
-                                    wire:model.blur="createPostForm.excerpt"></x-textarea>
+                                    minLength="50"
+                                    maxLength="255"
+                                    wire:model.live="createPostForm.excerpt"></x-textarea>
+
+                                    <div class="absolute bottom-2 right-2">
+                                        <p class="inline text-gray-600 dark:text-white {{ Str::length($createPostForm->excerpt) >= 255 ? 'text-red-500' : null }}">
+                                            {{ Str::length($createPostForm->excerpt) }}/255
+                                        </p>
+                                    </div>
+                                </section>
     
                                 <x-input-error for='createPostForm.excerpt' />
                             </div>
@@ -119,19 +133,22 @@
                         @if (!$this->isEvent())
                             <section class="attachments">
                                 <div class="w-full pt-3 pb-5 mt-3 border-b border-gray-200 dark:border-gray-700 xl:border-none">
-                                    <x-label for="attachments" class="uppercase" :value="__('Add attachment')" />
-                                    <x-input 
-                                        type="file" 
-                                        name="attachments[]" 
-                                        id="attachments"
-                                        inputClasses="w-full shadow-none"
-                                        accept="{{ implode(',', $this->getAcceptedMimeTypes()) }}"
-                                        size="{{ config('swiatov.max_file_size') }}" 
-                                        wire:model="createPostForm.attachments"
-                                        multiple />
+                                    <x-button type="button" component="button-zinc-outlined" wire:click="attachmentsModal = true">
+                                        {{ 
+                                            count($createPostForm->attachments) ? 
+                                                'Toggle Attachments' : 
+                                                'Add Attachments' 
+                                        }}
+                                    </x-button>
+
+                                    <livewire:admin.posts.sync-attachments-modal wire:model="attachmentsModal" />
+
                                     <x-input-error for='createPostForm.attachments.*' />
                                 </div>
                             </section>
+
+                            <livewire:admin.posts.attachments.synced-attachments-lister 
+                                wire:attachments.live="$createPostForm.attachments" />
                         @endif
                     </x-slot>
     
@@ -150,13 +167,17 @@
     
                             <x-input-error for='createPostForm.categoryId' />
     
-                            <button type="button"
-                                class="outline-none bg-none text-cyan-500 hover:text-cyan-600 active:text-cyan-800 dark:text-white mt-3 flex items-center">
-                                <span class="material-symbols-outlined text-base mr-1">
-                                    add_circle
-                                </span>
-                                <span class="text-base">{{ __('create new category') }}</span>
-                            </button>
+                            @if (auth()->user()->can('write-category'))
+                                <button type="button"
+                                    class="outline-none bg-none text-cyan-500 hover:text-cyan-600 active:text-cyan-800 dark:text-white mt-3 flex items-center" wire:click="openModal()" >
+                                    <span class="material-symbols-outlined text-base mr-1">
+                                        add_circle
+                                    </span>
+                                    <span class="text-base">{{ __('create new category') }}</span>
+                                </button>
+
+                                <livewire:admin.posts.category-create wire:model="modalOpen" />
+                            @endif
                         </aside>
     
                         <!-- Tags -->
@@ -255,3 +276,12 @@
         </section>
     </form>
 </section>
+
+@script
+<script>
+    Livewire.on('category-added', function() {
+        $wire.closeModal()
+        $wire.$refresh()
+    })
+</script>
+@endscript

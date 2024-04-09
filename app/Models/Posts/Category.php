@@ -30,7 +30,7 @@ class Category extends Model implements Stringable
     /**
      * @return HasMany<Post>
      */
-    public function post(): HasMany
+    public function posts(): HasMany
     {
         return $this->hasMany(Post::class);
     }

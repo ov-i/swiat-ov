@@ -5,6 +5,7 @@ namespace App\Livewire\Forms;
 use App\Data\CreatePostRequest;
 use App\Enums\Post\PostTypeEnum;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 use Livewire\Form;
 
@@ -26,8 +27,8 @@ class CreatePostForm extends Form
     /** @var ?UploadedFile $thumbnail */
     public $thumbnailPath = null;
 
-    /** @var ?UploadedFile[] $attachments */
-    public $attachments = null;
+    /** @var Collection<array-key, int> $attachments */
+    public $attachments = [];
 
     public ?string $publishableDateTime = null;
 
@@ -41,7 +42,7 @@ class CreatePostForm extends Form
             'excerpt' => [
                 Rule::requiredIf(fn () => PostTypeEnum::event()->value !== $this->type),
                 'min:50',
-                'max: 255',
+                'max:255',
                 'nullable',
             ],
         ];

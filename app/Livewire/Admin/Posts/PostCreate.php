@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Admin\Posts;
 
-use App\Data\CreateAttachmentRequest;
 use App\Data\CreatePostRequest;
 use App\Enums\Post\AttachmentAllowedMimeTypesEnum;
 use App\Enums\Post\PostTypeEnum;
@@ -13,11 +12,11 @@ use App\Models\Posts\Post;
 use App\Repositories\Eloquent\Posts\CategoryRepository;
 use App\Repositories\Eloquent\Posts\PostRepository;
 use App\Repositories\Eloquent\Posts\TagRepository;
-use App\Services\Post\AttachmentService;
 use App\Services\Post\PostService;
 use App\Services\Post\ThumbnailService;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 
 class PostCreate extends Resource
 {
@@ -25,10 +24,10 @@ class PostCreate extends Resource
 
     public PostCreateActionState $postCreateState;
 
+    public bool $attachmentsModal = false;
+
     /** @var PostRepository $repository */
     protected $repository = PostRepository::class;
-
-    private AttachmentService $attachmentService;
 
     private ThumbnailService $thumbnailService;
 
@@ -44,13 +43,11 @@ class PostCreate extends Resource
     }
 
     public function boot(
-        AttachmentService $attachmentService,
         ThumbnailService $thumbnailService,
         PostService $postService,
         CategoryRepository $categoryRepository,
         TagRepository $tagRepository,
     ) {
-        $this->attachmentService = $attachmentService;
         $this->thumbnailService = $thumbnailService;
         $this->postService = $postService;
         $this->categoryRepository = $categoryRepository;
@@ -68,8 +65,6 @@ class PostCreate extends Resource
             return;
         }
 
-        $this->saveAttachments();
-
         $post = $this->savePost();
 
         $this->saveThumbnailFile($post);
@@ -77,6 +72,12 @@ class PostCreate extends Resource
         $this->createPostForm->reset();
 
         $this->redirectRoute('admin.posts.edit', ['post' => $post], navigate: true);
+    }
+
+    #[On('attachments-sync')]
+    public function updateAttachmentsRequest(array $ids): void
+    {
+        $this->createPostForm->attachments = [...$ids];
     }
 
     public function resetForm(): void
@@ -168,27 +169,6 @@ class PostCreate extends Resource
         $thumbnailFile->storeOnDisk();
 
         $this->repository->updateThumbnailPath($post, path: $thumbnailFile->getPublicUrl());
-    }
-
-    /**
-     * Saves the optional attachments from request
-     *
-     * @return void
-     */
-    private function saveAttachments(): void
-    {
-        $files = $this->createPostForm->attachments;
-
-        if (filled($files)) {
-            foreach($files as $file) {
-                $file = $this->attachmentService->setFile($file);
-
-                $request = new CreateAttachmentRequest(attachment: $file->getContent());
-
-                /** @var AttachmentService $file */
-                $file->createAttachment($request);
-            }
-        }
     }
 
     private function savePost(): Post

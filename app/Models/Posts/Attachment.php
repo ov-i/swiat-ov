@@ -29,7 +29,7 @@ class Attachment extends Model
 
     public function __toString(): string
     {
-        return $this->getFileName();
+        return $this->getOriginalName();
     }
 
     public function getOriginalName(): string
