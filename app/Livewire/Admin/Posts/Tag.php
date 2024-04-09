@@ -2,12 +2,15 @@
 
 namespace App\Livewire\Admin\Posts;
 
-use Livewire\Component;
+use App\Livewire\Resource;
+use App\Repositories\Eloquent\Posts\TagRepository;
 
-class Tag extends Component
+class Tag extends Resource
 {
-    public function render()
+    protected $repository = TagRepository::class;
+
+    protected function getView(): string
     {
-        return view('livewire.admin.resources.posts.tag');
+        return 'posts.tag';
     }
 }

@@ -143,7 +143,7 @@ class PostService
      *
      * @param array<array-key, \App\Models\Posts\Attachment|int> $attachments
      */
-    private function syncAttachments(Post &$post, array $attachments): void
+    private function syncAttachments(Post &$post, ?array $attachments): void
     {
         if (!filled($attachments)) {
             return;

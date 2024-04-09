@@ -1,4 +1,8 @@
 <section class="attachment-preview">
+    <x-material-icon class="text-[2rem]" wire:loading>
+        sync
+    </x-material-icon>
+
     <h2 class="text-sm py-2" x-show="$wire.attachments.length">
         {{ __(sprintf('Upload %d attachment(s)', count($attachments))) }}
     </h2>
