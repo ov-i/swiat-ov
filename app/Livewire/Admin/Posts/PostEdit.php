@@ -15,6 +15,7 @@ use App\Repositories\Eloquent\Posts\TagRepository;
 use App\Services\Post\PostService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -30,6 +31,8 @@ class PostEdit extends Component
     public string $post;
 
     public UpdatePostForm $updatePostForm;
+
+    public bool $attachmentsModal = false;
 
     private PostRepository $postRepository;
 
@@ -186,13 +189,12 @@ class PostEdit extends Component
         return $this->postService->editPost($post, UpdatePostData::from($request));
     }
 
-    private function getPostWithRelations(): array
+    private function getPostWithRelations(): Collection
     {
         $post = $this->post();
         return collect($post->toArray())
             ->merge([
                 'tags' => $post->tags()->pluck('name')->toArray(),
-                'attachments' => $post->attachments()->get()->toArray()
-            ])->toArray();
+            ])->collect();
     }
 }

@@ -67,4 +67,9 @@ class PostPolicy
     {
         return Gate::allows('viewAdmin', [$user]);
     }
+
+    public function attachAttachments(User $user): bool
+    {
+        return Gate::allows('viewAdmin') || $user->hasRole(RoleNamesEnum::vipMember()->value);
+    }
 }

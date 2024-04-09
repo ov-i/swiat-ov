@@ -105,7 +105,7 @@
                     <article class="flex flex-row items-center">
                         <section class="nav-opener">
                             <button type="button" class="flex items-start" @click.stop="navShown = true">
-                                <x-material-icon classes="text-[2rem]" aria-describedby="nav-opener">
+                                <x-material-icon class="text-[2rem]" aria-describedby="nav-opener">
                                     menu
                                 </x-material-icon>
                             </button>

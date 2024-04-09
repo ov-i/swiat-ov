@@ -2,12 +2,15 @@
 
 namespace App\Livewire\Admin\Posts;
 
-use Livewire\Component;
+use App\Livewire\Resource;
+use App\Repositories\Eloquent\Posts\CategoryRepository;
 
-class Category extends Component
+class Category extends Resource
 {
-    public function render()
+    protected $repository = CategoryRepository::class;
+
+    protected function getView(): string
     {
-        return view('livewire.admin.resources.posts.category');
+        return 'posts.category';
     }
 }

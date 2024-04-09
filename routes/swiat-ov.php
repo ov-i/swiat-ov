@@ -16,6 +16,7 @@ use App\Livewire\Admin\Users\Role;
 use App\Livewire\Admin\Users\User;
 use App\Livewire\Admin\Users\UserEdit;
 use App\Livewire\Admin\Users\UserShow;
+use App\Livewire\Admin\Posts\CategoryCreate;
 
 $middlewares = [
     config('jetstream.auth_session'),
@@ -35,6 +36,7 @@ Route::prefix('admin')->middleware($middlewares)->group(function () {
         Route::get('/edit/{post:slug}', PostEdit::class)->name('admin.posts.edit');
         Route::get('/show/{post:slug}', PostShow::class)->name('admin.posts.show');
         Route::get('/categories', Category::class)->name('admin.posts.categories');
+        Route::get('/categories/create', CategoryCreate::class)->name('admin.categories.create');
         Route::get('categories/show/{category}', CategoryShow::class)->name('admin.posts.categories.show');
         Route::get('/comments', Comment::class)->name('admin.comments');
         Route::get('/tags', Tag::class)->name('admin.tags');

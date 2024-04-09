@@ -13,21 +13,18 @@ use Livewire\Form;
 
 class UpdatePostForm extends Form
 {
-    public string $title;
+    public string $title = '';
 
-    public string $type;
+    public string $type = '';
 
-    public ?string $excerpt;
+    public ?string $excerpt = ' ';
 
-    public string $content;
+    public string $content = '';
 
     public int $category_id;
 
     /** @var array<array-key, int> $tags */
     public array $tags = [];
-
-    /** @var ?UploadedFile[] $attachments */
-    public ?array $attachments = [];
 
     public ?UploadedFile $thumbnailPath = null;
 
@@ -43,7 +40,7 @@ class UpdatePostForm extends Form
             'excerpt' => [
                 Rule::requiredIf(fn () => PostTypeEnum::event()->value !== $this->type),
                 'min:50',
-                'max: 255',
+                'max:255',
                 'nullable',
             ],
              'title' => [

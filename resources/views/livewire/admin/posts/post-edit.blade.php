@@ -14,7 +14,6 @@
                         @livewire('status-update', ['post' => $this->post()], key($this->post()->getKey()))
                         <x-button 
                             type="button" 
-                            class="disabled:cursor-not-allowed disabled:bg-transparent disabled:text-gray-400 disabled:hover:border-gray-200 hover:border-initial" 
                             :disabled="$this->isFormUnTouched()">
                             {{ $this->isFormUnTouched() ? __('Form untouched') : __('Edit') }}
                         </x-button>
@@ -112,27 +111,6 @@
     
                             <x-input-error for='updatePostForm.content' />
                         </div>
-                    </x-slot>
-    
-                    <x-slot name="underInputs">
-                        <!-- Attachments -->
-                        @if (!$this->isEvent())
-                            <section class="attachments">
-                                <div class="w-full pt-3 pb-5 mt-3 border-b border-gray-200 dark:border-gray-700 xl:border-none">
-                                    <x-label for="attachments" class="uppercase" :value="__('Add attachment')" />
-                                    <x-input 
-                                        type="file" 
-                                        name="attachments[]" 
-                                        id="attachments"
-                                        inputClasses="w-full"
-                                        accept="{{ implode(',', $this->getAcceptedMimeTypes()) }}"
-                                        size="{{ config('swiatov.max_file_size') }}" 
-                                        wire:model="updatePostForm.attachments"
-                                        multiple />
-                                    <x-input-error for='updatePostForm.attachments.*' />
-                                </div>
-                            </section>
-                        @endif
                     </x-slot>
     
                     <x-slot name="rightSide">

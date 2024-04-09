@@ -2,7 +2,6 @@
 
 namespace App\Data;
 
-use App\Enums\Post\AttachmentAllowedMimeTypesEnum;
 use App\Enums\Post\PostTypeEnum;
 use App\Enums\Post\ThumbnailAllowedMimeTypesEnum;
 use App\Rules\AllowOnlySpecificSpecialChars;
@@ -18,7 +17,6 @@ class CreatePostRequest extends Data
 {
     /**
      * @param null|array<array-key, int> $tags,
-     * @param null|array<array-key, CreateAttachmentRequest> $attachments,
      */
     public function __construct(
         public readonly int $categoryId,
@@ -64,9 +62,8 @@ class CreatePostRequest extends Data
             ],
             'attachments.*' => [
                 'nullable',
-                Rule::file()
-                    ->extensions([...AttachmentAllowedMimeTypesEnum::toLabels()])
-                    ->max(config('swiatov.max_file_size')),
+                'numeric',
+                Rule::exists('attachments', 'id'),
             ],
             'thumbnailPath' => [
                 'nullable',

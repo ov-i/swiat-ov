@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Data;
 
-use App\Enums\Post\AttachmentAllowedMimeTypesEnum;
 use App\Enums\Post\PostTypeEnum;
 use App\Enums\Post\ThumbnailAllowedMimeTypesEnum;
 use App\Rules\DoesntStartWithANumber;
@@ -25,7 +24,6 @@ class UpdatePostData extends Data
         public string $content,
         public int $category_id,
         public ?array $tags = null,
-        public ?array $attachments = null,
         public ?string $thumbnailPath = null
     ) {
     }
@@ -49,12 +47,6 @@ class UpdatePostData extends Data
                 'nullable',
                 new Exists(table: 'tags', column: 'id'),
                 'numeric'
-            ],
-            'attachments.*' => [
-                'nullable',
-                Rule::file()
-                    ->extensions([...AttachmentAllowedMimeTypesEnum::toLabels()])
-                    ->max(config('swiatov.max_file_size')),
             ],
             'thumbnailPath' => [
                 'nullable',
