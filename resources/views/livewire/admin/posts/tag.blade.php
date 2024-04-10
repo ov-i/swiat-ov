@@ -7,7 +7,7 @@
         {{ __('Back to dashboard') }}
     </x-back-button>
 
-    <x-admin-card title="Posts">
+    <x-admin-card title="Tags">
         <x-slot name="actions">
             @if ($loggedInUser->can('write-tag'))
                 <section>

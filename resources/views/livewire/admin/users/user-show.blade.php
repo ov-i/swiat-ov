@@ -1,7 +1,7 @@
 <section>
     <livewire:admin.resource-detail resourceName="user" :resourceClass="$user" />
 
-    <x-admin-card title="" class="mt-2">
+    <x-admin-card.index title="" class="mt-2">
         <div class="user-details">
             <x-resource-detail property='id' :value="$this->user()->getKey()" />
             <x-resource-detail property='name' :value="$this->user()->getName()" />
@@ -21,7 +21,7 @@
             <x-resource-detail property='created at' :value="$this->user()->created_at" />
             <x-resource-detail property='deleted at' :value="$this->user()->deleted_at" />
         </div>
-    </x-admin-card>
+    </x-admin-card.index>
 
     <section class="relations">
         <x-resource-relation title="roles" withId="false">
@@ -29,21 +29,23 @@
                 <x-button class="text-sm">Add role</x-button>
             </x-slot:actions>
 
-            <x-slot name="tableHead">
-                <th scope="col" class="py-3 text-xs md:text-md text-left">Name</th>
-                <th scope="col" class="py-3 text-xs md:text-md text-left">Guard name</th>
-                <th scope="col" class="py-3 text-xs md:text-md text-left">Action</th>
-            </x-slot>
+            <x-resource-table.head>
+                <x-resource-table.header>Name</x-resource-table.header>
+                <x-resource-table.header>Guard name</x-resource-table.header>
+                <x-resource-table.header>Action</x-resource-table.header>
+            </x-resource-table.head>
 
-            @foreach ($this->getRoles() as $role)
-                <tr class="text-left text-sm resource-tr" wire:key="{{ $role->getKey() }}">
+            <x-resource-table.body>
+                @foreach ($this->getRoles() as $role)
+                <x-resource-table.row :resource="$role" :key="$role->getKey()">
                     <td class="text-xs py-3 md:text-base">{{ $role->name }}</td>
                     <td class="text-xs py-3 md:text-base">{{ $role->guard_name }}</td>
                     <td class="text-xs py-3 md:text-base">
                         {{-- <x-iconed-link :link="route('')" icon="visibility" /> --}}
                     </td>
-                </tr>
-            @endforeach
+                </x-resource-table.row>
+                @endforeach
+            </x-resource-table.body>
         </x-resource-relation>
         
         <x-resource-relation title="posts">
@@ -51,16 +53,17 @@
                 <x-button class="text-sm">Add role</x-button>
             </x-slot:actions>
 
-            <x-slot name="tableHead">
-                <th scope="col" class="py-3 text-xs md:text-md text-left">#</th>
-                <th scope="col" class="py-3 text-xs md:text-md text-left">Title</th>
-                <th scope="col" class="py-3 text-xs md:text-md text-left">Type</th>
-                <th scope="col" class="py-3 text-xs md:text-md text-left">Status</th>
-                <th scope="col" class="py-3 text-xs md:text-md text-left">Action</th>
-            </x-slot>
-            
-            @forelse ($this->getPosts() as $post)
-                <tr class="text-left text-sm resource-tr">
+            <x-resource-table.head>
+                <x-resource-table.header>#</x-resource-table.header>
+                <x-resource-table.header>Title</x-resource-table.header>
+                <x-resource-table.header>Type</x-resource-table.header>
+                <x-resource-table.header>Status</x-resource-table.header>
+                <x-resource-table.header>Action</x-resource-table.header>
+            </x-resource-table.head>
+
+            <x-resource-table.body>
+                @foreach ($this->getPosts() as $post)
+                <x-resource-table.row :resource="$post" :key="$post->getKey()">
                     <td class="py-3 text-xs md:text-base">{{ $post->getKey() }}</td>
                     <td class="py-3 text-xs md:text-base">{{ $post->getTitle() }}</td>
                     <td class="py-3 text-xs md:text-base">{{ $post->getType() }}</td>
@@ -68,9 +71,9 @@
                     <td class="py-3 text-xs md:text-base">
                         <x-iconed-link :link="route('admin.posts.show', ['post' => $post])" icon="visibility" icon_size='md' />
                     </td>
-                </tr>    
-            @empty
-            @endforelse
+                </x-resource-table.row>
+                @endforeach
+            </x-resource-table.body>
         </x-resource-relation>
 
         <x-resource-relation title='attachments'>
@@ -78,16 +81,17 @@
                 <x-button class="text-sm">Add role</x-button>
             </x-slot:actions>
 
-            <x-slot name="tableHead">
-                <th scope="col" class="py-3 text-xs md:text-md text-left">#</th>
-                <th scope="col" class="py-3 text-xs md:text-md text-left">Original name</th>
-                <th scope="col" class="py-3 text-xs md:text-md text-left">Mime type</th>
-                <th scope="col" class="py-3 text-xs md:text-md text-left">Size</th>
-                <th scope="col" class="py-3 text-xs md:text-md text-left">Action</th>
-            </x-slot>
+            <x-resource-table.head>
+                <x-resource-table.header>#</x-resource-table.header>
+                <x-resource-table.header>Original name</x-resource-table.header>
+                <x-resource-table.header>Mime type</x-resource-table.header>
+                <x-resource-table.header>Size</x-resource-table.header>
+                <x-resource-table.header>Action</x-resource-table.header>
+            </x-resource-table.head>
 
-            @forelse ($this->getAttachments() as $attachment)
-                <tr class="text-left text-sm resource-tr" wire:key="{{ $attachment->getKey() }}">
+            <x-resource-table.body>
+                @foreach ($this->getAttachments() as $attachment)
+                <x-resource-table.row :resource="$attachment" :key="$attachment->getKey()">
                     <td class="py-3 text-xs md:text-base">{{ $attachment->getKey() }}</td>
                     <td class="py-3 text-xs md:text-base">{{ $attachment->getOriginalName() }}</td>
                     <td class="py-3 text-xs md:text-base">{{ $attachment->getMimeType() }}</td>
@@ -97,9 +101,9 @@
                             visibility
                         </x-material-icon>
                     </td>
-                </tr>
-            @empty
-            @endforelse
+                </x-resource-table.row>
+                @endforeach
+            </x-resource-table.body>
         </x-resource-relation>
     </section>
 </section>

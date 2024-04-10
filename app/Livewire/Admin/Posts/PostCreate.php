@@ -2,11 +2,9 @@
 
 namespace App\Livewire\Admin\Posts;
 
-use App\Data\CreatePostRequest;
-use App\Enums\Post\AttachmentAllowedMimeTypesEnum;
-use App\Enums\Post\PostTypeEnum;
+use App\Data\PostData;
 use App\Livewire\Concerns\PostCreateActionState;
-use App\Livewire\Forms\CreatePostForm;
+use App\Livewire\Forms\PostForm;
 use App\Livewire\Resource;
 use App\Models\Posts\Post;
 use App\Repositories\Eloquent\Posts\CategoryRepository;
@@ -15,12 +13,11 @@ use App\Repositories\Eloquent\Posts\TagRepository;
 use App\Services\Post\PostService;
 use App\Services\Post\ThumbnailService;
 use Illuminate\Support\Str;
-use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 
 class PostCreate extends Resource
 {
-    public CreatePostForm $createPostForm;
+    public PostForm $postForm;
 
     public PostCreateActionState $postCreateState;
 
@@ -58,9 +55,9 @@ class PostCreate extends Resource
     {
         $this->authorize('write-post');
 
-        $validated = $this->createPostForm->validate();
+        $validated = $this->postForm->validate();
         if ($this->repository->postExists($validated['title'])) {
-            $this->createPostForm->addError('title', __('The title has already been taken.'));
+            $this->postForm->addError('title', __('The title has already been taken.'));
 
             return;
         }
@@ -69,7 +66,7 @@ class PostCreate extends Resource
 
         $this->saveThumbnailFile($post);
 
-        $this->createPostForm->reset();
+        $this->postForm->reset();
 
         $this->redirectRoute('admin.posts.edit', ['post' => $post], navigate: true);
     }
@@ -77,46 +74,19 @@ class PostCreate extends Resource
     #[On('attachments-sync')]
     public function updateAttachmentsRequest(array $ids): void
     {
-        $this->createPostForm->attachments = [...$ids];
+        $this->postForm->attachments = [...$ids];
     }
 
     public function resetForm(): void
     {
-        if (filled($this->createPostForm->all())) {
-            $this->createPostForm->reset();
+        if (filled($this->postForm->all())) {
+            $this->postForm->reset();
         }
-    }
-
-    #[Computed]
-    public function isEvent(): bool
-    {
-        return $this->createPostForm->type === PostTypeEnum::event()->value;
-    }
-
-    #[Computed]
-    public function getPostPublicUri(): string
-    {
-        $host = config('app.url');
-        $slugableTitle = Str::slug($this->createPostForm->title);
-
-        return sprintf('%s/%s', $host, $slugableTitle);
-    }
-
-    #[Computed]
-    public function getPostTypesOptions(): array
-    {
-        return PostTypeEnum::cases();
-    }
-
-    #[Computed]
-    public function getAcceptedMimeTypes(): array
-    {
-        return AttachmentAllowedMimeTypesEnum::toValues();
     }
 
     public function cantBePublished(): bool
     {
-        return $this->isEvent() && $this->repository->isAnyEventPublished();
+        return $this->postForm->isEvent() && $this->repository->isAnyEventPublished();
     }
 
     public function getSaveButtonState(): string
@@ -144,7 +114,7 @@ class PostCreate extends Resource
     {
         if ($this->cantBePublished()) {
             $this->postCreateState->saveButtonContent = 'create';
-        } elseif (!$this->cantBePublished() && filled($this->createPostForm->publishableDateTime)) {
+        } elseif (!$this->cantBePublished() && filled($this->postForm->should_be_published_at)) {
             $this->postCreateState->saveButtonContent = 'delay';
         } else {
             $this->postCreateState->saveButtonContent = 'publish';
@@ -155,7 +125,7 @@ class PostCreate extends Resource
 
     private function saveThumbnailFile(Post &$post): void
     {
-        $thumbnail = $this->createPostForm->thumbnailPath;
+        $thumbnail = $this->postForm->thumbnail_path;
 
         if(blank($thumbnail)) {
             return;
@@ -173,9 +143,9 @@ class PostCreate extends Resource
 
     private function savePost(): Post
     {
-        $formContent = $this->createPostForm->validate();
+        $formContent = $this->postForm->validate();
 
-        $request = CreatePostRequest::from($formContent);
+        $request = PostData::from($formContent);
 
         if ($this->cantBePublished()) {
             return $this->postService->createPost($request);

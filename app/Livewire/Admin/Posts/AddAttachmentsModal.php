@@ -17,6 +17,8 @@ class AddAttachmentsModal extends Resource
     use WithFileUploads;
     use InteractsWithModals;
 
+    public bool $showSaveButton = false;
+
     public AddAttachmentForm $addAttachmentForm;
 
     protected $repository = AttachmentRepository::class;

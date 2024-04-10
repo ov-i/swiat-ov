@@ -4,6 +4,7 @@
     <x-admin-card title="" class="mt-2">
         <div class="post-details">
             <x-resource-detail property='id' :value="$this->post()->getKey()" />
+
             <x-resource-detail 
                 property='user' 
                 :value="$this->getPostUser()" 
@@ -19,6 +20,7 @@
                 :to="route('admin.posts.categories', ['category' => $this->getCategory()])"/>
 
             <x-resource-detail property='title' :value="$this->post()->getTitle()" />
+
             @if(filled($this->getThumbnail()))
             <x-resource-detail property='thumbnail'>
                 <x-slot name="value">
@@ -34,11 +36,15 @@
                 </x-slot>
             </x-resource-detail>
             @endif
+
             <x-resource-detail property='slug' :value="$this->post()->toSlug()" />
+
             @if (!$this->post()->isEvent())
                 <x-resource-detail property='excerpt' :value="$this->post()->getExcerpt()" />
             @endif
+
             <x-resource-detail property='type' :value="$this->post()->getType()" />
+
             <x-resource-detail property='content'>
                 <x-slot name="value">
                     @if ($this->post()->isEvent())
@@ -63,9 +69,13 @@
                     <x-fields.boolean-field condition="{{ $this->post()->isArchived() }}" />
                 </x-slot>
             </x-resource-detail>
+
             <x-resource-detail property='archived_at' :value="$this->post()->getArchivedAt()" x-show="$wire.posts.archived" />
+
             <x-resource-detail property='publishing in' :value="$this->getPublishDelay()" help="Post publishing is delayed for" x-show="$wire.posts.should_be_published_at "/>
+
             <x-resource-detail property='created at' :value="$this->post()->created_at" />
+                
             <x-resource-detail property='deleted at' :value="$this->post()->deleted_at" />
         </div>
     </x-admin-card>
@@ -76,28 +86,30 @@
                 <x-button class="text-sm">Add attachment</x-button>
             </x-slot:actions>
             
-            <x-slot name="tableHead">
-                <th scope="col" class="py-3 text-xs md:text-md text-left">#</th>
-                <th scope="col" class="py-3 text-xs md:text-md text-left">Original name</th>
-                <th scope="col" class="py-3 text-xs md:text-md text-left">Mime type</th>
-                <th scope="col" class="py-3 text-xs md:text-md text-left">Size</th>
-                <th scope="col" class="py-3 text-xs md:text-md text-left">Action</th>
-            </x-slot>
+            <x-resource-table.head>
+                <x-resource-table.header>#</x-resource-table.header>
+                <x-resource-table.header>Original name</x-resource-table.header>
+                <x-resource-table.header>Mime type</x-resource-table.header>
+                <x-resource-table.header>Size</x-resource-table.header>
+                <x-resource-table.header>Action</x-resource-table.header>
+            </x-resource-table.head>
 
-            @forelse ($this->getAttachments() as $attachment)
-                <tr class="text-left text-sm resource-tr" wire:key="{{ $attachment->getKey() }}">
-                    <td class="py-3 text-xs md:text-base">{{ $attachment->getKey() }}</td>
-                    <td class="py-3 text-xs md:text-base">{{ $attachment->getOriginalName() }}</td>
-                    <td class="py-3 text-xs md:text-base">{{ $attachment->getMimeType() }}</td>
-                    <td class="py-3 text-xs md:text-base">{{ $this->fileSize($attachment->getSize()) }}</td>
-                    <td class="py-3 text-xs md:text-base">
-                        <x-iconed-link :link="route('admin.attachments.show', ['attachment' => $attachment])" icon="visibility" icon_size="md" />
-                    </td>
-                </tr>
-            @empty
-            @endforelse
-
-            {{-- <x-pagination-links :resource="$this->getAttachments()" /> --}}
+            <x-resource-table.body>
+                @forelse ($this->getAttachments() as $attachment)
+                    <x-resource-table.row :resource="$attachment" :key="$attachment->getKey()">
+                        <td class="py-3 text-xs md:text-base">{{ $attachment->getKey() }}</td>
+                        <td class="py-3 text-xs md:text-base">{{ $attachment->getOriginalName() }}</td>
+                        <td class="py-3 text-xs md:text-base">{{ $attachment->getMimeType() }}</td>
+                        <td class="py-3 text-xs md:text-base">
+                            {{ $this->fileSize($attachment->getSize()) }}
+                        </td>
+                        <td class="py-3 text-xs md:text-base text-center mx-auto">
+                            <x-admin-card.actions :link="route('admin.attachments.show', ['attachment' => $attachment])" icon="visibility" />
+                        </td>
+                    </x-resource-table.row>
+                @empty
+                @endforelse
+            </x-resource-table.body>
         </x-resource-relation>
     </section>
 </section>

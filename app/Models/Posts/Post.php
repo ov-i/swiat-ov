@@ -9,7 +9,6 @@ use App\Enums\Post\PostTypeEnum;
 use App\Models\PostHistory;
 use Database\Factories\Posts\PostFactory;
 use App\Models\User;
-use Date;
 use DateTime;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -47,6 +46,13 @@ class Post extends Model implements Followable, Sluggable
     public function __toString(): string
     {
         return sprintf('[%s] %s', ucfirst($this->getStatus()), $this->getTitle());
+    }
+
+    public function cast(): array
+    {
+        return [
+            'type' => PostTypeEnum::class,
+        ];
     }
 
     public function toSlug(): string
@@ -94,14 +100,13 @@ class Post extends Model implements Followable, Sluggable
         return $this->archived;
     }
 
-    public function getArchivedAt(): ?Date
+    public function getArchivedAt()
     {
         if (!$this->isArchived()) {
             return null;
         }
 
-        /** @var ?Date $archivedAt */
-        return new Date($this->archived_at);
+        return $this->archived_at;
     }
 
     public function getPublishedAt(): ?DateTime

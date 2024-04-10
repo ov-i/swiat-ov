@@ -118,7 +118,7 @@
                                 manage_search
                             </x-material-icon>
 
-                            <x-input 
+                            <input 
                                 placeholder="{{ __('admin.dashboard.search') }}"
                                 class="w-full pl-10 dark:focus:outline-none" />
                         </article>

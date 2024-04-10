@@ -17,13 +17,9 @@
         </x-slot>
     </x-flex-content>
 
-    <x-admin-card title="">
-        <x-resource-table class="text-left" >
-          <x-slot name="tableHead">
-            {{ $tableHead }}
-          </x-slot>
-
+    <x-admin-card.index title="">
+        <x-resource-table.index class="text-left" >
           {{ $slot }}
-        </x-resource-table>
-    </x-admin-card>
+        </x-resource-table.index>
+    </x-admin-card.index>
 </section>

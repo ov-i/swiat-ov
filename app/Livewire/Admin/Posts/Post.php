@@ -9,6 +9,7 @@ use App\Services\Post\PostService;
 
 class Post extends SearchableResource implements Filterable
 {
+    /** @var PostRepository $repository */
     protected $repository = PostRepository::class;
 
     private PostService $postService;

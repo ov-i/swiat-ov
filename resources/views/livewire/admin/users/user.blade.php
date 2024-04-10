@@ -3,7 +3,7 @@
         {{ __('Back to dashboard') }}
     </x-back-button>
 
-    <x-admin-card title="Users">
+    <x-admin-card.index title="Users">
         <section class="py-4 border-b border-gray-200">
             <h3 class="text-lg font-secondary font-semibold text-gray-600 dark:text-zinc-300">
                 {{ __('Search & Filters') }}
@@ -118,7 +118,7 @@
                 @endforeach
             </x-resource-table>
         </section>
-    </x-admin-card>
+    </x-admin-card.index>
 
     <x-pagination-links :$resource />
 </section>

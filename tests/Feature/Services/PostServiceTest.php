@@ -1,8 +1,8 @@
 <?php
 
-use App\Data\CreatePostRequest;
+use App\Data\PostData;
 use App\Enums\Post\PostStatusEnum;
-use App\Enums\Post\PostTypeEnum;
+use App\Enums\PostTypeEnum;
 use App\Models\User;
 use App\Models\Posts\Category;
 use App\Models\Posts\Post;
@@ -25,10 +25,10 @@ describe('Post system', function () {
         $title = fake()->unique()->realText(30);
         $content = implode(fake()->sentences());
 
-        $request = new CreatePostRequest(
-            categoryId: $category->getKey(),
+        $request = new PostData(
+            category_id: $category->getKey(),
             title: $title,
-            type: $type->value,
+            type: $type,
             content: $content
         );
 

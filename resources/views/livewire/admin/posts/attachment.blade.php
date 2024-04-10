@@ -3,7 +3,7 @@
         {{ __('Back to dashboard') }}
     </x-back-button>
 
-    <x-admin-card :title="__('Attachments')">
+    <x-admin-card.index :title="__('Attachments')">
         <x-slot name="actions">
             <section class="hidden md:block">
                 @if (auth()->user()->can('create-attachment'))
@@ -63,7 +63,7 @@
         <section class="md:hidden">
             @livewire('admin.posts.add-attachments-modal')
         </section>
-    </x-admin-card>
+    </x-admin-card.index>
 
     <x-pagination-links :$resource />
 </section>

@@ -4,7 +4,7 @@
         :resourceClass="$attachment"
     />
 
-    <x-admin-card title="" class="mt-2">
+    <x-admin-card.index title="" class="mt-2">
         <div class="post-details">
             <x-resource-detail
                 property="id"
@@ -12,9 +12,9 @@
             />
             <x-resource-detail
                 property="user"
-                :value="$this->getUser()"
+                :value="$this->getAttachmentUser()"
                 isLink="true"
-                :to="route('admin.users.show', ['user' => $this->getUser()])"
+                :to="route('admin.users.show', ['user' => $this->getAttachmentUser()])"
             />
 
             <x-resource-detail
@@ -56,7 +56,7 @@
                 :value="$this->attachment()->deleted_at"
             />
         </div>
-    </x-admin-card>
+    </x-admin-card.index>
 
     <section class="relations">
         <x-resource-relation title="posts">

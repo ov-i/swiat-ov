@@ -31,7 +31,8 @@ class PostRepository extends BaseRepository
 
     public function editPost(Post &$post, array $requestData): bool
     {
-        if ($this->postExists($requestData['title']) || $post->isClosed()) {
+        $titleModified = $post->getTitle() !== $requestData['title'];
+        if (($titleModified && $this->postExists($requestData['title'])) || $post->isClosed()) {
             return false;
         }
 

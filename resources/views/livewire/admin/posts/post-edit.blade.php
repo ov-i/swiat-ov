@@ -8,97 +8,103 @@
         wire:keydown.document.stop.cmd.enter.throttle.1000ms="edit">
     
         <section>
-            <x-admin-card title="{{ $this->post() }}">
+            <x-admin-card title="{{ $this->post }}">
                 <x-slot name="actions">
                     <div class="buttons sm:flex flex-row items-center mb-3 hidden ">
-                        @livewire('status-update', ['post' => $this->post()], key($this->post()->getKey()))
+                        @livewire('status-update', ['post' => $this->post], key($this->post->getKey()))
                         <x-button 
-                            type="button" 
-                            :disabled="$this->isFormUnTouched()">
-                            {{ $this->isFormUnTouched() ? __('Form untouched') : __('Edit') }}
+                            wire:loading.remove
+                            wire:target="edit">
+                            {{ __('Edit') }}
                         </x-button>
-                        <x-button wire:loading wire:target="edit">
-                            <x-material-icon classes="animate-spin">
+                        <x-button wire:loading.flex wire:target="edit">
+                            <x-material-icon class="animate-spin">
                                 sync
                             </x-material-icon>
                         </x-button>
                     </div>
                 </x-slot>
                 
-                <x-admin-card-form>
+                <x-admin-card-form wire:loading.class="opacity-50" wire:target="edit">
                     <x-slot name="formInputs">
                         <!-- Title -->
                         <div class="input-group my-3 last:mb-0 first:mt-0">
-                            <x-label for="title" :value="__('Title')" class="uppercase" required />
-                            <x-input type="text" 
-                                name="title" 
-                                autocomplete="off" 
-                                id='title' 
-                                inputClasses="block w-full"
-                                required 
-                                autofocus
-                                minlength="3" 
-                                maxlength="120"
-                                spellcheck="true" 
-                                wire:model.blur="updatePostForm.title" />
+                            <x-label class="uppercase" >
+                                <h3>
+                                    {{ __('Title') }}
+                                    <span class="text-red-500 opacity-75" aria-hidden="true">*</span>
+                                </h3>
+                                <x-input
+                                    autocomplete="off" 
+                                    required 
+                                    autofocus
+                                    minlength="3" 
+                                    maxlength="120"
+                                    spellcheck="true" 
+                                    wire:model.blur="postForm.title" />
+                            </x-label>
     
-                            @if (filled($this->updatePostForm->title))
-                                <p class="text-sm text-gray-600">{{ $this->getPostPublicUri() }}</p>
+                            @if (filled($postForm->title) && $errors->missing('postForm.title'))
+                                <p class="text-sm text-gray-600">{{ $postForm->getPostPublicUri() }}</p>
                             @endif
     
-                            <x-input-error for='updatePostForm.title' />
+                            <x-input-error for='postForm.title' />
                         </div>
     
                         <!-- Type -->
                         <div class="input-group my-3 last:mb-0 first:mt-0">
-                            <x-label for="type" class="uppercase" :value="__('Type')" required />
-                            <x-select
-                                name="type"
-                                id="type" 
-                                inputClasses="w-full block" 
-                                required
-                                wire:model.live="updatePostForm.type">
-                                <option readonly selected value="" class="text-gray-100">
-                                    -- {{ __('Select post type') }} --
-                                </option>
+                            <x-label class="uppercase" >
+                                <h3>
+                                    {{ __('Type') }}
+                                    <span class="text-red-500 opacity-75" aria-hidden="true">*</span>
+                                </h3>
+                                <x-select
+                                    required
+                                    wire:model.live="postForm.type">
+                                    <option disabled selected>{{ __('Select post type') }}</option>
+        
+                                    @foreach ($postForm->getPostTypesOptions() as $postType)
+                                    <option 
+                                        :value="$postType->value" 
+                                        :selected="$this->post->getType() === $postType">
+                                        {{ $postType }}
+                                    </option>
+                                    @endforeach
+                                </x-select>
+                            </x-label>
     
-                                @foreach (\App\Enums\Post\PostTypeEnum::cases() as $postType)
-                                <option value="{{ $postType }}"
-                                    {{ $this->post()->getType() === $postType->value ? 'selected' : null }}>
-                                    {{ ucfirst($postType->value) }}
-                                </option>
-                            @endforeach
-                            </x-select>
-    
-                            <x-input-error for='updatePostForm.type' />
+                            <x-input-error for='postForm.type' />
                         </div>
     
                         <!-- Excerpt -->
-                        @if (!$this->isEvent())
+                        @if (!$postForm->isEvent())
                             <div class="input-group my-3 last:mb-0 first:mt-0">
-                                <x-label for="excerpt" class="uppercase" :value="__('Excerpt')" required />
-                                <x-textarea 
-                                    name="excerpt" 
-                                    id="excerpt" 
-                                    required 
-                                    inputClasses="block w-full"
-                                    rows="5"
-                                    wire:model.blur="updatePostForm.excerpt"></x-textarea>
+                                <x-label for="excerpt" class="uppercase">
+                                    <h3>
+                                        {{ __('Excerpt') }}
+                                        <span class="text-red-500 opacity-75" aria-hidden="true">*</span>
+                                    </h3>
+                                    <x-textarea 
+                                        required 
+                                        inputClasses="block w-full"
+                                        rows="5"
+                                        wire:model.live="postForm.excerpt"></x-textarea>
+                                </x-label>
     
-                                <x-input-error for='updatePostForm.excerpt' />
+                                <x-input-error for='postForm.excerpt' />
                             </div>
                         @endif
     
                         <!-- Content -->
                         <div class="input-group my-3 last:mb-0 first:mt-0">
                             <x-label for="content-form" class="uppercase" :value="__('Content')" required />
-                            @if ($this->isEvent())
+                            @if ($postForm->isEvent())
                                 <x-input 
                                     name="content" 
                                     id="content-form" 
                                     inputClasses="block w-full"
                                     required 
-                                    wire:model.blur="updatePostForm.content" />
+                                    wire:model.live="postForm.content" />
                             @else
                                 <x-textarea 
                                     name="content" 
@@ -106,10 +112,10 @@
                                     inputClasses="block w-full" 
                                     rows="10" 
                                     required
-                                    wire:model.blur="updatePostForm.content"></x-textarea>
+                                    wire:model.blur="postForm.content"></x-textarea>
                             @endif
     
-                            <x-input-error for='updatePostForm.content' />
+                            <x-input-error for='postForm.content' />
                         </div>
                     </x-slot>
     
@@ -122,15 +128,15 @@
                                 name="category" 
                                 id="category" 
                                 required 
-                                wire:model="updatePostForm.category_id"
+                                wire:model.live="postForm.category_id"
                                 class="w-full mt-3">
-                                <option readonly selected value="">-- {{ __('Select category') }} -- </option>
+                                <option disabled selected value="">-- {{ __('Select category') }} -- </option>
                                 @forelse ($categories as $category)
                                     <option value="{{ $category->getKey() }}">{{ ucfirst($category->getName()) }}</option>
                                 @endforeach
                             </x-select>
     
-                            <x-input-error for='updatePostForm.categoryId' />
+                            <x-input-error for='postForm.category_id' />
     
                             <button type="button"
                                 class="outline-none bg-none text-cyan-500 hover:text-cyan-600 active:text-cyan-800 dark:text-white mt-3 flex items-center">
@@ -151,7 +157,7 @@
                             <x-select
                                 name="tags" 
                                 id="tags" 
-                                wire:model.throttle.live="updatePostForm.tags"
+                                wire:model.throttle.live="postForm.tags"
                                 inputClasses="w-full mt-3" 
                                 multiple
                             >
@@ -160,17 +166,16 @@
                                 @endforeach
                             </x-select>
     
-                            <x-input-error for='updatePostForm.tags' />
+                            <x-input-error for='postForm.tags' />
                         </aside>
                     </x-slot>
                 </x-admin-card-form>
                 
                 <div class="buttons flex flex-row w-full items-center mt-6 sm:hidden">
                     <x-button 
-                        type="button" 
-                        class="disabled:cursor-not-allowed disabled:bg-transparent disabled:text-gray-400 disabled:hover:border-gray-200 hover:border-initial" 
-                        :disabled="$this->isFormUnTouched()">
-                        {{ $this->isFormUnTouched() ? __('Form untouched') : __('Edit') }}
+                        wire:loading.remove
+                        wire:target="edit">
+                        {{ __('Edit') }}
                     </x-button>
                     <x-button wire:loading wire:target="edit">
                         <x-material-icon classes="animate-spin">
@@ -181,4 +186,18 @@
             </x-admin-card>
         </section>
     </form>
+
+    <section 
+        class="flex items-center justify-between mt-3" 
+        x-effect="if($wire.edited) setTimeout(() => $wire.edited = false, 3000)"
+        x-transition.out.opacity.duration.2000ms
+        x-show="$wire.edited">
+        <div></div>
+        <article class="flex items-center text-green-500 gap-2">   
+            <x-material-icon class="border border-green-500 rounded-full p-1">
+                done
+            </x-material-icon>
+            <p class="text-lg font-semibold">Successfully updated post</p>
+        </article>
+    </section>
 </section>

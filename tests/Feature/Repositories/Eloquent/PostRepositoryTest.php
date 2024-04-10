@@ -1,6 +1,6 @@
 <?php
 
-use App\Data\CreatePostRequest;
+use App\Data\PostData;
 use App\Enums\Post\PostStatusEnum;
 use App\Enums\Post\PostTypeEnum;
 use App\Models\Posts\Category;
@@ -23,7 +23,7 @@ describe('Post Repository', function () {
 
         Category::factory()->create();
 
-        $payload = CreatePostRequest::from($payload);
+        $payload = PostData::from($payload);
 
         $post = $this->postRepository->createPost([
             ...$payload->toArray(),

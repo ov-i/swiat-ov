@@ -2,35 +2,29 @@
 
 namespace App\Livewire\Admin\Posts;
 
-use App\Data\UpdatePostData;
-use App\Enums\Post\AttachmentAllowedMimeTypesEnum;
-use App\Traits\IntersectsArray;
-use App\Enums\Post\PostTypeEnum;
-use App\Livewire\Forms\UpdatePostForm;
-use App\Models\Posts\Category;
+use App\Data\PostData;
+use App\Enums\PostTypeEnum;
+use App\Livewire\Forms\PostForm;
 use App\Models\Posts\Post;
+use App\Traits\IntersectsArray;
 use App\Repositories\Eloquent\Posts\CategoryRepository;
 use App\Repositories\Eloquent\Posts\PostRepository;
 use App\Repositories\Eloquent\Posts\TagRepository;
 use App\Services\Post\PostService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Response;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
-use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Locked;
-use Livewire\Attributes\Url;
 use Livewire\Component;
 
 class PostEdit extends Component
 {
     use IntersectsArray;
 
-    #[Locked, Url]
-    public string $post;
+    public Post $post;
 
-    public UpdatePostForm $updatePostForm;
+    public PostForm $postForm;
+
+    public bool $edited = false;
 
     public bool $attachmentsModal = false;
 
@@ -44,9 +38,19 @@ class PostEdit extends Component
 
     public function mount(): void
     {
-        $this->post = request('post');
+        $this->postForm->fill([
+            'title' => $this->post->getTitle(),
+            'excerpt' => $this->post->getExcerpt(),
+            'content' => $this->post->getContent(),
+            'category_id' => $this->post->category()->getParentKey(),
+            'should_be_published_at' => $this->post->getPublishableDate(),
+        ]);
 
-        $this->updatePostForm->fill($this->getPostWithRelations());
+        $this->postForm->setPost($this->post);
+        $this->postForm->type = PostTypeEnum::from($this->post->getType());
+
+        abort_if(blank($this->post) || $this->post->isClosed(), Response::HTTP_NOT_FOUND);
+
     }
 
     public function boot(
@@ -59,18 +63,6 @@ class PostEdit extends Component
         $this->categoryRepository = $categoryRepository;
         $this->tagRepository = $tagRepository;
         $this->postService = $postService;
-
-        $post = $this->post();
-
-        abort_if(blank($post) || $post->isClosed(), Response::HTTP_NOT_FOUND);
-    }
-
-    #[Computed(cache: true, seconds: 60)]
-    public function post(): ?Post
-    {
-        $post = $this->postRepository->findBy('slug', $this->post);
-
-        return $post;
     }
 
     #[Layout('layouts.admin')]
@@ -84,117 +76,23 @@ class PostEdit extends Component
 
     public function edit(): void
     {
-        $post = $this->post();
+        $post = $this->post;
 
         $this->authorize('can-edit-post', $post);
 
-        if ($this->isFormUnTouched()) {
-            return;
-        }
+        $validated = $this->postForm->validate();
 
-        if (!$this->isTitleChanged()) {
-            $this->updateWithoutTitle($post);
+        if ($this->postRepository->postExists($validated['title'] && $this->isTitleChanged())) {
+            $this->postForm->addError('title', __('The title has already been taken.'));
 
             return;
         }
 
-        $validated = $this->updatePostForm->validate();
-
-        if ($this->postRepository->postExists($validated['title'])) {
-            $this->updatePostForm->addError('title', __('The title has already been taken.'));
-
-            return;
-        }
-
-        $edited = $this->postService->editPost($post, UpdatePostData::from($validated));
-
-        $edited ? $this->redirectRoute('admin.posts.edit', ['post' => $post]) : null;
-    }
-
-    public function publish(): void
-    {
-    }
-
-    public function isEvent(): bool
-    {
-        return PostTypeEnum::event()->value === $this->updatePostForm->type;
-    }
-
-    public function isFormUnTouched(): bool
-    {
-        $formData = $this->updatePostForm->all();
-
-        $withRelations = $this->getPostWithRelations();
-
-        return $this->intersectSame($withRelations, $formData);
-    }
-
-    #[Computed]
-    public function getPostPublicUri(): string
-    {
-        $host = config('app.url');
-
-        if (!$this->isTitleChanged() && blank($this->updatePostForm->title)) {
-            return sprintf('%s/%s', $host, $this->post()->getSlug());
-        }
-
-        return sprintf('%s/%s', $host, Str::slug($this->updatePostForm->title));
-    }
-
-    #[Computed]
-    public function getStatus(): string
-    {
-        return $this->post()->getStatus();
-    }
-
-    #[Computed]
-    public function getCategory(): Category
-    {
-        return $this->post()->category()->first();
-    }
-
-    #[Computed]
-    public function postContainsTag(string $tag): bool
-    {
-        $tags = collect($this->post()->tags()->pluck('name')->toArray());
-        return $tags->contains($tag);
-    }
-
-    #[Computed]
-    public function isPublishable(): bool
-    {
-        return
-            !$this->post()->isEvent() || (
-                $this->post()->isEvent() &&
-                !$this->postRepository->isAnyEventPublished()
-            );
-    }
-
-    #[Computed]
-    public function getAcceptedMimeTypes(): array
-    {
-        return AttachmentAllowedMimeTypesEnum::toValues();
+        $this->edited = $this->postService->editPost($post, PostData::from($validated));
     }
 
     private function isTitleChanged(): bool
     {
-        return $this->updatePostForm->title !== $this->post()->getTitle();
-    }
-
-    private function updateWithoutTitle(Post &$post): bool
-    {
-        $exceptTitle = $this->updatePostForm->except(['title']);
-        $request = $this->updatePostForm->validate(attributes: $exceptTitle);
-
-        return $this->postService->editPost($post, UpdatePostData::from($request));
-    }
-
-    private function getPostWithRelations(): Collection
-    {
-        $post = $this->post();
-        return collect($post->toArray())
-            ->merge([
-                'tags' => $post->tags()->pluck('name')->toArray(),
-            ])->collect();
+        return $this->postForm->title !== $this->post->getTitle();
     }
 }

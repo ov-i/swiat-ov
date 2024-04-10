@@ -1,7 +1,3 @@
-@php
-    $loggedInUser = auth()->user();
-@endphp
-
 <section>
     <x-back-button :to="route('admin.dashboard')">
         {{ __('Back to dashboard') }}
@@ -9,14 +5,10 @@
 
     <x-admin-card title="Posts">
         <x-slot name="actions">
-            @if (auth()->user()->can('write-post'))
-                <x-iconed-link 
-                    :link="route('admin.posts.create')" 
-                    icon="add" 
-                    icon_size="text-[2rem]"
-                    class="button-info">
+            @if ($this->getUser()->can('write-post'))
+                <x-admin-card.actions :link="route('admin.posts.create')" class="button-info">
                     {{ __('new') }}
-                </x-iconed-link>
+                </x-admin-card.actions>
             @endif
         </x-slot>
         
@@ -30,97 +22,111 @@
             <x-search-model :state="$state"/>
         </section>
 
-        <section class="post-table overflow-x-hidden 2xl:overflow-x-visible">
-            <x-resource-table>
-                <x-slot name="tableHead">
-                    <th scope="col" class="px-6 py-3">
+        <section class="post-table overflow-x-hidden 2xl:overflow-x-visible" wire:loading.class="opacity-50">
+            <x-resource-table.index>
+                <x-resource-table.head>
+                    <x-resource-table.header>
                         #
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        {{ __('Title') }}
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        {{ __('Author') }}
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        {{ __('Category') }}
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        {{ __('Status') }}
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        {{ __('Type') }}
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        {{ __('Action') }}
-                    </th>
-                </x-slot>
+                    </x-resource-table.header>
 
-                @foreach ($resource as $post)
-                    <tr class="resource-tr" wire:key="{{ $post->getKey() }}">
-                        <td class="w-4 p-4">{{ $post->getKey() }}</td>
-                        <td scope="row" class="text-gray-600 whitespace-nowrap dark:text-white">
-                            <div class="ps-3">
-                                <div class="text-base font-semibold">
-                                    <a href="{{ route('admin.posts.show', ['post' => $post]) }}"
-                                        class="hover:text-gray-700 dark:hover:text-zinc-300 active:text-gray-800 transition duration-100">
-                                        {{ $post->getTitle() }}
-                                    </a>
+                    <x-resource-table.header>
+                        {{ __('Title') }}
+                    </x-resource-table.header>
+
+                    <x-resource-table.header>
+                        {{ __('Author') }}
+                    </x-resource-table.header>
+
+                    <x-resource-table.header>
+                        {{ __('Category') }}
+                    </x-resource-table.header>
+                    
+                    <x-resource-table.header>
+                        {{ __('Status') }}
+                    </x-resource-table.header>
+
+                    <x-resource-table.header>
+                        {{ __('Type') }}
+                    </x-resource-table.header>
+
+                    <x-resource-table.header>
+                        {{ __('Action') }}
+                    </x-resource-table.header>
+                </x-resource-table.head>
+
+                <x-resource-table.body>
+                    @foreach ($resource as $post)
+                        <x-resource-table.row :resource="$post" :key="$post->getKey()">
+                            <td class="w-4 mx-auto p-4">{{ $post->getKey() }}</td>
+
+                            <td scope="row" class="text-gray-600 whitespace-nowrap dark:text-white">
+                                <div class="ps-3">
+                                    <div class="text-base font-semibold">
+                                        <a href="{{ route('admin.posts.show', ['post' => $post]) }}"
+                                            class="hover:text-gray-700 dark:hover:text-zinc-300 active:text-gray-800 transition duration-100">
+                                            {{ $post->getTitle() }}
+                                        </a>
+                                    </div>
+                                    <div class="font-normal text-gray-500">{{ $post->getSlug() }}</div>
                                 </div>
-                                <div class="font-normal text-gray-500">{{ $post->getSlug() }}</div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            {{ $post->user()->first()->getName() }}
-                        </td>
-                        <td class="px-6 py-4">
-                            {{ $post->category()->first()->getName() }}
-                        </td>
-                        <td class="px-6 py-4">
-                            {{ $post->getStatus() }}
-                        </td>
-                        <td class="px-6 py-4">
-                            {{ $post->getType() }}
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center text-center">
-                                @if ($loggedInUser->can('view-post'))
-                                    <section>
-                                        <x-iconed-link 
-                                            icon="visibility" 
-                                            :link="route('admin.posts.show', ['post' => $post])" 
-                                            icon_size="md"
-                                            class="button mr-2" />
-                                    </section>
-                                @endif
-                                @if ($loggedInUser->can('can-edit-post', [$post]))
-                                    <section>
-                                        <x-iconed-link 
-                                            icon="edit" 
-                                            :link="route('admin.posts.edit', ['post' => $post])" 
-                                            icon_size="md"
-                                            class="button mr-2" />
-                                    </section>
-                                @endif
-                                @if ($loggedInUser->can('delete-post', [$post]))
-                                    <section class="mr-2">
-                                        <x-button
-                                        type="button"
-                                        component="button"
-                                        class="flex items-center"
-                                        wire:click="delete({{ $post->getKey() }})"
-                                        wire:confirm="Soft delete this post?">
-                                            <x-material-icon class="mr-0 text-md">
-                                                delete
-                                            </x-material-icon>
-                                        </x-button>
-                                    </section>                             
-                                @endif
-                            </div>
-                        </td>
-                    </tr>
-                @endforeach
-            </x-resource-table>
+                            </td>
+
+                            <td class="px-6 py-4">
+                                {{ $post->user()->first()->getName() }}
+                            </td>
+
+                            <td class="px-6 py-4">
+                                {{ $post->category()->first()->getName() }}
+                            </td>
+
+                            <td class="px-6 py-4">
+                                {{ $post->getStatus() }}
+                            </td>
+
+                            <td class="px-6 py-4">
+                                {{ $post->getType() }}
+                            </td>
+
+                            <td class="px-6 py-4">
+                                <div class="flex items-center text-center mx-auto">
+                                    @if ($this->getUser()->can('view-post'))
+                                        <section>
+                                            <x-admin-card.actions 
+                                                class="button"
+                                                icon="visibility"
+                                                :link="route('admin.posts.show', ['post' => $post])" />
+                                        </section>
+                                    @endif
+
+                                    @if ($this->getUser()->can('can-edit-post', [$post]))
+                                        <section>
+                                            <x-admin-card.actions
+                                                :link="route('admin.posts.edit', ['post' => $post])"
+                                                icon="edit"
+                                                class="button" />
+                                        </section>
+                                    @endif
+
+                                    @if ($this->getUser()->can('delete-post', [$post]))
+                                        <section class="mr-2">
+                                            <x-button
+                                            type="button"
+                                            component="button"
+                                            class="flex items-center"
+                                            wire:click="delete({{ $post->getKey() }})"
+                                            wire:confirm="Soft delete this post?">
+                                                <x-material-icon class="mr-0 text-md">
+                                                    delete
+                                                </x-material-icon>
+                                            </x-button>
+                                        </section>                             
+                                    @endif
+                                </div>
+                            </td>
+                        </x-resource-table.row>
+                    @endforeach
+                </x-resource-table.body>
+            </x-resource-table.index>
         </section>
 
         @if (blank($resource))
