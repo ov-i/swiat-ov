@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Contracts\Followable;
-use App\Enums\Post\PostStatusEnum;
+use App\Enums\PostStatus;
 use App\Models\Posts\Attachment;
 use App\Models\Posts\Category;
 use App\Models\Posts\Post;
@@ -73,7 +73,7 @@ class AuthServiceProvider extends ServiceProvider
             $isPost = true === $followable instanceof Post;
 
             if ($isPost && (
-                $followable->getStatus() !== PostStatusEnum::published()->value &&
+                $followable->getStatus() !== PostStatus::Published &&
                 !Gate::allows('viewAdmin', [$user])
             )) {
                 return false;

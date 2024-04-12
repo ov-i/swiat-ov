@@ -8,7 +8,7 @@
         wire:keydown.document.stop.cmd.enter.throttle.1000ms="edit">
     
         <section>
-            <x-admin-card title="{{ $this->post }}">
+            <x-admin-card title="{{ $this->post }}" class="p-5">
                 <x-slot name="actions">
                     <div class="buttons sm:flex flex-row items-center mb-3 hidden ">
                         @livewire('status-update', ['post' => $this->post], key($this->post->getKey()))

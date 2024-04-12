@@ -1,7 +1,7 @@
 <?php
 
-use App\Enums\Post\PostStatusEnum;
-use App\Enums\Post\PostTypeEnum;
+use App\Enums\PostStatus;
+use App\Enums\PostType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,11 +17,12 @@ return new class () extends Migration {
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('category_id')->constrained('categories');
             $table->string('title', 120)->unique();
-            $table->enum('type', PostTypeEnum::toValues());
+            $table->enum('type', array_map(fn($type) => $type->value, PostType::cases()))
+                ->default(PostType::Post);
+            $table->enum('status', array_map(fn($status) => $status->value, PostStatus::cases()))
+                ->default(PostStatus::Unpublished);
             $table->string('thumbnail_path')->nullable();
             $table->longText('content');
-            $table->enum('status', PostStatusEnum::toValues())
-                ->default(PostStatusEnum::unpublished());
             $table->boolean('archived')->default(false);
             $table->date('archived_at')->nullable();
             $table->dateTime('published_at')->nullable();

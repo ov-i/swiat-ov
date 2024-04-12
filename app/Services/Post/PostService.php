@@ -6,7 +6,7 @@ namespace App\Services\Post;
 
 use App\Data\PostData;
 use App\Enums\Post\PostHistoryActionEnum;
-use App\Enums\Post\PostStatusEnum;
+use App\Enums\PostStatus;
 use App\Events\PostPublished;
 use App\Exceptions\PostAlreadyExistsException;
 use App\Models\Posts\Post;
@@ -92,7 +92,7 @@ class PostService
             return;
         }
 
-        $this->postRepository->setStatus($post, PostStatusEnum::closed());
+        $this->postRepository->setStatus($post, PostStatus::Closed);
         $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::closed());
     }
 

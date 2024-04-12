@@ -2,14 +2,13 @@
 
 namespace App\Livewire;
 
-use App\Enums\Post\PostStatusEnum;
+use App\Enums\PostStatus;
 use App\Models\Posts\Post;
 use App\Repositories\Eloquent\Posts\PostRepository;
 use App\Traits\InteractsWithModals;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
-use Spatie\LaravelData\Attributes\Validation\In;
 
 class StatusUpdate extends Component
 {
@@ -17,12 +16,12 @@ class StatusUpdate extends Component
 
     public Post $post;
 
-    public string $newStatus;
+    public PostStatus $newStatus;
 
     /**
      * Defines an array for available explicits status that can be changed.
      *
-     * @return non-empty-list<array-key, PostStatusEnum>
+     * @return non-empty-list<array-key, PostStatus>
      */
     private array $availableExcplicitStatus = [];
 
@@ -38,13 +37,13 @@ class StatusUpdate extends Component
 
         $postRepository = new PostRepository();
 
-        if ($this->newStatus === PostStatusEnum::closed()->value && !Gate::allows('can-close-post')) {
+        if ($this->newStatus === PostStatus::Closed && !Gate::allows('can-close-post')) {
             $this->addError('newStatus', __("You're not allowed to close the posts"));
 
             return;
         }
 
-        $postRepository->setStatus($this->post, PostStatusEnum::from($this->newStatus));
+        $postRepository->setStatus($this->post, $this->newStatus);
 
         $this->closeModal();
 
@@ -52,22 +51,22 @@ class StatusUpdate extends Component
     }
 
     /**
-     * @return non-empty-list<array-key, PostStatusEnum>
+     * @return non-empty-list<array-key, PostStatus>
      */
     #[Computed(persist: true)]
     public function getAvailableExcplicitStatus(): array
     {
         $availableStatus = [
-            PostStatusEnum::published(),
-            PostStatusEnum::archived(),
-            PostStatusEnum::draft()
+            PostStatus::Published,
+            PostStatus::Archived,
+            PostStatus::Draft
         ];
 
         if (Gate::allows('can-close-post')) {
-            $availableStatus[] = PostStatusEnum::closed();
+            $availableStatus[] = PostStatus::Closed;
         }
 
-        foreach(PostStatusEnum::cases() as $status) {
+        foreach(PostStatus::cases() as $status) {
             if (!in_array($status->value, $availableStatus, true)) {
                 continue;
             }
@@ -76,23 +75,6 @@ class StatusUpdate extends Component
         }
 
         return $availableStatus;
-    }
-
-    /**
-     * @return non-empty-list<string, array<array-key, mixed>>
-     */
-    public function rules(): array
-    {
-        return [
-            'newStatus' => [
-                new In(
-                    PostStatusEnum::published()->value,
-                    PostStatusEnum::archived()->value,
-                    PostStatusEnum::closed()->value,
-                    PostStatusEnum::draft()->value
-                )
-            ]
-        ];
     }
 
     public function render()

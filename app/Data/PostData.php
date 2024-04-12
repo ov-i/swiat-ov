@@ -2,7 +2,7 @@
 
 namespace App\Data;
 
-use App\Enums\PostTypeEnum;
+use App\Enums\PostType;
 use Spatie\LaravelData\Attributes\MapName;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Mappers\SnakeCaseMapper;
@@ -17,7 +17,7 @@ class PostData extends Data
     public function __construct(
         public readonly int $category_id,
         public readonly string $title,
-        public readonly PostTypeEnum $type,
+        public readonly PostType $type,
         public readonly string $content,
         public readonly ?array $tags = null,
         public readonly ?array $attachments = null,

@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\Post\PostStatusEnum;
+use App\Enums\PostStatus;
 use App\Livewire\Admin\Posts\StatusUpdate;
 use App\Models\Posts\Post;
 
@@ -17,7 +17,7 @@ describe('Status Update', function () {
     it('should be able to update post status', function (User $user, Post $post) {
         actingAs($user);
 
-        $status = PostStatusEnum::archived()->value;
+        $status = PostStatus::Archived;
 
         $component = Livewire::test(StatusUpdate::class)
             ->set('post', $post)

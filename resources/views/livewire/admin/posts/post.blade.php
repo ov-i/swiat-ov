@@ -84,7 +84,7 @@
                             </td>
 
                             <td class="px-6 py-4">
-                                {{ $post->getType() }}
+                                {{ $post->getType()->value }}
                             </td>
 
                             <td class="px-6 py-4">

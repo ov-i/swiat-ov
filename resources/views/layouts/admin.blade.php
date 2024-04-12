@@ -24,11 +24,13 @@
     <!-- Favicons -->
     <link rel="shortcut icon" href="{{ asset('images/favicon.png') }}" type="image/png">
 
-    <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
+    
+    <script defer src="https://unpkg.com/@alpinejs/ui@3.13.3-beta.4/dist/cdn.min.js"></script>
+    
     <!-- Styles -->
     @livewireStyles
+
 </head>
 
 <body class="font-primary antialiased bg-gray-100 dark:bg-gray-900 h-screen">
@@ -99,7 +101,7 @@
         </div>
 
         <!-- Page Content -->
-        <main class="w-full lg:w-10/12 2xl:w-9/12 mx-auto p-4 lg:p-0 lg:py-4">
+        <main class="w-full lg:w-11/12 2xl:w-9/12 v-large:w-7/12 mx-auto p-4 lg:p-0 lg:py-4">
             <nav class="top-navbar" aria-label="top-navbar fixed top-0">
                 <section class="top-navbar__search flex flex-row justify-between items-center">
                     <article class="flex flex-row items-center">
@@ -144,10 +146,8 @@
         </main>
     </div>
 
-    @stack('modals')
-
     @livewireScripts
 
+    @stack('scripts')
 </body>
-
 </html>

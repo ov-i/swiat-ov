@@ -3,7 +3,6 @@
 namespace App\Livewire\Admin\Posts;
 
 use App\Data\PostData;
-use App\Enums\PostTypeEnum;
 use App\Livewire\Forms\PostForm;
 use App\Models\Posts\Post;
 use App\Traits\IntersectsArray;
@@ -47,7 +46,7 @@ class PostEdit extends Component
         ]);
 
         $this->postForm->setPost($this->post);
-        $this->postForm->type = PostTypeEnum::from($this->post->getType());
+        $this->postForm->type = $this->post->getType();
 
         abort_if(blank($this->post) || $this->post->isClosed(), Response::HTTP_NOT_FOUND);
 

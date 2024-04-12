@@ -1,7 +1,7 @@
 @props(['withId' => null])
 
 <section class="overflow-x-scroll lg:overflow-x-visible">
-  <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-white">
+  <table {{ $attributes->merge(['class' => 'min-w-full table-fixed divide-y divide-gray-300 text-gray-800']) }}>
     {{ $slot }}
   </table>
 </section>

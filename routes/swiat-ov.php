@@ -7,7 +7,6 @@ use App\Livewire\Admin\Posts\AttachmentShow;
 use App\Livewire\Admin\Posts\Category;
 use App\Livewire\Admin\Posts\CategoryShow;
 use App\Livewire\Admin\Posts\Comment;
-use App\Livewire\Admin\Posts\Post;
 use App\Livewire\Admin\Posts\PostCreate;
 use App\Livewire\Admin\Posts\PostEdit;
 use App\Livewire\Admin\Posts\PostShow;
@@ -18,6 +17,7 @@ use App\Livewire\Admin\Users\User;
 use App\Livewire\Admin\Users\UserEdit;
 use App\Livewire\Admin\Users\UserShow;
 use App\Livewire\Admin\Posts\CategoryCreate;
+use App\Livewire\Admin\Posts\Index\Page;
 
 $middlewares = [
     config('jetstream.auth_session'),
@@ -32,7 +32,7 @@ Route::prefix('admin')->middleware($middlewares)->group(function () {
     });
 
     Route::prefix('resource/posts')->group(function () {
-        Route::get('/', Post::class)->name('admin.posts');
+        Route::get('/', Page::class)->name('admin.posts');
         Route::get('/create', PostCreate::class)->name('admin.posts.create');
         Route::get('/edit/{post:slug}', PostEdit::class)->name('admin.posts.edit');
         Route::get('/show/{post:slug}', PostShow::class)->name('admin.posts.show');

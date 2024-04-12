@@ -2,8 +2,8 @@
 
 namespace Database\Factories\Posts;
 
-use App\Enums\Post\PostStatusEnum;
-use App\Enums\Post\PostTypeEnum;
+use App\Enums\PostStatus;
+use App\Enums\PostType;
 use App\Models\Posts\Category;
 use App\Models\Posts\Post;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -29,9 +29,9 @@ class PostFactory extends Factory
      */
     public function definition(): array
     {
-        $status = fake()->randomElement(PostStatusEnum::toValues());
-        $archived = $status === PostStatusEnum::archived()->value;
-        $published_at = $status === PostStatusEnum::published()->value ?
+        $status = fake()->randomElement(PostStatus::cases());
+        $archived = $status === PostStatus::Archived;
+        $published_at = $status === PostStatus::Published ?
             now()->toDateTimeString() :
             null;
 
@@ -40,8 +40,8 @@ class PostFactory extends Factory
             'category_id' => Category::factory(),
             'title' => fake()->unique()->realText(30),
             'slug' => fake()->unique()->slug(),
-            'type' => fake()->randomElement(PostTypeEnum::toValues()),
-            'thumbnail_path' => fake()->imageUrl(1024, 1024, fake()->randomElement(PostTypeEnum::toValues())),
+            'type' => fake()->randomElement(PostType::cases()),
+            'thumbnail_path' => fake()->imageUrl(1024, 1024),
             'content' => fake()->realText(1000),
             'status' => $status,
             'archived' => $archived,
@@ -53,18 +53,18 @@ class PostFactory extends Factory
     public function unpublished(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => PostStatusEnum::unpublished(),
+            'status' => PostStatus::Unpublished,
             'archived_at' => null,
             'archived' => false
         ]);
     }
 
-    public function published(?PostTypeEnum $type = null): static
+    public function published(?PostType $type = null): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => PostStatusEnum::published(),
+            'status' => PostStatus::Published,
             'published_at' => now(),
-            'type' => $type ?? PostTypeEnum::post()
+            'type' => $type ?? PostType::Post
         ]);
     }
 }

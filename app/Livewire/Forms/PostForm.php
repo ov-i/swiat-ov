@@ -4,7 +4,7 @@ namespace App\Livewire\Forms;
 
 use App\Enums\Post\AttachmentAllowedMimeTypesEnum;
 use App\Enums\Post\ThumbnailAllowedMimeTypesEnum;
-use App\Enums\PostTypeEnum;
+use App\Enums\PostType;
 use App\Models\Posts\Post;
 use App\Rules\AllowOnlySpecificSpecialChars;
 use App\Rules\DateTimeGreaterThanNow;
@@ -22,7 +22,7 @@ class PostForm extends Form
     #[Validate]
     public string $title = '';
 
-    public PostTypeEnum $type = PostTypeEnum::POST;
+    public PostType $type = PostType::Post;
 
     public string $excerpt = '';
 
@@ -48,9 +48,11 @@ class PostForm extends Form
      */
     public function rules(): array
     {
-        $titleUnique = isset($this->post) ?
-            Rule::unique('posts', 'title')->ignore($this->post->getKey()) :
-            null;
+        $titleUnique = Rule::unique('posts', 'title');
+
+        if (isset($post)) {
+            $titleUnique->ignore($this->post->getKey());
+        }
 
         return [
             'title' => [
@@ -99,7 +101,7 @@ class PostForm extends Form
                 'min:10',
             ],
             'excerpt' => [
-                Rule::requiredIf(fn () => PostTypeEnum::EVENT !== $this->type),
+                Rule::requiredIf(fn () => PostType::Event !== $this->type),
                 'min:50',
                 'max:255',
                 'nullable',
@@ -115,7 +117,7 @@ class PostForm extends Form
     #[Computed]
     public function isEvent(): bool
     {
-        return $this->type === PostTypeEnum::EVENT;
+        return $this->type === PostType::Event;
     }
 
     #[Computed]
@@ -130,7 +132,7 @@ class PostForm extends Form
     #[Computed]
     public function getPostTypesOptions(): array
     {
-        return PostTypeEnum::cases();
+        return PostType::cases();
     }
 
     #[Computed]

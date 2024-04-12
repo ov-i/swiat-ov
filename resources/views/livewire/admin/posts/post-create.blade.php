@@ -13,7 +13,7 @@
         <section>
             <x-admin-card :title="__('Create Post')">
                 <x-slot name="actions">
-                    <div class="buttons sm:flex flex-row items-center mb-3 hidden ">
+                    <div class="buttons sm:flex flex-row items-center mb-3 hidden">
                         <x-button 
                             type="button"
                             component="button-zinc-outlined mr-3" 
