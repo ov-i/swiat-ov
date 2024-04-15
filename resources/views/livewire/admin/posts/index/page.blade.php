@@ -1,4 +1,4 @@
-<section>
+<section id="page-section">
     <x-back-button :to="route('admin.dashboard')">
         {{ __('Back to dashboard') }}
     </x-back-button>

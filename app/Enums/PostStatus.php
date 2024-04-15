@@ -5,7 +5,7 @@ namespace App\Enums;
 enum PostStatus: string
 {
     case Published = 'published';
-    
+
     case Archived = 'archived';
 
     case Unpublished = 'unpublished';
@@ -37,20 +37,20 @@ enum PostStatus: string
             PostStatus::InTrash => 'In Trash',
             default => $this->value,
         };
-        
+
         return str($label)->ucfirst();
     }
 
     public function color(): string
     {
         return match ($this) {
-            PostStatus::Published => 'green',
-            PostStatus::Archived => 'gray',
-            PostStatus::Unpublished => 'orange',
-            PostStatus::Delayed => 'yellow',
-            PostStatus::InTrash => 'red',
-            PostStatus::Closed => 'blue',
-            PostStatus::Draft => 'indigo'
+            PostStatus::Published => 'green-600',
+            PostStatus::Archived => 'zinc-500',
+            PostStatus::Unpublished => 'stone-400',
+            PostStatus::Delayed => 'amber-400',
+            PostStatus::InTrash => 'red-400',
+            PostStatus::Closed => 'blue-400',
+            PostStatus::Draft => 'indigo-500'
         };
     }
 }

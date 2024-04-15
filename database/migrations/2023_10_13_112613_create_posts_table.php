@@ -17,9 +17,9 @@ return new class () extends Migration {
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('category_id')->constrained('categories');
             $table->string('title', 120)->unique();
-            $table->enum('type', array_map(fn($type) => $type->value, PostType::cases()))
+            $table->enum('type', array_map(fn ($type) => $type->value, PostType::cases()))
                 ->default(PostType::Post);
-            $table->enum('status', array_map(fn($status) => $status->value, PostStatus::cases()))
+            $table->enum('status', array_map(fn ($status) => $status->value, PostStatus::cases()))
                 ->default(PostStatus::Unpublished);
             $table->string('thumbnail_path')->nullable();
             $table->longText('content');

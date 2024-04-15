@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Eloquent\Posts;
 
+use App\Data\PostData;
 use App\Enums\PostStatus;
 use App\Enums\PostType;
 use App\Models\Posts\Post;
@@ -16,16 +17,17 @@ class PostRepository extends BaseRepository
     /**
      * @param non-empty-list<array-key, scalar> $postData
      */
-    public function createPost(array $postData): Post|false
+    public function createPost(PostData $postForm): Post|false
     {
-        if($this->postExists((string) $postData['title'])) {
+        if($this->postExists($postForm->title)) {
             return false;
         }
 
         return $this->create([
-            ...$postData,
-            'slug' => Str::slug($postData['title']),
-            'should_be_published_at' => $postData['publishable_date_time'] ?? null,
+            ...$postForm->toArray(),
+            'slug' => str($postForm->title)->slug(),
+            'should_be_published_at' => $postForm->should_be_published_at,
+            'user_id' => auth()->id(),
         ]);
     }
 

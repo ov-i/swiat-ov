@@ -4,7 +4,6 @@ namespace Database\Factories\Posts;
 
 use App\Enums\PostStatus;
 use App\Enums\PostType;
-use App\Models\Posts\Category;
 use App\Models\Posts\Post;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -37,8 +36,8 @@ class PostFactory extends Factory
 
         return [
             'user_id' => 1,
-            'category_id' => Category::factory(),
-            'title' => fake()->unique()->realText(30),
+            'category_id' => 1,
+            'title' => fake()->unique()->realText(40),
             'slug' => fake()->unique()->slug(),
             'type' => fake()->randomElement(PostType::cases()),
             'thumbnail_path' => fake()->imageUrl(1024, 1024),

@@ -10,7 +10,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 
 class Table extends Component
-{   
+{
     use WithPagination;
 
     private PostService $postService;
@@ -26,7 +26,7 @@ class Table extends Component
     public function render(): View
     {
         return view('livewire.admin.posts.index.table', [
-            'posts' => Post::paginate(ItemsPerPageEnum::DEFAULT)
+            'posts' => Post::paginate(ItemsPerPageEnum::DEFAULT),
         ]);
     }
 
@@ -38,7 +38,7 @@ class Table extends Component
     public function delete(Post $post): void
     {
         $this->authorizeResource($post);
-        
+
         $this->postService->deletePost($post);
     }
 }

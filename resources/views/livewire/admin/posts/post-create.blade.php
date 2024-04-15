@@ -162,7 +162,7 @@
     
                     <x-slot name="underInputs">
                         <!-- Attachments -->
-                        @if (!$postForm->isEvent() && $this->getUser()->can('post-sync-attachments'))
+                        @if (!$postForm->isEvent() && auth()->user()->can('post-sync-attachments'))
                             <section class="attachments">
                                 <div class="w-full pt-3 pb-5 mt-3 border-b border-gray-200 dark:border-gray-700 xl:border-none">
                                     <x-button type="button" component="button-zinc-outlined" wire:click="attachmentsModal = true">

@@ -25,7 +25,7 @@ class CategoryCreate extends Resource
                 new DoesntStartWithANumber(),
                 'required',
                 'min:2',
-                'max:10',
+                'max:30',
             ]
         ];
     }

@@ -37,8 +37,7 @@ class PublishPost
         $this->postRepository->setStatus($post, PostStatus::Delayed);
         $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::delayed());
 
-        $delayDiff = Carbon::parse($post->getPublishableDate(), config('app.timezone'))->diffInSeconds();
-
+        $delayDiff = abs(Carbon::parse($post->getPublishableDate(), config('app.timezone'))->diffInSeconds());
         \App\Jobs\PublishPost::dispatch($post)->delay($delayDiff);
     }
 }

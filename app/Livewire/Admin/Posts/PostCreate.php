@@ -5,34 +5,34 @@ namespace App\Livewire\Admin\Posts;
 use App\Data\PostData;
 use App\Livewire\Concerns\PostCreateActionState;
 use App\Livewire\Forms\PostForm;
-use App\Livewire\Resource;
+use App\Models\Posts\Category;
 use App\Models\Posts\Post;
-use App\Repositories\Eloquent\Posts\CategoryRepository;
+use App\Models\Posts\Tag;
 use App\Repositories\Eloquent\Posts\PostRepository;
-use App\Repositories\Eloquent\Posts\TagRepository;
 use App\Services\Post\PostService;
 use App\Services\Post\ThumbnailService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
+use Livewire\Component;
 
-class PostCreate extends Resource
+class PostCreate extends Component
 {
     public PostForm $postForm;
 
     public PostCreateActionState $postCreateState;
 
+    public bool $modalOpen = false;
+
     public bool $attachmentsModal = false;
 
     /** @var PostRepository $repository */
-    protected $repository = PostRepository::class;
+    private PostRepository $repository;
 
     private ThumbnailService $thumbnailService;
 
     private PostService $postService;
-
-    private CategoryRepository $categoryRepository;
-
-    private TagRepository $tagRepository;
 
     public function mount(): void
     {
@@ -40,27 +40,37 @@ class PostCreate extends Resource
     }
 
     public function boot(
+        PostRepository $postRepository,
         ThumbnailService $thumbnailService,
         PostService $postService,
-        CategoryRepository $categoryRepository,
-        TagRepository $tagRepository,
     ) {
+        $this->repository = $postRepository;
         $this->thumbnailService = $thumbnailService;
         $this->postService = $postService;
-        $this->categoryRepository = $categoryRepository;
-        $this->tagRepository = $tagRepository;
+    }
+
+    #[Layout('layouts.admin')]
+    public function render(): View
+    {
+        return view('livewire.admin.posts.post-create', [
+            'categories' => Category::all(),
+            'tags' => Tag::all(),
+        ]);
+    }
+
+    public function openModal(): void
+    {
+        $this->modalOpen = true;
+    }
+
+    public function closeModal(): void
+    {
+        $this->modalOpen = false;
     }
 
     public function save(): void
     {
         $this->authorize('write-post');
-
-        $validated = $this->postForm->validate();
-        if ($this->repository->postExists($validated['title'])) {
-            $this->postForm->addError('title', __('The title has already been taken.'));
-
-            return;
-        }
 
         $post = $this->savePost();
 
@@ -92,22 +102,6 @@ class PostCreate extends Resource
     public function getSaveButtonState(): string
     {
         return Str::ucfirst($this->bindSaveButtonState());
-    }
-
-    protected function getView(): string
-    {
-        return 'posts.post-create';
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getViewAttributes(): array
-    {
-        return [
-            'categories' => $this->categoryRepository->all(paginate: false),
-            'tags' => $this->tagRepository->all(paginate: false)
-        ];
     }
 
     private function bindSaveButtonState(): string

@@ -1,3 +1,4 @@
+const colors = require('tailwindcss/colors')
 import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
 import typography from '@tailwindcss/typography';
@@ -22,6 +23,7 @@ export default {
             },
 
             colors: {
+                ...colors,
                 asideMenu: '#1e293b',
                 darkAsideMenu: '#1c2637',
                 dark: '#323232',
