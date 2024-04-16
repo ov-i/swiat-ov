@@ -55,7 +55,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('write-post', [PostPolicy::class, 'create']);
         Gate::define('delete-post', [PostPolicy::class, 'delete']);
         Gate::define('can-edit-post', [PostPolicy::class, 'update']);
-        Gate::define('can-close-post', fn (User &$user) => Gate::allows('viewAdmin'));
+        Gate::define('can-close-post', fn () => Gate::allows('viewAdmin'));
         Gate::define('post-sync-attachments', [PostPolicy::class, 'attachAttachments']);
 
         Gate::define('view-category', [CategoryPolicy::class, 'view']);
@@ -66,20 +66,17 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('write-tag', [TagPolicy::class, 'create']);
 
         Gate::define('can-follow', function (User $user, Followable $followable) {
+            $canFollow = false;
             if (!Auth::check() || $user->isBlocked()) {
                 return false;
             }
 
-            $isPost = true === $followable instanceof Post;
-
-            if ($isPost && (
-                $followable->getStatus() !== PostStatus::Published &&
-                !Gate::allows('viewAdmin', [$user])
-            )) {
-                return false;
+            $isPost = false;
+            if ($followable instanceof Post) {
+                $isPost = $followable->getStatus() === PostStatus::Published;
             }
 
-            return true;
+            return $canFollow === $isPost && Gate::allows('viewAdmin', $user);
         });
     }
 }

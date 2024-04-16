@@ -71,6 +71,12 @@ export const buttons = plugin(function ({ addComponents, theme }) {
       '&:active': {
         backgroundColor: theme('backgroundColor.red.700'),
         borderColor: theme('borderColor.red.700'),
+      },
+      '&:disabled': {
+        backgroundColor: 'transparent',
+        borderColor: theme('borderColor.red.600'),
+        color: theme('textColor.zinc.400'),
+        cursor: theme('cursor.not-allowed'),
       }
     },
 

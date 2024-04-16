@@ -58,6 +58,7 @@ class PostEdit extends Component
         CategoryRepository $categoryRepository,
         TagRepository $tagRepository,
     ): void {
+        $this->authorize('update', $this->post);
         $this->postRepository = $postRepository;
         $this->categoryRepository = $categoryRepository;
         $this->tagRepository = $tagRepository;

@@ -44,13 +44,13 @@ enum PostStatus: string
     public function color(): string
     {
         return match ($this) {
-            PostStatus::Published => 'green-600',
-            PostStatus::Archived => 'zinc-500',
-            PostStatus::Unpublished => 'stone-400',
-            PostStatus::Delayed => 'amber-400',
-            PostStatus::InTrash => 'red-400',
-            PostStatus::Closed => 'blue-400',
-            PostStatus::Draft => 'indigo-500'
+            PostStatus::Published => 'text-green-600',
+            PostStatus::Archived => 'text-zinc-500',
+            PostStatus::Unpublished => 'text-stone-400',
+            PostStatus::Delayed => 'text-amber-400',
+            PostStatus::InTrash => 'text-red-400',
+            PostStatus::Closed => 'text-blue-400',
+            PostStatus::Draft => 'text-indigo-500'
         };
     }
 }

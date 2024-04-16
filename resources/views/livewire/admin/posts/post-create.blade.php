@@ -44,7 +44,8 @@
                                         Title
                                         <span class="text-red-500 opacity-75" aria-hidden="true">*</span>
                                     </h3>
-                                    <x-input type="text" 
+                                    <x-input type="text"
+                                        full 
                                         autocomplete="off"
                                         errorTarget="postForm.title"
                                         required 
@@ -140,7 +141,8 @@
                         <div class="input-group my-3 last:mb-0 first:mt-0">
                             <x-label for="content-form" class="uppercase" :value="__('Content')" required />
                             @if ($postForm->isEvent())
-                                <x-input 
+                                <x-input
+                                    full
                                     required 
                                     errorTarget='postForm.content'
                                     wire:target="save" 
