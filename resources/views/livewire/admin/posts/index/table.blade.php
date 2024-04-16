@@ -13,27 +13,39 @@
                 </x-resource-table.header>
 
                 <x-resource-table.header>
-                    {{ __('Author') }}
+                    <x-post.index.sortable column="author" :$sortCol :$sortAsc class="flex items-center">
+                        {{ __('Author') }}
+                    </x-post.index.sortable>
                 </x-resource-table.header>
 
                 <x-resource-table.header>
-                    {{ __('Title') }}
+                    <x-post.index.sortable column="title" :$sortCol :$sortAsc class="flex items-center">
+                        {{ __('Title') }}
+                    </x-post.index.sortable>
                 </x-resource-table.header>
 
                 <x-resource-table.header>
-                    {{ __('Status') }}
+                    <x-post.index.sortable column="status" :$sortCol :$sortAsc class="flex items-center">
+                        {{ __('Status') }}
+                    </x-post.index.sortable>
                 </x-resource-table.header>
 
                 <x-resource-table.header class="hidden sm:table-cell">
-                    {{ __('Type') }}
+                    <x-post.index.sortable column="type" :$sortCol :$sortAsc class="flex items-center">
+                        {{ __('Type') }}
+                    </x-post.index.sortable>
                 </x-resource-table.header>
 
                 <x-resource-table.header class="hidden sm:table-cell">
-                    {{ __('Category') }}
+                    <x-post.index.sortable column="category" :$sortCol :$sortAsc class="flex items-center">
+                        {{ __('Category') }}
+                    </x-post.index.sortable>
                 </x-resource-table.header>
 
                 <x-resource-table.header class="hidden sm:table-cell">
-                    {{ __('Written at') }}
+                    <x-post.index.sortable column="written_at" :$sortCol :$sortAsc class="flex items-center">
+                        {{ __('Written at') }}
+                    </x-post.index.sortable>
                 </x-resource-table.header>
 
                 <x-resource-table.header>
@@ -111,14 +123,16 @@
 
         <section 
             wire:loading 
-            wire:target="search, nextPage, previousPage, delete, deleteSelected" 
+            wire:target="sortBy, search, nextPage, previousPage, delete, deleteSelected" 
             class="inset-0 absolute bg-white opacity-50">
+
             {{-- Loading canvas .. --}}
+
         </section>
 
         <section 
             wire:loading.flex 
-            wire:target="search. nextPage, previousPage, delete, deleteSelected" 
+            wire:target="sortBy, search. nextPage, previousPage, delete, deleteSelected" 
             class="inset-0 absolute flex justify-center items-center">
             <x-icon.spinner size="10" class="text-gray-500" />
         </section>
@@ -134,11 +148,11 @@
     @endif
 
     <template x-teleport="#page-section">
-        <section class="links mt-2 flex items-center w-full justify-between">
-            <div x-show="$wire.posts.length">
+        @if ($posts->count())
+            <section class="links mt-2 flex items-center w-full justify-between">
                 {{ __('Total records:') }} {{ Illuminate\Support\Number::format($posts->total()) }}
                 {{ $posts->links('livewire.admin.posts.index.pagination') }}
-            </div>
-        </section>
+            </section>
+        @endif
     </template>
 </section>

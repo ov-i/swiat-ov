@@ -5,6 +5,7 @@ namespace App\Livewire\Admin\Posts\Index;
 use App\Enums\ItemsPerPageEnum;
 use App\Livewire\Traits\Searchable;
 use App\Livewire\Traits\Selectable;
+use App\Livewire\Traits\Sortable;
 use App\Models\Posts\Post;
 use App\Services\Post\PostService;
 use Illuminate\Contracts\View\View;
@@ -21,6 +22,8 @@ class Table extends Component
 
     use Selectable;
 
+    use Sortable;
+
     private PostService $postService;
 
     public function boot(
@@ -36,6 +39,7 @@ class Table extends Component
         $posts = Post::query();
 
         $posts = $this->applySearch($posts);
+        $posts = $this->applySorting($posts);
         
         $posts = $posts->paginate(ItemsPerPageEnum::DEFAULT);
         
@@ -46,15 +50,6 @@ class Table extends Component
         return view('livewire.admin.posts.index.table', [
             'posts' => $posts,
         ]);
-    }
-
-    public function applySearch(Builder &$builder): Builder|ScoutBuilder
-    {
-        if (filled($this->search)) {
-            return Post::search($this->search);
-        }
-
-        return $builder;
     }
 
     public function delete(Post $post): void
@@ -81,4 +76,31 @@ class Table extends Component
 
         $post->restore();
     }
+
+    public function applySearch(Builder &$builder): Builder|ScoutBuilder
+    {
+        if (filled($this->search)) {
+            return Post::search($this->search);
+        }
+
+        return $builder;
+    }
+
+    public function applySorting(Builder &$builder): Builder
+    {
+        if (filled($this->sortCol)) {
+            $column = match ($this->sortCol) {
+                'title' => 'title',
+                'status' => 'status',
+                'type' => 'type',
+                'written_at' => 'created_at',
+                'author' => 'user_id',
+                'category' => 'category_id'
+            };
+
+            $builder->orderBy($column, $this->sortAsc ? 'asc' : 'desc');
+        }
+
+        return $builder;
+    } 
 }
