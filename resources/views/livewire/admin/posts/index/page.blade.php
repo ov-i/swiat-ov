@@ -14,8 +14,12 @@
             <h3 class="text-lg font-secondary font-semibold text-gray-600 dark:text-zinc-300">
                 {{ __('Search & Filters') }}
             </h3>
+            
+            <div class="flex sm:items-center w-full items-start gap-3 flex-col sm:flex-row mt-4 mb-2">
+                <x-post.index.filter-range :$filters />
+            </div>
         </section>
 
-        <livewire:admin.posts.index.table />
+        <livewire:admin.posts.index.table :$filters />
     </x-admin-card>
 </section>

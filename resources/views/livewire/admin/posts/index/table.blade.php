@@ -1,6 +1,10 @@
 <section class="w-full py-4 relative" wire:loading.class="opacity-50">
-    <div class="flex items-center justify-between mb-3 ml-1 w-full">
-        <x-post.index.search :$posts />
+    <div class="flex items-center justify-between mt-2 mb-5 sm:mb-4 ml-0.5 w-full">
+        <div class="flex items-center gap-2">
+            <x-fields.per-page :$perPage />
+
+            <x-post.index.search :$posts />
+        </div>
 
         <x-post.index.bulk-actions />
     </div>
@@ -53,16 +57,16 @@
                 </x-resource-table.header>
             </x-resource-table.head>
 
-            <x-resource-table.body>
+            <x-resource-table.body class="mt-4">
                 @foreach ($posts as $post)
                     <x-resource-table.row :resource="$post" :key="$post->getKey()">
-                        <td class="whitespace-nowrap p-3 text-sm">
+                        <x-resource-table.cell>
                             <div class="flex items-center">
-                                <input wire:model="selectedItemIds" value="{{ $post->getKey() }}" type="checkbox" class="rounded border-gray-300 shadow">
+                                <x-input wire:model="selectedItemIds" value="{{ $post->getKey() }}" type="checkbox" class="rounded border-gray-300 shadow" />
                             </div>
-                        </td>
+                        </x-resource-table.cell>
 
-                        <td class="capitalize py-3">
+                        <x-resource-table.cell>
                             <div class="flex items-center gap-3">
                                 <img src="{{ $post->user->profile_photo_url }}" alt="{{ __('User profile photo') }}" class="rounded-full w-12 hidden xl:inline-block">
                                 <div class="w-full xs:text-center text-sm">
@@ -70,9 +74,9 @@
                                     <p class="lowercase hidden lg:block">{{ $post->user->getEmail() }}</p>
                                 </div>
                             </div>
-                        </td>
+                        </x-resource-table.cell>
 
-                        <td class="whitespace-nowrap p-3 text-sm">
+                        <x-resource-table.cell class="py-3">
                             <div>
                                 <div class="text-base font-semibold">
                                     @if ($post->isClosed() || !auth()->user()->can('view', $post))
@@ -80,36 +84,36 @@
                                     @else
                                         <a 
                                             href="{{ route('admin.posts.show', ['post' => $post]) }}"
-                                            class="hover:text-gray-700 dark:hover:text-zinc-300 active:text-gray-800 transition duration-100">
+                                            class=" border-b border-dashed border-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300 dark:border-zinc-500 dark:active:text-gray-200 active:text-gray-500 transition duration-100">
                                             {{ $post->getTitle() }}
                                         </a>
                                     @endif
-                                    <div class="font-normal text-gray-500">{{ $post->getSlug() }}</div>
+                                    <div class="font-normal text-gray-500 pt-1">{{ $post->getSlug() }}</div>
                                 </div>
                             </div>
-                        </td>
+                        </x-resource-table.cell>
 
-                        <td class="whitespace-nowrap p-3 text-sm">
+                        <x-resource-table.cell class="py-3">
                             <div class="inline-flex items-center gap-1 py-1 {{ $post->getStatus()->color() }} opacity-75">
                                 <x-dynamic-component :component="$post->getStatus()->icon()" />
                                 <div>{{ $post->getStatus()->label() }}</div>
                             </div>
-                        </td>
+                        </x-resource-table.cell>
 
-                        <td class="whitespace-nowrap p-3 text-sm hidden sm:table-cell">
+                        <x-resource-table.cell class="hidden sm:table-cell">
                             <div class="inline-flex items-center gap-1 py-1">
                                 <x-dynamic-component :component="$post->getType()->icon()" />
                                 <div>{{ $post->getType()->label() }}</div>
                             </div>
-                        </td>
+                        </x-resource-table.cell>
 
-                        <td class="whitespace-nowrap p-3 text-sm hidden sm:table-cell">
+                        <x-resource-table.cell class="hidden sm:table-cell">
                             {{ $post->category->getName() }}
-                        </td>
+                        </x-resource-table.cell>
 
-                        <td class="whitespace-nowrap p-3 text-sm hidden sm:table-cell">
+                        <x-resource-table.cell class="hidden sm:table-cell">
                             {{ $post->created_at }}
-                        </td>
+                        </x-resource-table.cell>
 
                         <td>
                             <div class="flex items-center"> 
@@ -124,7 +128,7 @@
         <section 
             wire:loading 
             wire:target="sortBy, search, nextPage, previousPage, delete, deleteSelected" 
-            class="inset-0 absolute bg-white opacity-50">
+            class="inset-0 absolute bg-white dark:bg-asideMenu opacity-75">
 
             {{-- Loading canvas .. --}}
 
@@ -149,10 +153,14 @@
 
     <template x-teleport="#page-section">
         @if ($posts->count())
-            <section class="links mt-2 flex items-center w-full justify-between">
-                {{ __('Total records:') }} {{ Illuminate\Support\Number::format($posts->total()) }}
+            {{-- Pagination... --}}
+            <div class="pt-4 flex justify-between items-center">
+                <div class="text-gray-700 text-sm dark:text-gray-500">
+                    Results: {{ \Illuminate\Support\Number::format($posts->total()) }}
+                </div>
+
                 {{ $posts->links('livewire.admin.posts.index.pagination') }}
-            </section>
+            </div>
         @endif
     </template>
 </section>

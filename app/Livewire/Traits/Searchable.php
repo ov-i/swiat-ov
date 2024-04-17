@@ -12,8 +12,7 @@ trait Searchable
 
     public function updatedSearchable(string $property): void
     {
-        if ($property === 'search' && in_array(WithPagination::class, class_uses_recursive($this)))
-        {
+        if ($property === 'search' && in_array(WithPagination::class, class_uses_recursive($this))) {
             $this->resetPage();
         }
     }

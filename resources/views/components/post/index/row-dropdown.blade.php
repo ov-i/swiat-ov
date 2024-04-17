@@ -1,7 +1,7 @@
 @props(['post'])
 
 <x-menu>
-    <x-menu.button class="rounded hover:bg-gray-100 p-1">
+    <x-menu.button class="rounded hover:bg-gray-100 dark:hover:bg-transparent p-1 dark:text-white dark:hover:text-gray-300 transition-colors">
         <x-icon.ellipsis-horizontal />
     </x-menu.button>
 

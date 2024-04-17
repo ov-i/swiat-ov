@@ -10,9 +10,9 @@
             </h3>
         </section>
 
-        <section class="searchable-actions">
+        {{-- <section class="searchable-actions">
             <x-search-model :state="$state" />
-        </section>
+        </section> --}}
 
         <section>
             <x-resource-table>
@@ -37,7 +37,7 @@
                     </th>
                 </x-slot>
 
-                @foreach ($resource as $user)
+                @foreach ($users as $user)
                     <tr class="resource-tr" wire:key="{{ $user->getKey() }}">
                         <td class="w-4 p-4">{{ $user->getKey() }}</td>
                         <td
@@ -120,5 +120,5 @@
         </section>
     </x-admin-card.index>
 
-    <x-pagination-links :$resource />
+    <x-pagination-links :resource="$users" />
 </section>

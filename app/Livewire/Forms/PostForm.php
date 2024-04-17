@@ -41,7 +41,18 @@ class PostForm extends Form
 
     public ?string $should_be_published_at = null;
 
-    private Post $post;
+    public Post $post;
+
+    public function init(Post $post): void
+    {
+        $this->post = $post;
+        $this->title = $post->title;
+        $this->type = $post->getType();
+        $this->excerpt = $post->getExcerpt();
+        $this->content = $post->getContent();
+        $this->category_id = $post->category()->getParentKey();
+        $this->should_be_published_at = $post->getPublishableDate();
+    }
 
     /**
      * @return array<array-key, mixed>
@@ -50,7 +61,7 @@ class PostForm extends Form
     {
         $titleUnique = Rule::unique('posts', 'title');
 
-        if (isset($post)) {
+        if (isset($this->post)) {
             $titleUnique->ignore($this->post->getKey());
         }
 

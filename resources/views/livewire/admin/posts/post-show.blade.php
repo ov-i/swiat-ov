@@ -1,8 +1,8 @@
 <section>
     <livewire:admin.resource-detail resourceName="post" :resourceClass="$post" />
 
-    <x-admin-card title="" class="mt-2">
-        <div class="post-details">
+    <x-admin-card title="" class="mt-2 w-full overflow-x-auto">
+        <div class="post-details w-full">
             <x-resource-detail property='id' :value="$this->post()->getKey()" />
 
             <x-resource-detail 
@@ -70,13 +70,13 @@
                 </x-slot>
             </x-resource-detail>
 
-            <x-resource-detail property='archived_at' :value="$this->post()->getArchivedAt()" x-show="$wire.posts.archived" />
+            <x-resource-detail class="whitespace-nowrap" property='archived_at' :value="$this->post()->getArchivedAt()" x-show="$wire.posts.archived" />
 
-            <x-resource-detail property='publishing in' :value="$this->getPublishDelay()" help="Post publishing is delayed for" x-show="$wire.posts.should_be_published_at "/>
+            <x-resource-detail class="whitespace-nowrap" property='publishing in' :value="$this->getPublishDelay()" help="Post publishing is delayed for" x-show="$wire.posts.should_be_published_at "/>
 
-            <x-resource-detail property='created at' :value="$this->post()->created_at" />
+            <x-resource-detail class="whitespace-nowrap" property='created at' :value="$this->post()->created_at" />
                 
-            <x-resource-detail property='deleted at' :value="$this->post()->deleted_at" />
+            <x-resource-detail class="whitespace-nowrap" property='deleted at' :value="$this->post()->deleted_at" />
         </div>
     </x-admin-card>
 

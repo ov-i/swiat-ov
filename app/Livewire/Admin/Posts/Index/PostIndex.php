@@ -5,8 +5,10 @@ namespace App\Livewire\Admin\Posts\Index;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
-class Page extends Component
+class PostIndex extends Component
 {
+    public Filters $filters;
+
     #[Layout('layouts.admin')]
     public function render()
     {

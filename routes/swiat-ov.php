@@ -7,17 +7,17 @@ use App\Livewire\Admin\Posts\AttachmentShow;
 use App\Livewire\Admin\Posts\Category;
 use App\Livewire\Admin\Posts\CategoryShow;
 use App\Livewire\Admin\Posts\Comment;
-use App\Livewire\Admin\Posts\PostCreate;
-use App\Livewire\Admin\Posts\PostEdit;
+use App\Livewire\Admin\Posts\Create\PostCreate;
+use App\Livewire\Admin\Posts\Edit\PostEdit;
 use App\Livewire\Admin\Posts\PostShow;
 use App\Livewire\Admin\Posts\Tag;
 use App\Livewire\Admin\Posts\TagsCreate;
 use App\Livewire\Admin\Users\Role;
-use App\Livewire\Admin\Users\User;
+use App\Livewire\Admin\Users\UserIndex;
 use App\Livewire\Admin\Users\UserEdit;
 use App\Livewire\Admin\Users\UserShow;
 use App\Livewire\Admin\Posts\CategoryCreate;
-use App\Livewire\Admin\Posts\Index\Page;
+use App\Livewire\Admin\Posts\Index\PostIndex;
 
 $middlewares = [
     config('jetstream.auth_session'),
@@ -32,7 +32,7 @@ Route::prefix('admin')->middleware($middlewares)->group(function () {
     });
 
     Route::prefix('resource/posts')->group(function () {
-        Route::get('/', Page::class)->name('admin.posts');
+        Route::get('/', PostIndex::class)->name('admin.posts');
         Route::get('/create', PostCreate::class)->name('admin.posts.create');
         Route::get('/edit/{post:slug}', PostEdit::class)->name('admin.posts.edit');
         Route::get('/show/{post:slug}', PostShow::class)->name('admin.posts.show');
@@ -48,7 +48,7 @@ Route::prefix('admin')->middleware($middlewares)->group(function () {
     });
 
     Route::prefix('resource/support')->group(function () {
-        Route::get('/users', User::class)->name('admin.users');
+        Route::get('/users', UserIndex::class)->name('admin.users');
         Route::get('/users/edit/{user}', UserEdit::class)
             ->name('admin.users.edit')
             ->withTrashed();

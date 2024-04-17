@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Admin\Posts;
+namespace App\Livewire\Admin\Posts\Create;
 
 use App\Data\PostData;
 use App\Livewire\Concerns\PostCreateActionState;
@@ -11,13 +11,10 @@ use App\Models\Posts\Tag;
 use App\Repositories\Eloquent\Posts\PostRepository;
 use App\Services\Post\PostService;
 use App\Services\Post\ThumbnailService;
-use Illuminate\Contracts\View\View;
-use Illuminate\Support\Str;
-use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
-class PostCreate extends Component
+class Form extends Component
 {
     public PostForm $postForm;
 
@@ -27,8 +24,8 @@ class PostCreate extends Component
 
     public bool $attachmentsModal = false;
 
-    /** @var PostRepository $repository */
-    private PostRepository $repository;
+    /** @var PostRepository $postRepository */
+    private PostRepository $postRepository;
 
     private ThumbnailService $thumbnailService;
 
@@ -44,28 +41,17 @@ class PostCreate extends Component
         ThumbnailService $thumbnailService,
         PostService $postService,
     ) {
-        $this->repository = $postRepository;
+        $this->postRepository = $postRepository;
         $this->thumbnailService = $thumbnailService;
         $this->postService = $postService;
     }
 
-    #[Layout('layouts.admin')]
-    public function render(): View
+    public function render()
     {
-        return view('livewire.admin.posts.post-create', [
+        return view('livewire.admin.posts.create.form', [
             'categories' => Category::all(),
             'tags' => Tag::all(),
         ]);
-    }
-
-    public function openModal(): void
-    {
-        $this->modalOpen = true;
-    }
-
-    public function closeModal(): void
-    {
-        $this->modalOpen = false;
     }
 
     public function save(): void
@@ -76,7 +62,7 @@ class PostCreate extends Component
 
         $this->saveThumbnailFile($post);
 
-        $this->postForm->reset();
+        $this->resetForm();
 
         $this->redirectRoute('admin.posts.edit', ['post' => $post], navigate: true);
     }
@@ -89,19 +75,19 @@ class PostCreate extends Component
 
     public function resetForm(): void
     {
-        if (filled($this->postForm->all())) {
-            $this->postForm->reset();
+        if (filled($this->postForm->only(['title', 'content', 'excerpt']))) {
+            $this->postForm->reset('title', 'content', 'excerpt');
         }
     }
 
     public function cantBePublished(): bool
     {
-        return $this->postForm->isEvent() && $this->repository->isAnyEventPublished();
+        return $this->postForm->isEvent() && $this->postRepository->isAnyEventPublished();
     }
 
     public function getSaveButtonState(): string
     {
-        return Str::ucfirst($this->bindSaveButtonState());
+        return str($this->bindSaveButtonState())->ucfirst();
     }
 
     private function bindSaveButtonState(): string
@@ -127,12 +113,12 @@ class PostCreate extends Component
 
         $thumbnailFile = $this->thumbnailService->setFile($thumbnail);
 
-        /** @var ThumbnailService $thumbnailFile */
+        /** @var \App\Services\Post\ThumbnailService $thumbnailFile */
         $thumbnailFile->setPost($post);
 
         $thumbnailFile->storeOnDisk();
 
-        $this->repository->updateThumbnailPath($post, path: $thumbnailFile->getPublicUrl());
+        $this->postRepository->updateThumbnailPath($post, path: $thumbnailFile->getPublicUrl());
     }
 
     private function savePost(): Post
@@ -150,5 +136,15 @@ class PostCreate extends Component
         $this->postService->publishPost($post);
 
         return $post;
+    }
+
+    public function openModal(): void
+    {
+        $this->modalOpen = true;
+    }
+
+    public function closeModal(): void
+    {
+        $this->modalOpen = false;
     }
 }

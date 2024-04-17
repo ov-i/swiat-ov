@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Livewire\Enums;
+
 use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Support\Carbon;
 
@@ -24,7 +26,7 @@ enum Range: string
 
     /**
      * @return array<Carbon, Carbon>
-     * @throws InvalidFormatException 
+     * @throws InvalidFormatException
      */
     public function dates(): array
     {
@@ -32,8 +34,7 @@ enum Range: string
             static::Today => [Carbon::today(), now()],
             static::Last_7 => [Carbon::today()->subDays(6), now()],
             static::Last_30 => [Carbon::today()->subDays(30), now()],
-            static::Year => [now()->startOfYear(), now()],
-            default => throw new InvalidFormatException()
+            static::Year => [now()->startOfYear(), now()]
         };
-    } 
+    }
 }

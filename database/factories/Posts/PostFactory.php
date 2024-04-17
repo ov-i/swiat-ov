@@ -46,6 +46,7 @@ class PostFactory extends Factory
             'archived' => $archived,
             'archived_at' => $archived ? now()->toDateString() : null,
             'published_at' => $archived ? null : $published_at,
+            'created_at' => fake()->dateTime(),
         ];
     }
 

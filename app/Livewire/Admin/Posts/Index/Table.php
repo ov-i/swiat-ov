@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin\Posts\Index;
 
 use App\Enums\ItemsPerPageEnum;
+use App\Livewire\Forms\PerPage;
 use App\Livewire\Traits\Searchable;
 use App\Livewire\Traits\Selectable;
 use App\Livewire\Traits\Sortable;
@@ -11,6 +12,8 @@ use App\Services\Post\PostService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Laravel\Scout\Builder as ScoutBuilder;
+use Livewire\Attributes\Modelable;
+use Livewire\Attributes\Reactive;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -23,6 +26,12 @@ class Table extends Component
     use Selectable;
 
     use Sortable;
+
+    #[Reactive]
+    public Filters $filters;
+
+    #[Modelable]
+    public PerPage $perPage;
 
     private PostService $postService;
 
@@ -40,9 +49,10 @@ class Table extends Component
 
         $posts = $this->applySearch($posts);
         $posts = $this->applySorting($posts);
-        
+        $posts = $this->filters->apply($posts);
+
         $posts = $posts->paginate(ItemsPerPageEnum::DEFAULT);
-        
+
         $this->itemIdsOnPage = collect($posts->items())
             ->map(fn (Post $post) => (string) $post->getKey())
             ->toArray();
@@ -86,7 +96,7 @@ class Table extends Component
         return $builder;
     }
 
-    public function applySorting(Builder &$builder): Builder
+    public function applySorting(Builder|ScoutBuilder &$builder): Builder|ScoutBuilder
     {
         if (filled($this->sortCol)) {
             $column = match ($this->sortCol) {
@@ -102,5 +112,5 @@ class Table extends Component
         }
 
         return $builder;
-    } 
+    }
 }
