@@ -7,6 +7,7 @@ namespace App\Livewire;
 use App\Enums\ItemsPerPageEnum;
 use App\Traits\FormatsString;
 use App\Traits\InteractsWithModals;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -47,6 +48,11 @@ abstract class Resource extends Component
         $view->layout($this->layout);
 
         return $view;
+    }
+
+    public function getUser(): Authenticatable
+    {
+        return auth()->user();
     }
 
     /**

@@ -67,14 +67,11 @@ abstract class BaseRepository implements EloquentRepository
      * Searches through laravel scout for a given phrase.
      *
      * @throws NotSearchableModelException If model is not searchable.
-     * @return Collection<int, Model>|LengthAwarePaginator
      */
     public function searchBy(
         string $query,
-        bool $paginate = true,
         Closure|null $callback = null,
-        ?int $perPage = null,
-    ): Collection|LengthAwarePaginator {
+    ): ScoutBuilder {
         $classModel = $this->getModel()::class;
         if (!in_array(Searchable::class, class_uses_recursive($classModel))) {
             throw new NotSearchableModelException("The $classModel model is not searchable.");
@@ -83,7 +80,7 @@ abstract class BaseRepository implements EloquentRepository
         /** @var \Laravel\Scout\Builder $searched */
         $searched = $this->getModel()->search($query, $callback);
 
-        return $paginate ? $this->toPaginated($searched, $perPage) : $searched->get();
+        return $searched;
     }
 
     /**

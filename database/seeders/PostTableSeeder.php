@@ -2,10 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Posts\Attachment;
-use App\Models\Posts\Comment;
-use App\Models\Posts\LangPost;
-use App\Models\Posts\Tag;
+use App\Models\Posts\Category;
 use Illuminate\Database\Seeder;
 use App\Models\Posts\Post;
 
@@ -17,10 +14,8 @@ class PostTableSeeder extends Seeder
     public function run(): void
     {
         Post::factory()
-            ->has(LangPost::factory())
-            ->has(Tag::factory())
-            ->has(Comment::factory())
-            ->has(Attachment::factory()->count(2))
+            ->for(Category::factory())
+            ->count(20)
             ->create();
     }
 }

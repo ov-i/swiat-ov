@@ -41,7 +41,7 @@ class MakeFilter extends GeneratorCommand implements PromptsForMissingInput
         return [
             'name' => [
                 'What should the Filter be named?',
-                'E.g. PublishedFilter'
+                'E.g. RangeFilter'
             ],
         ];
     }

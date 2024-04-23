@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Eloquent\Posts;
 
-use App\Enums\Post\PostHistoryActionEnum;
+use App\Enums\Post\PostHistoryAction;
 use App\Models\PostHistory;
 use App\Models\Posts\Post;
 use App\Models\User;
@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 class PostHistoryRepository extends BaseRepository
 {
-    public function addHistory(Post &$post, PostHistoryActionEnum $action): PostHistory
+    public function addHistory(Post &$post, PostHistoryAction $action): PostHistory
     {
         $user = $post->user();
 
@@ -39,7 +39,7 @@ class PostHistoryRepository extends BaseRepository
     /**
      * @return Collection<PostHistory>|null
      */
-    public function findByAction(PostHistoryActionEnum $action): ?Collection
+    public function findByAction(PostHistoryAction $action): ?Collection
     {
         return $this->findAllBy('action', $action->value);
     }

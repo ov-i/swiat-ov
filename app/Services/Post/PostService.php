@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Post;
 
-use App\Data\CreatePostRequest;
-use App\Data\UpdatePostData;
-use App\Enums\Post\PostHistoryActionEnum;
-use App\Enums\Post\PostStatusEnum;
+use App\Data\PostData;
+use App\Enums\Post\PostHistoryAction;
+use App\Enums\PostStatus;
 use App\Events\PostPublished;
 use App\Exceptions\PostAlreadyExistsException;
 use App\Models\Posts\Post;
@@ -16,7 +15,6 @@ use App\Repositories\Eloquent\Posts\PostHistoryRepository;
 use App\Repositories\Eloquent\Posts\PostRepository;
 use App\Traits\IntersectsArray;
 use Illuminate\Support\Str;
-use Spatie\LaravelData\Data;
 
 class PostService
 {
@@ -33,15 +31,12 @@ class PostService
     /**
      * @throws PostAlreadyExistsException If post with a title already exists.
      */
-    public function createPost(CreatePostRequest $request): Post
+    public function createPost(PostData $request): Post
     {
         throw_if($this->postRepository->postExists($request->title), PostAlreadyExistsException::class);
 
-        $post = $this->postRepository->createPost([
-            ...$request->toArray(),
-            'user_id' => auth()->id()
-        ]);
-        $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::created());
+        $post = $this->postRepository->createPost($request);
+        $this->postHistoryRepository->addHistory($post, PostHistoryAction::Created);
 
         $this->syncTags($post, $request);
         $this->syncAttachments($post, $request->attachments);
@@ -52,7 +47,7 @@ class PostService
     /**
      * @throws PostAlreadyExistsException if post with a title or slug already exists
      */
-    public function editPost(Post &$post, UpdatePostData $updateData): bool
+    public function editPost(Post &$post, PostData $updateData): bool
     {
         $requestTitle = $updateData->title;
 
@@ -70,7 +65,7 @@ class PostService
         $this->syncAttachments($post, $updateData->attachments);
 
         $editedPost = $this->postRepository->editPost($post, $updateData->toArray());
-        $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::updated());
+        $this->postHistoryRepository->addHistory($post, PostHistoryAction::Updated);
 
         return $editedPost;
     }
@@ -94,8 +89,8 @@ class PostService
             return;
         }
 
-        $this->postRepository->setStatus($post, PostStatusEnum::closed());
-        $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::closed());
+        $this->postRepository->setStatus($post, PostStatus::Closed);
+        $this->postHistoryRepository->addHistory($post, PostHistoryAction::Closed);
     }
 
     /**
@@ -110,23 +105,26 @@ class PostService
 
         $deleted = $this->postRepository->deletePost($post, $forceDelete);
         $historyAction = $forceDelete ?
-            PostHistoryActionEnum::forceDeleted() :
-            PostHistoryActionEnum::deleted();
+            PostHistoryAction::ForceDeleted :
+            PostHistoryAction::Deleted;
 
         $this->postHistoryRepository->addHistory($post, $historyAction);
 
         return $deleted;
     }
 
+    public function restorePost(Post &$post): bool
+    {
+        $restored = $this->postRepository->restorePost($post);
+        $this->postHistoryRepository->addHistory($post, PostHistoryAction::Restored);
+
+        return $restored;
+    }
+
     /**
      * Checks if tags property exist in request. If so, syncs'em with post
-     *
-     * @param \App\Models\Posts\Post $post
-     * @param \App\Data\CreatePostRequest|\App\Data\UpdatePostData $data
-     *
-     * @return void
      */
-    private function syncTags(Post &$post, Data &$data)
+    private function syncTags(Post &$post, PostData &$data): void
     {
         $tags = $data->tags;
 

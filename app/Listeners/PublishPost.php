@@ -2,8 +2,8 @@
 
 namespace App\Listeners;
 
-use App\Enums\Post\PostHistoryActionEnum;
-use App\Enums\Post\PostStatusEnum;
+use App\Enums\Post\PostHistoryAction;
+use App\Enums\PostStatus;
 use App\Events\PostPublished;
 use App\Repositories\Eloquent\Posts\PostHistoryRepository;
 use App\Repositories\Eloquent\Posts\PostRepository;
@@ -28,17 +28,16 @@ class PublishPost
         $post = $event->post;
 
         if (blank($post->getPublishableDate())) {
-            $this->postRepository->setStatus($post, PostStatusEnum::published());
-            $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::published());
+            $this->postRepository->setStatus($post, PostStatus::Published);
+            $this->postHistoryRepository->addHistory($post, PostHistoryAction::Published);
 
             return;
         }
 
-        $this->postRepository->setStatus($post, PostStatusEnum::delayed());
-        $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::delayed());
+        $this->postRepository->setStatus($post, PostStatus::Delayed);
+        $this->postHistoryRepository->addHistory($post, PostHistoryAction::Delayed);
 
-        $delayDiff = Carbon::parse($post->getPublishableDate(), config('app.timezone'))->diffInSeconds();
-
+        $delayDiff = abs(Carbon::parse($post->getPublishableDate(), config('app.timezone'))->diffInSeconds());
         \App\Jobs\PublishPost::dispatch($post)->delay($delayDiff);
     }
 }

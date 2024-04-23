@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Repositories\Eloquent\Posts;
 
-use App\Enums\Post\PostStatusEnum;
-use App\Enums\Post\PostTypeEnum;
+use App\Data\PostData;
+use App\Enums\PostStatus;
+use App\Enums\PostType;
 use App\Models\Posts\Post;
 use App\Repositories\Eloquent\BaseRepository;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,32 +17,34 @@ class PostRepository extends BaseRepository
     /**
      * @param non-empty-list<array-key, scalar> $postData
      */
-    public function createPost(array $postData): Post|false
+    public function createPost(PostData $postForm): Post|false
     {
-        if($this->postExists((string) $postData['title'])) {
+        if($this->postExists($postForm->title)) {
             return false;
         }
 
         return $this->create([
-            ...$postData,
-            'slug' => Str::slug($postData['title']),
-            'should_be_published_at' => $postData['publishable_date_time'] ?? null,
+            ...$postForm->toArray(),
+            'slug' => str($postForm->title)->slug(),
+            'should_be_published_at' => $postForm->should_be_published_at,
+            'user_id' => auth()->id(),
         ]);
     }
 
     public function editPost(Post &$post, array $requestData): bool
     {
-        if ($this->postExists($requestData['title']) || $post->isClosed()) {
+        $titleModified = $post->getTitle() !== $requestData['title'];
+        if (($titleModified && $this->postExists($requestData['title'])) || $post->isClosed()) {
             return false;
         }
 
         return $this->update(model: $post, data: $requestData);
     }
 
-    public function setStatus(Post &$post, PostStatusEnum $status): self
+    public function setStatus(Post &$post, PostStatus $status): self
     {
-        if ($status->value === $post->getStatus()) {
-            throw new \LogicException(__("Post {$post->getTitle()} is already {$status->value}"));
+        if ($status === $post->getStatus()) {
+            throw new \LogicException(__("Post {$post->getTitle()} is already {$status->label()}"));
         }
 
         $post->status = $status;
@@ -74,9 +77,14 @@ class PostRepository extends BaseRepository
     {
         $deleted = $this->delete($post, $forceDelete);
 
-        $this->setStatus($post, PostStatusEnum::inTrash());
+        $this->setStatus($post, PostStatus::InTrash);
 
         return $deleted;
+    }
+
+    public function restorePost(Post &$post): bool
+    {
+        return $post->restore();
     }
 
     /**
@@ -86,12 +94,12 @@ class PostRepository extends BaseRepository
     {
         return $this->findWhere(params: function (Builder $query) {
             $query
-                ->where('type', PostTypeEnum::event())
-                ->where('status', PostStatusEnum::published())
+                ->where('type', PostType::Event)
+                ->where('status', PostStatus::Published)
                 ->orWhere(function (Builder $builder) {
                     $builder
-                        ->where('type', PostTypeEnum::event())
-                        ->where('status', PostStatusEnum::delayed())
+                        ->where('type', PostType::Event)
+                        ->where('status', PostStatus::Delayed)
                         ->whereNotNull('should_be_published_at');
                 });
         })->exists();
@@ -100,13 +108,13 @@ class PostRepository extends BaseRepository
     /**
      * Binds current post status with it's timestamps / boolean values
      */
-    private function bindPostStatusToValue(Post &$post, PostStatusEnum $status): bool
+    private function bindPostStatusToValue(Post &$post, PostStatus $status): bool
     {
         switch($status) {
-            case PostStatusEnum::published():
+            case PostStatus::Published:
                 $post->published_at = now();
                 break;
-            case PostStatusEnum::archived():
+            case PostStatus::Archived:
                 $post->archived = true;
                 $post->archived_at = now()->toDateTime();
                 break;

@@ -1,5 +1,5 @@
  @props(['property', 'value', 'isLink' => false, 'to' => null, 'help' => null])
- <div {{ $attributes->merge(['class' => "resource-detail"]) }}>
+ <div {{ $attributes->merge(['class' => "resource-detail w-full whitespace-no-wrap"]) }}>
     <div class="detail-property self-start font-light">
         <p class="text-md xl:text-base text-zinc-500 dark:text-white">
           {{ ucfirst($property) }}

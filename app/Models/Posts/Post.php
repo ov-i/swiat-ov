@@ -4,12 +4,11 @@ namespace App\Models\Posts;
 
 use App\Contracts\Followable;
 use App\Contracts\Sluggable;
-use App\Enums\Post\PostStatusEnum;
-use App\Enums\Post\PostTypeEnum;
+use App\Enums\PostStatus;
+use App\Enums\PostType;
 use App\Models\PostHistory;
 use Database\Factories\Posts\PostFactory;
 use App\Models\User;
-use Date;
 use DateTime;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -46,7 +45,26 @@ class Post extends Model implements Followable, Sluggable
 
     public function __toString(): string
     {
-        return sprintf('[%s] %s', ucfirst($this->getStatus()), $this->getTitle());
+        return sprintf('[%s] %s', ucfirst($this->getStatus()->label()), $this->getTitle());
+    }
+
+    /**
+     * @return non-empty-list<array-key, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'type' => PostType::class,
+            'status' => PostStatus::class
+        ];
+    }
+
+    /**
+     * @return Factory<self>
+     */
+    protected static function newFactory(): Factory
+    {
+        return PostFactory::new();
     }
 
     public function toSlug(): string
@@ -64,9 +82,14 @@ class Post extends Model implements Followable, Sluggable
         return $this->slug;
     }
 
-    public function getType(): string
+    public function getType(): PostType
     {
         return $this->type;
+    }
+
+    public function getStatus(): ?PostStatus
+    {
+        return $this->status;
     }
 
     public function getThumbnailPath(): ?string
@@ -84,24 +107,18 @@ class Post extends Model implements Followable, Sluggable
         return $this->excerpt;
     }
 
-    public function getStatus(): string
-    {
-        return $this->status ?? PostStatusEnum::unpublished()->value;
-    }
-
     public function isArchived(): bool
     {
         return $this->archived;
     }
 
-    public function getArchivedAt(): ?Date
+    public function getArchivedAt()
     {
         if (!$this->isArchived()) {
             return null;
         }
 
-        /** @var ?Date $archivedAt */
-        return new Date($this->archived_at);
+        return $this->archived_at;
     }
 
     public function getPublishedAt(): ?DateTime
@@ -172,27 +189,19 @@ class Post extends Model implements Followable, Sluggable
         return $this->hasMany(LangPost::class);
     }
 
-    /**
-     * @return Factory<self>
-     */
-    protected static function newFactory(): Factory
-    {
-        return PostFactory::new();
-    }
-
     public function isPublished(): bool
     {
-        return $this->getStatus() === PostStatusEnum::published()->value;
+        return $this->getStatus() === PostStatus::Published;
     }
 
     public function isClosed(): bool
     {
-        return $this->getStatus() === PostStatusEnum::closed()->value;
+        return $this->getStatus() === PostStatus::Closed;
     }
 
     public function isEvent(): bool
     {
-        return $this->type === PostTypeEnum::event()->value;
+        return $this->type === PostType::Event;
     }
 
     public function isDelayed(): bool

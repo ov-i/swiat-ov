@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Posts\Post;
+use App\Models\User;
+
 return [
 
     /*
@@ -134,11 +137,12 @@ return [
         'host' => env('MEILISEARCH_HOST', 'http://localhost:7700'),
         'key' => env('MEILISEARCH_KEY'),
         'index-settings' => [
-            'users' => [
+            User::class => [
                 'filterableAttributes' => ['id', 'name', 'email', 'posts'],
             ],
-            'posts' => [
-                'filterableAttributes' => ['id', 'title', 'slug', 'type', 'status', 'user_id', 'category']
+            Post::class => [
+                'filterableAttributes' => ['id', 'title', 'slug', 'type', 'status', 'user_id', 'category'],
+                'sortableAttributes' => ['id', 'title', 'type', 'status', 'user_id', 'category_id']
             ]
         ],
     ],

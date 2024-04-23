@@ -3,16 +3,16 @@
         {{ __('Back to dashboard') }}
     </x-back-button>
 
-    <x-admin-card title="Users">
+    <x-admin-card.index title="Users">
         <section class="py-4 border-b border-gray-200">
             <h3 class="text-lg font-secondary font-semibold text-gray-600 dark:text-zinc-300">
                 {{ __('Search & Filters') }}
             </h3>
         </section>
 
-        <section class="searchable-actions">
+        {{-- <section class="searchable-actions">
             <x-search-model :state="$state" />
-        </section>
+        </section> --}}
 
         <section>
             <x-resource-table>
@@ -37,7 +37,7 @@
                     </th>
                 </x-slot>
 
-                @foreach ($resource as $user)
+                @foreach ($users as $user)
                     <tr class="resource-tr" wire:key="{{ $user->getKey() }}">
                         <td class="w-4 p-4">{{ $user->getKey() }}</td>
                         <td
@@ -118,7 +118,7 @@
                 @endforeach
             </x-resource-table>
         </section>
-    </x-admin-card>
+    </x-admin-card.index>
 
-    <x-pagination-links :$resource />
+    <x-pagination-links :resource="$users" />
 </section>

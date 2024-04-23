@@ -18,9 +18,8 @@
                         <p class="text-lg text-zinc-400">
                             {{ __('or click to add attachment[s] that you want.') }}
                         </p>
-                        <x-input 
+                        <input 
                             type="file" 
-                            
                             name="attachments[]" 
                             id="fileInput"
                             class="hidden"
@@ -31,16 +30,16 @@
                     </article>
                 </x-label>
                 
-                <x-button 
-                    x-show="$wire.addAttachmentForm.attachments.length" 
+                <x-button
+                    :disabled="count($addAttachmentForm->attachments) < 1"
                     class="mb-4"
                     wire:loading.remove>
                     {{ __('submit') }}
                 </x-button>
             
-                <x-button 
-                    wire:loading
-                    wire:target="addAttachments">
+                <x-button
+                    disabled
+                    wire:loading.flex>
                     <x-material-icon class="animate-spin">
                         sync
                     </x-material-icon>

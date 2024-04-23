@@ -1,8 +1,8 @@
 <?php
 
-use App\Data\CreatePostRequest;
-use App\Enums\Post\PostStatusEnum;
-use App\Enums\Post\PostTypeEnum;
+use App\Data\PostData;
+use App\Enums\PostStatus;
+use App\Enums\PostType;
 use App\Models\User;
 use App\Models\Posts\Category;
 use App\Models\Posts\Post;
@@ -18,17 +18,17 @@ describe('Post system', function () {
         $this->postService = app(PostService::class);
     });
 
-    it('should be able to create post with different types', function (PostTypeEnum $type) {
+    it('should be able to create post with different types', function (PostType $type) {
         actingAs(User::factory()->create());
 
         $category = Category::factory()->create();
         $title = fake()->unique()->realText(30);
         $content = implode(fake()->sentences());
 
-        $request = new CreatePostRequest(
-            categoryId: $category->getKey(),
+        $request = new PostData(
+            category_id: $category->getKey(),
             title: $title,
-            type: $type->value,
+            type: $type,
             content: $content
         );
 
@@ -36,7 +36,7 @@ describe('Post system', function () {
 
         expect($post)->not()->toBeNull();
         expect($post)->toBeInstanceOf(Post::class);
-    })->with(PostTypeEnum::cases());
+    })->with(PostType::cases());
 
     it('must be able to publish unpublished post', function () {
         /** @var Post $unpublishedPost */
@@ -45,6 +45,6 @@ describe('Post system', function () {
         $this->postService->publishPost($unpublishedPost);
 
         expect($unpublishedPost)->toBeInstanceOf(Post::class);
-        expect($unpublishedPost->getStatus())->toBeString(PostStatusEnum::published()->value);
+        expect($unpublishedPost->getStatus())->toEqual(PostStatus::Published);
     });
 });

@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\Post\PostTypeEnum;
+use App\Enums\PostType;
 use Illuminate\Foundation\Testing\WithFaker;
 
 dataset('create-post-payload', function () {
@@ -9,7 +9,7 @@ dataset('create-post-payload', function () {
     return [[[
         'category_id' => 1,
         'title' => fake()->realText(40),
-        'type' => PostTypeEnum::post(),
+        'type' => PostType::Post,
         'content' => fake()->realText(),
     ]]];
 });

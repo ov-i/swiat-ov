@@ -19,7 +19,7 @@ class AttachmentShow extends Resource
     }
 
     #[Computed]
-    public function getUser(): ?User
+    public function getAttachmentUser(): ?User
     {
         return $this->attachment()->user()->first();
     }

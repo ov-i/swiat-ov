@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Livewire\Contracts;
 
+use Illuminate\Database\Eloquent\Builder;
+use Laravel\Scout\Builder as ScoutBuilder;
+
 interface Filterable
 {
     /**
-     * @return array<array-key, \App\Livewire\Filters\Filter>
+     * Applies the given filter
      */
-    public function filters(): array;
+    public function apply(Builder &$builder): Builder|ScoutBuilder;
 }

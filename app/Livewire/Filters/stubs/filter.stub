@@ -2,29 +2,22 @@
 
 declare(strict_types=1);
 
-namespace {{ namespace }};
+namespace App\Livewire\Filters;
 
-use App\Livewire\Filters\Filter;
+use App\Livewire\Contracts\Filterable;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
+use Livewire\Attributes\Url;
+use Livewire\Form;
 
-class {{ class }} extends Filter
+class RangeFilter extends Form implements Filterable
 {
-    /**
-     * Create a new class instance.
-     */
-    public function __construct()
-    {
-        //
-    }
-
     /**
      * @inheritDoc
      */
-    protected static function apply(Request $request, Builder $query, mixed $value)
+    public function apply(Builder &$builder): Builder
     {
         // code ..
 
-        return $query;
+        return $builder;
     }
 }

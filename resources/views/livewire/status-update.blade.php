@@ -9,9 +9,9 @@
             <x-select name="status" id="status" wire:model.live="newStatus" class="w-full">
                 @foreach ($this->getAvailableExcplicitStatus() as $status)
                     <option 
-                        value="{{ $status->value }}" 
-                        {{ $this->post->getStatus() === $status->value  ? 'selected' : null}}>
-                        {{ __($status->label) }}
+                        value="{{ $status }}" 
+                        {{ $this->post->getStatus() === $status  ? 'selected' : null}}>
+                        {{ __($status->label()) }}
                     </option>
                 @endforeach
             </x-select>

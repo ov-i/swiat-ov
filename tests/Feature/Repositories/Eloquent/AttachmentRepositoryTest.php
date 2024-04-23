@@ -2,6 +2,7 @@
 
 use App\Enums\Post\AttachmentAllowedMimeTypesEnum;
 use App\Models\Posts\Attachment;
+use App\Models\User;
 use App\Repositories\Eloquent\Posts\AttachmentRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -13,11 +14,12 @@ describe('Attachment Repository', function () {
         $this->attachmentRepository = new AttachmentRepository();
     });
 
-    it('should be able to create attachment record', function () {
+    it('should be able to create attachment record', function (User $user) {
         $mimeType = AttachmentAllowedMimeTypesEnum::pdf()->value;
         $attachmentFile = UploadedFile::fake()->create('attachment.pdf', mimeType: $mimeType);
 
         $attachment = $this->attachmentRepository->createAttachment([
+            'user_id' => $user->getKey(),
             'original_name' => $attachmentFile->getClientOriginalName(),
             'filename' => fake()->realText(10),
             'checksum' => hash(config('swiatov.file_hash_algo'), 'checksum'),
@@ -28,7 +30,7 @@ describe('Attachment Repository', function () {
 
         expect($attachment)->toBeInstanceOf(Attachment::class);
         expect($attachment->getMimeType())->toBe($mimeType);
-    });
+    })->with('custom-user');
 
     it('should be able to update attachment data', function () {
         $attachment = Attachment::factory()->create();

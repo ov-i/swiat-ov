@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
+use phpDocumentor\Reflection\DocBlock\Tags\Deprecated;
 use Spatie\Enum\Enum;
 
+#[Deprecated(description: 'Please use ItemsPerPage instead')]
 final class ItemsPerPageEnum extends Enum
 {
     public const DEFAULT = 10;
