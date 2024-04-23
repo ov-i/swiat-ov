@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\Post\PostHistoryActionEnum;
+use App\Enums\Post\PostHistoryAction;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,7 +15,7 @@ return new class () extends Migration {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('post_id')->constrained('posts');
-            $table->enum('action', PostHistoryActionEnum::toValues());
+            $table->enum('action', array_map(fn (PostHistoryAction $action) => $action->value, PostHistoryAction::cases()));
             $table->timestamps();
             $table->softDeletes();
         });

@@ -82,6 +82,11 @@ class PostRepository extends BaseRepository
         return $deleted;
     }
 
+    public function restorePost(Post &$post): bool
+    {
+        return $post->restore();
+    }
+
     /**
      * Tries to find any already published event or delayed and not published yet.
      */

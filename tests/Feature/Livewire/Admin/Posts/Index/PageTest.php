@@ -1,17 +1,13 @@
 <?php
 
-namespace Tests\Feature\Livewire\Admin\Posts\Index;
-
 use App\Livewire\Admin\Posts\Index\PostIndex;
-use Livewire\Livewire;
-use Tests\TestCase;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class PageTest extends TestCase
-{
-    /** @test */
-    public function renders_successfully()
-    {
-        Livewire::test(PostIndex::class)
-            ->assertStatus(200);
-    }
-}
+uses(RefreshDatabase::class);
+
+test('renders successfully', function (User $user) {
+    Livewire::actingAs($user)
+        ->test(PostIndex::class)
+        ->assertStatus(200);
+})->with('custom-user');

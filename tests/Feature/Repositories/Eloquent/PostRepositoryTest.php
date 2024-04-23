@@ -25,15 +25,11 @@ describe('Post Repository', function () {
 
         $payload = PostData::from($payload);
 
-        $post = $this->postRepository->createPost([
-            ...$payload->toArray(),
-            'user_id' => $user->getKey(),
-            'status' => PostStatus::Unpublished
-        ]);
+        $post = $this->postRepository->createPost($payload);
 
         expect($post)->toBeInstanceOf(Post::class);
-        expect($post->getTitle())->toBeString();
-        expect($post->getStatus())->toBe(PostStatus::Unpublished);
+        expect($post->fresh()->getTitle())->toBeString();
+        expect($post->fresh()->getStatus())->toBe(PostStatus::Unpublished);
     })->with('create-post-payload');
 
     it('Should be able to check if post with $title already exists', function (Post $post) {
@@ -73,14 +69,18 @@ describe('Post Repository', function () {
     it('should be able to set [archived] status', function (Post $post) {
         $this->postRepository->setStatus($post, PostStatus::Archived);
 
-        expect($post->getStatus())->toBe(PostStatus::Archived);
-        expect($post->isPublished())->toBeFalse();
-        expect($post->isArchived())->toBeTrue();
-        expect($post->getArchivedAt())->toBeInstanceOf(Date::class);
+        expect($post->fresh()->getStatus())->toBe(PostStatus::Archived);
+        expect($post->fresh()->isPublished())->toBeFalse();
+        expect($post->fresh()->isArchived())->toBeTrue();
+        expect($post->fresh()->getArchivedAt())->toBeInstanceOf(Date::class);
     })->with('unpublished-post');
 
     it('should be able to set [delayed] status', function () {
-        $post = Post::factory()->unpublished()->create(['should_be_published_at' => now()->addHours(2)]);
+        $post = Post::factory()
+            ->for(User::factory())
+            ->for(Category::factory())
+            ->unpublished()
+            ->create(['should_be_published_at' => now()->addHours(2)]);
 
         $this->postRepository->setStatus($post, PostStatus::Delayed);
 
@@ -98,8 +98,8 @@ describe('Post Repository', function () {
     it('should be able to set [closed] status', function (Post $post) {
         $this->postRepository->setStatus($post, PostStatus::Closed);
 
-        expect($post->getStatus())->toBe(PostStatus::Closed);
-        expect($post->isClosed())->toBeTrue();
+        expect($post->fresh()->getStatus())->toBe(PostStatus::Closed);
+        expect($post->fresh()->isClosed())->toBeTrue();
     })->with('unpublished-post');
 
     test('isAnyEventPublished method returns true, if there is any published event', function () {

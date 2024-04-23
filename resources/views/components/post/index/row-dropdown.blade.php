@@ -15,7 +15,7 @@
         </x-menu.close>
         @endcan
 
-        @if ($post->deleted_at === null)
+        @if (blank($post->deleted_at))
             @can('delete', [\App\Models\Posts\Post::class, $post])
             <x-menu.close>
                 <x-menu.item 

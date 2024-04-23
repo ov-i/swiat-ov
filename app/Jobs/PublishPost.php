@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Enums\Post\PostHistoryActionEnum;
+use App\Enums\Post\PostHistoryAction;
 use App\Enums\PostStatus;
 use App\Models\Posts\Post;
 use App\Repositories\Eloquent\Posts\PostHistoryRepository;
@@ -41,6 +41,6 @@ class PublishPost implements ShouldQueue, ShouldBeEncrypted
         $postHistoryRepository = app(PostHistoryRepository::class);
 
         $postRepository->setStatus($this->post, PostStatus::Published);
-        $postHistoryRepository->addHistory($this->post, PostHistoryActionEnum::published());
+        $postHistoryRepository->addHistory($this->post, PostHistoryAction::Published);
     }
 }

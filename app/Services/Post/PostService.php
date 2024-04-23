@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Post;
 
 use App\Data\PostData;
-use App\Enums\Post\PostHistoryActionEnum;
+use App\Enums\Post\PostHistoryAction;
 use App\Enums\PostStatus;
 use App\Events\PostPublished;
 use App\Exceptions\PostAlreadyExistsException;
@@ -36,7 +36,7 @@ class PostService
         throw_if($this->postRepository->postExists($request->title), PostAlreadyExistsException::class);
 
         $post = $this->postRepository->createPost($request);
-        $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::created());
+        $this->postHistoryRepository->addHistory($post, PostHistoryAction::Created);
 
         $this->syncTags($post, $request);
         $this->syncAttachments($post, $request->attachments);
@@ -65,7 +65,7 @@ class PostService
         $this->syncAttachments($post, $updateData->attachments);
 
         $editedPost = $this->postRepository->editPost($post, $updateData->toArray());
-        $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::updated());
+        $this->postHistoryRepository->addHistory($post, PostHistoryAction::Updated);
 
         return $editedPost;
     }
@@ -90,7 +90,7 @@ class PostService
         }
 
         $this->postRepository->setStatus($post, PostStatus::Closed);
-        $this->postHistoryRepository->addHistory($post, PostHistoryActionEnum::closed());
+        $this->postHistoryRepository->addHistory($post, PostHistoryAction::Closed);
     }
 
     /**
@@ -105,12 +105,20 @@ class PostService
 
         $deleted = $this->postRepository->deletePost($post, $forceDelete);
         $historyAction = $forceDelete ?
-            PostHistoryActionEnum::forceDeleted() :
-            PostHistoryActionEnum::deleted();
+            PostHistoryAction::ForceDeleted :
+            PostHistoryAction::Deleted;
 
         $this->postHistoryRepository->addHistory($post, $historyAction);
 
         return $deleted;
+    }
+
+    public function restorePost(Post &$post): bool
+    {
+        $restored = $this->postRepository->restorePost($post);
+        $this->postHistoryRepository->addHistory($post, PostHistoryAction::Restored);
+
+        return $restored;
     }
 
     /**

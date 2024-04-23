@@ -85,7 +85,7 @@
                                         <a 
                                             href="{{ route('admin.posts.show', ['post' => $post]) }}"
                                             class=" border-b border-dashed border-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300 dark:border-zinc-500 dark:active:text-gray-200 active:text-gray-500 transition duration-100">
-                                            {{ $post->getTitle() }}
+                                            {{ str($post->getTitle())->words(4) }}
                                         </a>
                                     @endif
                                     <div class="font-normal text-gray-500 pt-1">{{ $post->getSlug() }}</div>
@@ -141,14 +141,7 @@
             <x-icon.spinner size="10" class="text-gray-500" />
         </section>
     @else
-        <h3 class="font-primary text-lg text-gray-600 lowercase text-center my-5">
-            {{ __('No posts found, ') }}
-            
-            <a href="{{ route('admin.posts.create') }}"
-                class="text-cyan-500 underlined hover:text-cyan-700 active:text-cyan-800 dark:text-white">
-                {{ __('create one here') }}
-            </a>
-        </h3>
+        <x-not-found-resource resource='posts' :link="route('admin.posts.create')" />
     @endif
 
     <template x-teleport="#page-section">
