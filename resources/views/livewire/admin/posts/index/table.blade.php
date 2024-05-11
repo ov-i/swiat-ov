@@ -3,7 +3,7 @@
         <div class="flex items-center gap-2">
             <x-fields.per-page :$perPage />
 
-            <x-post.index.search :$posts />
+            <x-fields.search />
         </div>
 
         <x-post.index.bulk-actions />
@@ -13,7 +13,7 @@
         <x-resource-table.index>
             <x-resource-table.head>
                 <x-resource-table.header>
-                    <x-post.index.check-all />
+                    <x-fields.check-all />
                 </x-resource-table.header>
 
                 <x-resource-table.header>
@@ -84,7 +84,7 @@
                                     @else
                                         <a 
                                             href="{{ route('admin.posts.show', ['post' => $post]) }}"
-                                            class=" border-b border-dashed border-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300 dark:border-zinc-500 dark:active:text-gray-200 active:text-gray-500 transition duration-100">
+                                            class="border-b border-dashed border-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300 dark:border-zinc-500 dark:active:text-gray-200 active:text-gray-500 transition duration-100">
                                             {{ str($post->getTitle())->words(4) }}
                                         </a>
                                     @endif
@@ -127,7 +127,7 @@
 
         <section 
             wire:loading 
-            wire:target="sortBy, search, nextPage, previousPage, delete, deleteSelected" 
+            wire:target="sortBy, search, nextPage, previousPage, delete, deleteSelected, perPage" 
             class="inset-0 absolute bg-white dark:bg-asideMenu opacity-75">
 
             {{-- Loading canvas .. --}}
@@ -136,7 +136,7 @@
 
         <section 
             wire:loading.flex 
-            wire:target="sortBy, search. nextPage, previousPage, delete, deleteSelected" 
+            wire:target="sortBy, search. nextPage, previousPage, delete, deleteSelected, perPage" 
             class="inset-0 absolute flex justify-center items-center">
             <x-icon.spinner size="10" class="text-gray-500" />
         </section>

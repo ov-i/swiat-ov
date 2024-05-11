@@ -15,7 +15,7 @@ use App\Livewire\Admin\Posts\Show\PostShow;
 use App\Livewire\Admin\Posts\Tag;
 use App\Livewire\Admin\Posts\TagsCreate;
 use App\Livewire\Admin\Users\Role;
-use App\Livewire\Admin\Users\UserIndex;
+use App\Livewire\Admin\Users\Index\UserIndex;
 use App\Livewire\Admin\Users\UserEdit;
 use App\Livewire\Admin\Users\UserShow;
 use App\Livewire\Admin\Posts\CategoryCreate;

@@ -13,10 +13,6 @@ class PostShow extends Component
 {
     public Post $post;
 
-    public bool $showImageModel = false;
-
-    public bool $attachmentsModal = false;
-
     private PostService $postService;
 
     public function mount(): void

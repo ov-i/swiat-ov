@@ -1,9 +1,7 @@
 @props(['condition'])
 
 @if($condition)
-    <x-material-icon class="text-green-600">
-        check_circle
-    </x-material-icon>
+    <x-icon.check-circle class="text-green-600" />
 @else
     <x-material-icon class="text-red-600">
         dangerous

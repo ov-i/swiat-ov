@@ -2,37 +2,45 @@
 
 namespace App\Livewire;
 
-use App\Enums\AppThemeEnum;
+use App\Enums\AppTheme;
 use App\Models\User;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class ThemeSwitcher extends Component
 {
-    public string $theme;
+    public AppTheme|string $theme;
 
-    public function mount()
+    public function mount(): void
     {
         $user = $this->getLoggedInUser();
 
-        $this->theme = filled($user) ? $user->getTheme() : 'light';
+        if (filled($user)) {
+            $this->theme = $user->getTheme();
+        } else {
+            $this->theme = AppTheme::Light;
+        }
     }
 
-    public function render()
+    #[Computed]
+    public function theme(): AppTheme|string
     {
-        return view('livewire.theme-switcher', ['theme' => $this->theme]);
+        return $this->theme;
     }
 
-    public function toggleTheme()
+    public function toggleTheme(): void
     {
         $user = $this->getLoggedInUser();
         $theme = match($this->theme) {
-            AppThemeEnum::LIGHT->value => AppThemeEnum::DARK->value,
-            AppThemeEnum::DARK->value => AppThemeEnum::LIGHT->value,
+            AppTheme::Light => AppTheme::Dark,
+            AppTheme::Dark => AppTheme::Light,
         };
 
         if(filled($user)) {
-            $user->updateTheme(AppThemeEnum::from($theme));
+            $user->updateTheme($theme);
         }
+
+        $this->theme = $theme;
 
         $this->dispatch('app.theme-change', ['theme' => $theme]);
     }

@@ -6,7 +6,6 @@ use App\Events\Auth\UserDeleted;
 use App\Events\Auth\UserLocked;
 use App\Events\Auth\UserUnlocked;
 use App\Events\PostPublished;
-use App\Events\User\UserProfileImageDeleted;
 use App\Listeners\Auth\UpdateLastLoginAt;
 use App\Listeners\Auth\SaveLockToHistory;
 use App\Listeners\Auth\SaveUnlockToHistory;
@@ -15,7 +14,6 @@ use App\Listeners\Auth\SendLockNotification;
 use App\Listeners\Auth\SendUnlockNotification;
 use App\Listeners\Auth\SaveUserAccountDeletionToHistory;
 use App\Listeners\PublishPost;
-use App\Listeners\User\SendDeletedImageNotification;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -41,9 +39,6 @@ class EventServiceProvider extends ServiceProvider
         UserDeleted::class => [
             SendAccountDeletionNotification::class,
             SaveUserAccountDeletionToHistory::class
-        ],
-        UserProfileImageDeleted::class => [
-            SendDeletedImageNotification::class,
         ],
         PostPublished::class => [
             PublishPost::class,

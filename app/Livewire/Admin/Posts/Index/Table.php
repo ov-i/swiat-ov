@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Admin\Posts\Index;
 
-use App\Enums\ItemsPerPageEnum;
 use App\Livewire\Forms\PerPage;
 use App\Livewire\Traits\Searchable;
 use App\Livewire\Traits\Selectable;
@@ -51,7 +50,7 @@ class Table extends Component
         $posts = $this->applySorting($posts);
         $posts = $this->filters->apply($posts);
 
-        $posts = $posts->paginate(ItemsPerPageEnum::DEFAULT);
+        $posts = $posts->paginate($this->perPage->slice->value);
 
         $this->itemIdsOnPage = collect($posts->items())
             ->map(fn (Post $post) => (string) $post->getKey())

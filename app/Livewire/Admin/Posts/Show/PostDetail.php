@@ -15,6 +15,10 @@ class PostDetail extends Component
 {
     use InteractsWithModals;
 
+    public bool $showImageModel = false;
+
+    public bool $attachmentsModal = false;
+
     public Post $post;
 
     public function render(): View
@@ -25,13 +29,13 @@ class PostDetail extends Component
     #[Computed]
     public function getPostUser(): User
     {
-        return $this->post->user()->first();
+        return $this->post->user;
     }
 
     #[Computed]
     public function getCategory(): Category
     {
-        return $this->post->category()->first();
+        return $this->post->category;
     }
 
     #[Computed]
