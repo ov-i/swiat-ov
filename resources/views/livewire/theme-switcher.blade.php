@@ -1,3 +1,9 @@
-<button type="button" wire:click.throttle.500ms="toggleTheme">
-  <x-material-icon classes="text-2xl">light_mode</x-material-icon>
-</button>
+<section title="Theme switcher">
+  <button type="button" wire:click.throttle.1000ms="toggleTheme" class="flex items-start">
+    @if ($this->theme() === \App\Enums\AppTheme::Light)
+      <x-icon.moon class="dark:text-white" />
+    @else
+      <x-icon.light-bulb class="dark:text-white" />
+    @endif
+  </button>
+</section>

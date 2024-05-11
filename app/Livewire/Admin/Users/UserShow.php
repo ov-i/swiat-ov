@@ -2,32 +2,20 @@
 
 namespace App\Livewire\Admin\Users;
 
-use App\Events\User\UserProfileImageDeleted;
-use App\Livewire\Resource;
 use App\Models\User;
-use App\Repositories\Eloquent\Users\UserRepository;
-use App\Services\Users\UserService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Url;
+use Livewire\Component;
 
-class UserShow extends Resource
+class UserShow extends Component
 {
     #[Locked, Url]
     public User $user;
-
-    /** @var UserRepository $repository */
-    protected $repository = UserRepository::class;
-
-    private UserService $userService;
-
-    public function mount(
-        UserService $userService
-    ): void {
-        $this->userService = $userService;
-    }
 
     #[Computed]
     public function user(): User
@@ -35,15 +23,10 @@ class UserShow extends Resource
         return $this->user;
     }
 
-    public function deleteImage(): void
+    #[Layout('layouts.admin')]
+    public function render(): View
     {
-        $user = $this->user();
-
-        $user->deleteProfilePhoto();
-
-        session()->flash('User image has been deleted');
-
-        event(new UserProfileImageDeleted($user));
+        return view('livewire.admin.users.user-show');
     }
 
     #[Computed]
@@ -71,10 +54,5 @@ class UserShow extends Resource
             ->roles()
             ->select(['name', 'guard_name'])
             ->get();
-    }
-
-    protected function getView(): string
-    {
-        return 'users.user-show';
     }
 }

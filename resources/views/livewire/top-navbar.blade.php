@@ -1,9 +1,7 @@
-<nav class="top-navbar" aria-label="top-navbar fixed top-0">
-    <section class="top-navbar__search flex flex-rop justify-between items-center">
+<nav class="top-navbar sticky top-0" aria-label="Top navbar">
+    <section class="top-navbar__search flex justify-between items-center">
         <article class="search-input flex items-center space-x-2">
-            <span class="material-symbols-outlined text-2xl">
-                manage_search
-            </span>
+            <x-icon.magnifying-glass />
 
             <x-input placeholder="{{ __('admin.dashboard.search') }}" class="w-full" />
         </article>

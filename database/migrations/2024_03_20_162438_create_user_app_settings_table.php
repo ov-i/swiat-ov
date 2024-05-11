@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\AppTheme;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +14,8 @@ return new class () extends Migration {
         Schema::create('user_app_settings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->unique();
-            $table->string('theme')->default('light');
+            $table->enum('theme', array_map(fn ($theme) => $theme->value, AppTheme::cases()))
+                ->default(AppTheme::Light);
             $table->timestamps();
         });
     }

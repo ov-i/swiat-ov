@@ -1,12 +1,12 @@
 import './bootstrap';
 
 Livewire.on('app.theme-change', ([{ theme }]) => {
-  const htmlTag = document.querySelector('html');
+  if (localStorage.getItem('theme') === theme) return;
 
-  if (htmlTag.classList.contains('light')) {
-    htmlTag.classList.remove('light');
-  }
-  htmlTag.classList.toggle(theme === 'dark' ? 'light' : 'dark');
+  const html = document.querySelector('html');
+  html.setAttribute('data-theme', theme);
 
-  location.reload()
+  localStorage.setItem('theme', theme);
+
+  // Livewire.dispatch('app.alert', 'theme changed');
 })
