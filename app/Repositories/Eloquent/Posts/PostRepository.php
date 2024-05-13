@@ -105,6 +105,30 @@ class PostRepository extends BaseRepository
         })->exists();
     }
 
+    public function getPublishedEvent(): ?Post
+    {
+        return $this->findWhere(params: function (Builder $query) {
+            $query
+                ->where('type', PostType::Event)
+                ->where('status', PostStatus::Published)
+                ->orderBy('published_at', 'desc')
+                ->limit(1);
+        })->first();
+    }
+
+    public function getPublishedPosts(): Builder
+    {
+        return $this->findWhere(params: function (Builder $query) {
+            $query
+                ->where('status', PostStatus::Published)
+                ->where(function () use (&$query) {
+                    $query->where('type', PostType::Post)
+                        ->orWhere('type', PostType::Vip);
+                })
+                ->orderBy('published_at', 'desc');
+        });
+    }
+
     /**
      * Binds current post status with it's timestamps / boolean values
      */

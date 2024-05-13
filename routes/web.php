@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PostController;
+use App\Http\Middleware\VipMembership;
 use Illuminate\Support\Facades\Route;
 use Laravel\Jetstream\Http\Controllers\Livewire\UserProfileController;
 use App\Livewire\Admin\Dashboards\Main;
@@ -20,6 +23,7 @@ use App\Livewire\Admin\Users\UserEdit;
 use App\Livewire\Admin\Users\UserShow;
 use App\Livewire\Admin\Posts\CategoryCreate;
 use App\Livewire\Admin\Posts\Index\PostIndex;
+use Illuminate\Routing\Router;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +65,12 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+
+Route::group([], function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+    
+    Route::get('/{post:slug}', [PostController::class, 'show'])->name('posts.show');
+});
 
 // User profile
 Route::middleware($profileMiddlewares)->group(function () {
