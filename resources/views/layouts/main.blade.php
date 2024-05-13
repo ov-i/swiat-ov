@@ -22,9 +22,11 @@
         <!-- Styles -->
         @livewireStyles
     </head>
-    <body>
-        <div class="font-sans text-gray-900 dark:text-gray-100 antialiased">
-            {{ $slot }}
+    <body class="font-primary antialiased bg-gray-200 h-screen dark:bg-gray-900">
+        <x-navigation.top-navbar />
+        
+        <div>
+            @yield('content')
         </div>
 
         @livewireScripts

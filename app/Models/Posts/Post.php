@@ -194,6 +194,11 @@ class Post extends Model implements Followable, Sluggable
         return $this->getStatus() === PostStatus::Published;
     }
 
+    public function isVipOnly(): bool
+    {
+        return $this->getType() === PostType::Vip;
+    }
+
     public function isClosed(): bool
     {
         return $this->getStatus() === PostStatus::Closed;
