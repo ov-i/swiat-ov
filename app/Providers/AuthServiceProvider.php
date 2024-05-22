@@ -65,6 +65,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('view-tag', [TagPolicy::class, 'view']);
         Gate::define('write-tag', [TagPolicy::class, 'create']);
 
+        // Vip posts access
+        Gate::define('view-vip-posts', fn (User $user) => $user->isVip() || $user->isAdmin() || $user->isModerator());
+
         Gate::define('can-follow', function (User $user, Followable $followable) {
             $canFollow = false;
             if (!Auth::check() || $user->isBlocked()) {

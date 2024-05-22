@@ -1,4 +1,6 @@
-<x-guest-layout>
+@extends('layouts.main')
+
+@section('content')
     <x-authentication-card>
         <x-slot name="logo">
             <x-authentication-card-logo />
@@ -61,5 +63,4 @@
     </x-authentication-card>
 
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-
-</x-guest-layout>
+@endsection

@@ -62,7 +62,7 @@
                 <article class="navigation-links__item my-2 mx-3">
                     <h2 class="text-lg resource-header text-gray-200">{{ __('Panels') }}</h2>
 
-                    <x-nav-section route='dashboard' icon='dashboard' content='Main' />
+                    <x-nav-section route='dashboard' icon='squares' content='Main' />
                 </article>
 
                 <!-- single link -->
@@ -74,7 +74,7 @@
                         <article class="sub-resources pt-4">
                             <h3 class="sub-resource-header text-md text-gray-200">{{ __('Support') }}</h3>
 
-                            <x-nav-section route='users' icon="person" />
+                            <x-nav-section route='users' icon="user" />
                             <x-nav-section route='roles' icon='key' />
                         </article>
 
@@ -82,11 +82,11 @@
                         <article class="sub-resources py-4">
                             <h3 class="sub-resource-header text-md text-gray-200">{{ __('Posts system') }}</h3>
 
-                            <x-nav-section route='comments' icon="chat" />
-                            <x-nav-section route='posts' icon='edit_note' />
-                            <x-nav-section route='posts.categories' icon='category' />
+                            <x-nav-section route='comments' icon="chat-bubble-bottom-center" />
+                            <x-nav-section route='posts' icon='pencil-square' />
+                            <x-nav-section route='posts.categories' icon='rectangle-group' />
                             <x-nav-section route='posts.tags' icon='tag' />
-                            <x-nav-section route='attachments' icon='cloud_upload' />
+                            <x-nav-section route='attachments' icon='cloud-arrow-up' />
                         </article>
                     </section>
                 </article>
@@ -103,9 +103,9 @@
                     <article class="flex flex-row items-center">
                         <section class="nav-opener">
                             <button type="button" class="flex items-start" @click.stop="navShown = true">
-                                <x-material-icon class="text-[2rem]" aria-describedby="nav-opener">
+                                <x-icon.bars-3-bottom-left class="!w-7 !h-auto dark:text-white" aria-describedby="nav-opener">
                                     menu
-                                </x-material-icon>
+                                </x-icon.bars-3-bottom-left>
                             </button>
                             <p class="sr-only" id="nav-opener">
                                 {{ __('Navigation menu icon that opens hidden menu on mobile') }}
@@ -121,10 +121,10 @@
                     </article>
                     <article class="profile-info flex flex-row space-x-2 items-center">
                         <div class="icons-wrapper flex flex-row space-x-2 items-center">
-                            <x-material-icon classes="text-2xl">translate</x-material-icon>
+                            <x-icon.language class="dark:text-white" />
                             <livewire:theme-switcher />
-                            <x-material-icon classes="text-2xl">dashboard_customize</x-material-icon>
-                            <x-icon.bell />
+                            <x-icon.squares class="dark:text-white" />
+                            <x-icon.bell class="dark:text-white" />
                         </div>
 
                         <div class="profile-avatar">

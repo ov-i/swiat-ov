@@ -28,5 +28,5 @@ class AppSettings extends Model
             'theme' => AppTheme::class
         ];
     }
-    
+
 }

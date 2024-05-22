@@ -1,4 +1,4 @@
-<nav {{ $attributes->class(['w-full px-4 py-3 sticky top-0 bg-white shadow']) }} {{ $attributes }}>
+<nav {{ $attributes->class(['w-full px-4 py-3 fixed top-0 bg-white shadow']) }} {{ $attributes }}>
     <section class="nav-wrapper flex items-center justify-between w-full">
         <section class="nav-brand flex items-center gap-2">
             <a href="{{ route('home') }}" class="flex">

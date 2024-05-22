@@ -7,6 +7,8 @@ use App\Contracts\Sluggable;
 use App\Enums\PostStatus;
 use App\Enums\PostType;
 use App\Models\PostHistory;
+use App\Traits\HasCommentsPolicy;
+use App\Traits\HasLikes;
 use Database\Factories\Posts\PostFactory;
 use App\Models\User;
 use DateTime;
@@ -26,6 +28,8 @@ class Post extends Model implements Followable, Sluggable
     use HasFactory;
     use \App\Traits\Followable;
     use Searchable;
+    use HasLikes;
+    use HasCommentsPolicy;
 
     protected $fillable = [
         'user_id',

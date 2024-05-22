@@ -29,7 +29,6 @@ class CommentFactory extends Factory
     {
         return [
             'user_id' => 1,
-            'post_id' => PostFactory::new(),
             'title' => fake()->realText(60),
             'content' => fake()->realText(120),
             'status' => fake()->randomElement(CommentStatusEnum::toValues()),

@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\ItemsPerPage;
 use App\Repositories\Eloquent\Posts\PostRepository;
-use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {

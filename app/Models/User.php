@@ -206,6 +206,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasRole(RoleNamesEnum::moderator()->value);
     }
 
+    public function isVip(): bool
+    {
+        return $this->hasRole(RoleNamesEnum::vipMember()->value);
+    }
+
     public function isBlocked(): bool
     {
         return $this->status === UserStatusEnum::banned()->value;
