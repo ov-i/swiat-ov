@@ -3,7 +3,6 @@
 namespace App\Livewire\Admin\Users\Show;
 
 use App\Models\User;
-use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class UserDetail extends Component

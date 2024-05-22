@@ -2,10 +2,9 @@
 
 <div 
     class="sub-resource {{ request()->routeIs('admin.'.$route) ? 'font-semibold text-white' : 'text-gray-400' }}">
-    <x-iconed-link
-        link="{{ route('admin.'.$route) }}"
-        icon="{{ $icon }}"
-        icon_size="md">
-    {{ __(ucfirst($route)) }}
-    </x-iconed-link>
+    
+    <a href="{{ route('admin.'.$route) }}" class="flex items-center space-x-2 dark:text-white">
+        <x-dynamic-component :component="'icon.'.$icon" class="icon" />
+        <span>{{ $content }}</span>
+    </a>
 </div>

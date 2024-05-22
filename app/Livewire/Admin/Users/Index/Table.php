@@ -92,7 +92,7 @@ class Table extends Component
     public function applySearch(Builder &$builder): Builder
     {
         if (filled($this->search)) {
-            return $builder->where(function() use (&$builder) {
+            return $builder->where(function () use (&$builder) {
                 $builder->where('name', 'like', '%' . $this->search . '%')
                     ->orWhere('id', 'like', '%' . (int) $this->search . '%')
                     ->orWhere('email', 'like', '%' . $this->search . '%')
@@ -126,7 +126,7 @@ class Table extends Component
 
                 return $builder;
             }
-            
+
             $builder->orderBy($column, $sortDirection);
         }
 

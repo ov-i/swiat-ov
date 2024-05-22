@@ -1,5 +1,35 @@
 @extends('layouts.main')
 
+@section('title')
+    {{ __('Strona główna') }}
+@endsection
+
+@section('meta')
+    <meta name="description" content="Świat OV - platforma dla ludzi z pasją">
+    <mete name="keywords" content="Świat OV, pasja, hobby, nauka, kuchnia, medycyna, programowanie, cyberbezpieczeństwo">
+    <meta name="author" content="Bartosz Pazdur">
+    <meta name="robots" content="index, follow">
+    <meta name="revisit-after" content="7 days">
+
+    {{-- Facebook ogs --}}
+    <meta property="og:title" content="Świat OV - platforma dla ludzi z pasją">
+    <meta property="og:description" content="Świat OV - platforma dla ludzi z pasją">
+    <meta property="og:image" content="{{ asset('images/swiat-ov.svg') }}">
+    <meta property="og:url" content="{{ route('home') }}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Świat OV">
+    <meta property="og:locale" content="pl_PL">
+
+    {{-- Twitter --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@swiat_ov">
+    <meta name="twitter:creator" content="@bartosz_pazdur">
+    <meta name="twitter:title" content="Świat OV - platforma dla ludzi z pasją">
+    <meta name="twitter:description" content="Świat OV - platforma dla ludzi z pasją">
+    <meta name="twitter:image" content="{{ asset('images/swiat-ov.svg') }}">
+    <meta name="twitter:url" content="{{ route('home') }}">
+@endsection
+
 @section('content')
     <livewire:event-banner />
 
@@ -35,31 +65,13 @@
                             <x-card.body>
                                 <x-scrollable-list>
                                     <x-scrollable-list.list>
-                                        <li class="border-b border-zinc-200 last:border-none first:pt-0 last:pb-0 py-1">
-                                            <A href="{{ route('home') }}" class="text-zinc-500 ">
-                                                {{ __('Kulinaria') }}
-                                            </A>
-                                        </li>
-                                        <li class="border-b border-zinc-200 last:border-none first:pt-0 last:pb-0 py-1">
-                                            <A href="{{ route('home') }}" class="text-zinc-500 ">
-                                                {{ __('Medycyna') }}
-                                            </A>
-                                        </li>
-                                        <li class="border-b border-zinc-200 last:border-none first:pt-0 last:pb-0 py-1">
-                                            <A href="{{ route('home') }}" class="text-zinc-500 ">
-                                                {{ __('Programowanie') }}
-                                            </A>
-                                        </li>
-                                        <li class="border-b border-zinc-200 last:border-none first:pt-0 last:pb-0 py-1">
-                                            <A href="{{ route('home') }}" class="text-zinc-500 ">
-                                                {{ __('Cyberbezpieczeństwo') }}
-                                            </A>
-                                        </li>
-                                        <li class="border-b border-zinc-200 last:border-none first:pt-0 last:pb-0 py-1">
-                                            <A href="{{ route('home') }}" class="text-zinc-500 ">
-                                                {{ __('Lifestyle') }}
-                                            </A>
-                                        </li>
+                                        @foreach (\App\Models\Posts\Category::select('name')->get() as $category)
+                                            <li class="border-b border-zinc-200 last:border-none first:pt-0 last:pb-0 py-1">
+                                                <a href="{{ route('home') }}" class="text-zinc-500 ">
+                                                    {{ $category->getName() }}
+                                                </a>
+                                            </li>
+                                        @endforeach
                                     </x-scrollable-list.list>
                                 </x-scrollable-list>
                             </x-card.body>
@@ -77,31 +89,19 @@
                             <x-card.body>
                                 <x-scrollable-list>
                                     <x-scrollable-list.list>
-                                        <li class="border-b border-zinc-200 last:border-none first:pt-0 last:pb-0 py-1">
-                                            <A href="{{ route('home') }}" class="text-zinc-500 ">
-                                                {{ __('#zdrowie') }}
-                                            </A>
-                                        </li>
-                                        <li class="border-b border-zinc-200 last:border-none first:pt-0 last:pb-0 py-1">
-                                            <A href="{{ route('home') }}" class="text-zinc-500 ">
-                                                {{ __('#dieta') }}
-                                            </A>
-                                        </li>
-                                        <li class="border-b border-zinc-200 last:border-none first:pt-0 last:pb-0 py-1">
-                                            <A href="{{ route('home') }}" class="text-zinc-500 ">
-                                                {{ __('#kuchnia') }}
-                                            </A>
-                                        </li>
-                                        <li class="border-b border-zinc-200 last:border-none first:pt-0 last:pb-0 py-1">
-                                            <A href="{{ route('home') }}" class="text-zinc-500 ">
-                                                {{ __('#bezpieczeństwo') }}
-                                            </A>
-                                        </li>
-                                        <li class="border-b border-zinc-200 last:border-none first:pt-0 last:pb-0 py-1">
-                                            <A href="{{ route('home') }}" class="text-zinc-500 ">
-                                                {{ __('#lifestyle') }}
-                                            </A>
-                                        </li>
+                                        @forelse (\App\Models\Posts\Tag::select('name')->get() as $tag)
+                                            <li class="border-b border-zinc-200 last:border-none first:pt-0 last:pb-0 py-1">
+                                                <A href="{{ route('home') }}" class="text-zinc-500 ">
+                                                    {{ __("#{$tag->getName()}") }}
+                                                </A>
+                                            </li>
+                                        @empty
+                                            <li class="border-b border-zinc-200 last:border-none first:pt-0 last:pb-0 py-1">
+                                                <A href="{{ route('home') }}" class="text-zinc-500 ">
+                                                    {{ __('Brak tagów') }}
+                                                </A>
+                                            </li>
+                                        @endforelse
                                     </x-scrollable-list.list>
                                 </x-scrollable-list>
                             </x-card.body>

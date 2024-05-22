@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
-use App\Http\Middleware\VipMembership;
 use Illuminate\Support\Facades\Route;
 use Laravel\Jetstream\Http\Controllers\Livewire\UserProfileController;
 use App\Livewire\Admin\Dashboards\Main;
@@ -23,7 +22,6 @@ use App\Livewire\Admin\Users\UserEdit;
 use App\Livewire\Admin\Users\UserShow;
 use App\Livewire\Admin\Posts\CategoryCreate;
 use App\Livewire\Admin\Posts\Index\PostIndex;
-use Illuminate\Routing\Router;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,32 +59,26 @@ $adminMiddlewares = [
     'can:viewAdmin'
 ];
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
-
-
-Route::group([], function () {
-    Route::get('/', [HomeController::class, 'index'])->name('home');
-    
-    Route::get('/{post:slug}', [PostController::class, 'show'])->name('posts.show');
-});
-
 // User profile
 Route::middleware($profileMiddlewares)->group(function () {
-    Route::get('/profile', [UserProfileController::class, 'show'])
-        ->name('profile.show');
 
-    Route::get('/posts', function () {echo 'ddd'; })
-        ->name('user.posts')
-      ->middleware('can:writePost');
 });
 
-Route::middleware($dashboardMiddlewares)->group(function () {
+Route::group([], function () use (&$dashboardMiddlewares, &$profileMiddlewares) {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+
     Route::get('/dashboard', function () {
         return view('dashboard');
-    })->name('dashboard');
+    })->middleware($dashboardMiddlewares)->name('dashboard');
+
+    Route::get('/profile', [UserProfileController::class, 'show'])
+        ->name('profile.show')
+        ->middleware($profileMiddlewares);
+
+    Route::get('/{post:slug}', [PostController::class, 'show'])
+        ->name('posts.show');
 });
+
 
 // Admin panel
 Route::prefix('admin')->middleware($adminMiddlewares)->group(function () {

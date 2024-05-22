@@ -5,7 +5,7 @@
             <x-card.header>
                 <article class="single-article">
                     <div class="thumbnail mb-5" x-show="$wire.post.thumbnail_url">
-                        <img src="{{ $post->thumbnail_url }}" alt="Hero" class="w-full h-64 object-cover rounded-lg" />
+                        <img src="{{ $post->getThumbnailPath() }}" alt="Hero" class="w-full h-64 object-cover rounded-lg" />
                     </div>
 
                     <div class="flex items-start gap-2">
@@ -25,15 +25,29 @@
                     </div>
 
                     <div class="font-primary">
-                        <a href="{{ route('posts.show', ['post' => $post]) }}">
-                            <h2 class="text-2xl text-zinc-500 font-semibold mt-3 flex items-center gap-2 hover:text-zinc-600 active:text-zinc-700 border-b border-dashed border-zinc-400 transition-all duration-150 dark:text-asideMenu">
-                                @if ($post->isVipOnly())
+                        @if ($post->isVipOnly())
+                            @can('view-vip-posts')
+                                <a href="{{ route('posts.show', ['post' => $post]) }}">
+                                    <h2 class="text-2xl text-zinc-500 font-semibold mt-3 flex items-center gap-2 hover:text-zinc-600 active:text-zinc-700 border-b border-dashed border-zinc-400 transition-all duration-150 dark:text-asideMenu">
+                                        <x-icon.lock-closed />
+                                        
+                                        {{ str($post->getTitle())->words(5) }}
+                                    </h2>
+                                </a>
+                            @else
+                                <h2 class="text-2xl text-zinc-500 font-semibold mt-3 flex items-center gap-2 hover:text-zinc-600 active:text-zinc-700 border-b border-dashed border-zinc-400 transition-all duration-150 dark:text-asideMenu">
                                     <x-icon.lock-closed />
-                                @endif
-                                
-                                {{ str($post->getTitle())->words(5) }}
-                            </h2>
-                        </a>
+                                        
+                                    {{ str($post->getTitle())->words(5) }}
+                                </h2>
+                            @endcan
+                        @else
+                            <a href="{{ route('posts.show', ['post' => $post]) }}">
+                                <h2 class="text-2xl text-zinc-500 font-semibold mt-3 flex items-center gap-2 hover:text-zinc-600 active:text-zinc-700 border-b border-dashed border-zinc-400 transition-all duration-150 dark:text-asideMenu">
+                                    {{ str($post->getTitle())->words(5) }}
+                                </h2>
+                            </a>
+                        @endif
 
                         <p class="text-gray-500 text-base mt-3">
                             {{ str($post->getExcerpt())->words(50) }}
@@ -57,9 +71,19 @@
 
                         <div class="flex justify-between">
                             <div class=""></div>
-                            <a href="" class="lowercase text-sm lg:text-base text-cyan-600 mt-3 py-2">
-                                {{ __('universal.keep_reding', locale: 'pl') }} &raquo;
-                            </a>
+
+                            @if ($post->isVipOnly())
+                                @can('view-vip-posts')
+                                    <a href="{{ route('posts.show', $post) }}" class="lowercase text-sm lg:text-base text-cyan-600 mt-3 py-2">
+                                        {{ __('universal.keep_reding', locale: 'pl') }} &raquo;
+                                    </a>
+                                @else
+                                @endcan
+                            @else
+                                <a href="{{ route('posts.show', $post) }}" class="lowercase text-sm lg:text-base text-cyan-600 mt-3 py-2">
+                                    {{ __('universal.keep_reding', locale: 'pl') }} &raquo;
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </article>
@@ -69,7 +93,6 @@
         <x-card>
             <x-card.header>
                 <h2 class="text-2xl text-zinc-500 font-semibold mt-3 flex items-center gap-2 hover:text-zinc-600 active:text-zinc-700 border-b border-dashed border-zinc-400 transition-all duration-150 dark:text-asideMenu">
-                    <x-icon.lock-closed />
                     {{ __('universal.no_posts', locale: 'pl') }}
                 </h2>
             </x-card.header>

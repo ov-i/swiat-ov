@@ -18,7 +18,7 @@ class EventBanner extends Component
     }
 
     #[Computed]
-    public function event(): Post
+    public function event(): ?Post
     {
         return $this->postRepository->getPublishedEvent();
     }
