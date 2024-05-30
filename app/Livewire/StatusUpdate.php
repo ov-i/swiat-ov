@@ -7,7 +7,6 @@ use App\Models\Posts\Post;
 use App\Repositories\Eloquent\Posts\PostRepository;
 use App\Traits\InteractsWithModals;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 

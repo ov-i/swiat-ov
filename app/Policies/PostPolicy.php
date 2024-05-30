@@ -22,7 +22,7 @@ class PostPolicy
      */
     public function view(User &$user, Post &$post): bool
     {
-        return 
+        return
             $post->isPublished() ||
             $post->isArchived() ||
             $post->isClosed();
