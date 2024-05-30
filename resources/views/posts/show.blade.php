@@ -182,11 +182,11 @@
             </div>
         </main>
 
-        <section class="mt-12">
-            <section class="post-show-comments">
-                <h2 class="text-xl font-semibold text-zinc-500">{{ __('Komentarze') }} ({{ $post->comments->count() }})</h2>
+        @if ($post->isCommentable())
+            <section class="mt-12">
+                <section class="post-show-comments">
+                    <h2 class="text-xl font-semibold text-zinc-500">{{ __('Komentarze') }} ({{ $post->comments->count() }})</h2>
 
-                @if ($post->isCommentable())
                     @auth
                         <section class="mt-4">
                             <section class="flex items-start gap-2">
@@ -204,12 +204,12 @@
                             </section>
                         </section>
                     @endauth
-                @endif
 
-                <section class="mt-4">
-                    <x-post.comments-list :$post />
+                    <section class="mt-4">
+                        <x-post.comments-list :$post />
+                    </section>
                 </section>
             </section>
-        </section>
+        @endif
   </section>
 @endsection

@@ -168,7 +168,7 @@
 
                             <x-input-error for='postForm.category_id' />
     
-                            @if (auth()->user()->can('write-category'))
+                            @can('write-category')
                                 <x-button type="button" component="button"
                                     class="outline-none bg-none text-cyan-500 hover:text-cyan-600 active:text-cyan-800 dark:text-white mt-3 flex items-center" wire:click="openModal()" >
                                     
@@ -177,7 +177,7 @@
                                 </x-button>
 
                                 <livewire:admin.posts.category-create wire:model="modalOpen" />
-                            @endif
+                            @endcan
                         </aside>
     
                         <!-- Tags -->

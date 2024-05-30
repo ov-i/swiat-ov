@@ -120,7 +120,12 @@ class PostRepository extends BaseRepository
     {
         return $this->findWhere(params: function (Builder $query) {
             $query
-                ->where('status', PostStatus::Published)
+                ->where(function () use (&$query) {
+                    $query
+                        ->where('status', PostStatus::Published)
+                        ->orWhere('status', PostStatus::Archived)
+                        ->orWhere('status', PostStatus::Closed);
+                })
                 ->where(function () use (&$query) {
                     $query->where('type', PostType::Post)
                         ->orWhere('type', PostType::Vip);

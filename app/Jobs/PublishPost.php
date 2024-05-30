@@ -42,5 +42,7 @@ class PublishPost implements ShouldQueue, ShouldBeEncrypted
 
         $postRepository->setStatus($this->post, PostStatus::Published);
         $postHistoryRepository->addHistory($this->post, PostHistoryAction::Published);
+        $this->post->should_be_published_at = null;
+        $this->post->update();
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Models\User;
-use Gate;
+use Illuminate\Support\Facades\Gate;
 
 class PulseServiceProvider extends \Laravel\Pulse\PulseServiceProvider
 {
