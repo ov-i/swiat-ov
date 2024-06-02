@@ -94,7 +94,7 @@ class Form extends Component
     {
         if ($this->cantBePublished()) {
             $this->postCreateState->saveButtonContent = 'create';
-        } elseif (!$this->cantBePublished() && filled($this->postForm->should_be_published_at)) {
+        } elseif (!$this->cantBePublished() && $this->postForm->isScheduled()) {
             $this->postCreateState->saveButtonContent = 'delay';
         } else {
             $this->postCreateState->saveButtonContent = 'publish';

@@ -27,17 +27,17 @@ class PublishPost
     {
         $post = $event->post;
 
-        if (blank($post->getPublishableDate())) {
+        if (blank($post->getScheduledAt())) {
             $this->postRepository->setStatus($post, PostStatus::Published);
             $this->postHistoryRepository->addHistory($post, PostHistoryAction::Published);
 
             return;
         }
 
-        $this->postRepository->setStatus($post, PostStatus::Delayed);
-        $this->postHistoryRepository->addHistory($post, PostHistoryAction::Delayed);
+        $this->postRepository->setStatus($post, PostStatus::Scheduled);
+        $this->postHistoryRepository->addHistory($post, PostHistoryAction::Scheduled);
 
-        $delayDiff = abs(Carbon::parse($post->getPublishableDate(), config('app.timezone'))->diffInSeconds());
+        $delayDiff = abs(Carbon::parse($post->getScheduledAt(), config('app.timezone'))->diffInSeconds());
         \App\Jobs\PublishPost::dispatch($post)->delay($delayDiff);
     }
 }

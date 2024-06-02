@@ -23,7 +23,7 @@ class PostData extends Data
         public readonly ?array $attachments = null,
         public readonly ?string $thumbnail_path = null,
         public readonly ?string $excerpt = null,
-        public readonly ?string $should_be_published_at = null,
+        public readonly ?string $scheduled_publish_date = null,
     ) {
     }
 }

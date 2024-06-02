@@ -26,7 +26,7 @@ class PostRepository extends BaseRepository
         return $this->create([
             ...$postForm->toArray(),
             'slug' => str($postForm->title)->slug(),
-            'should_be_published_at' => $postForm->should_be_published_at,
+            'scheduled_publish_date' => $postForm->scheduled_publish_date,
             'user_id' => auth()->id(),
         ]);
     }
@@ -99,8 +99,8 @@ class PostRepository extends BaseRepository
                 ->orWhere(function (Builder $builder) {
                     $builder
                         ->where('type', PostType::Event)
-                        ->where('status', PostStatus::Delayed)
-                        ->whereNotNull('should_be_published_at');
+                        ->where('status', PostStatus::Scheduled)
+                        ->whereNotNull('scheduled_publish_date');
                 });
         })->exists();
     }

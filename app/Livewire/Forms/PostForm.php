@@ -39,7 +39,7 @@ class PostForm extends Form
     /** @var Collection<array-key, int> $attachments */
     public $attachments = [];
 
-    public ?string $should_be_published_at = null;
+    public ?string $scheduled_publish_date = null;
 
     public Post $post;
 
@@ -51,7 +51,7 @@ class PostForm extends Form
         $this->excerpt = $post->getExcerpt();
         $this->content = $post->getContent();
         $this->category_id = $post->category()->getParentKey();
-        $this->should_be_published_at = $post->getPublishableDate();
+        $this->scheduled_publish_date = $post->getScheduledAt();
     }
 
     /**
@@ -99,7 +99,7 @@ class PostForm extends Form
                     ->extensions([...ThumbnailAllowedMimeTypesEnum::toLabels()])
                     ->max(config('swiatov.max_file_size')),
             ],
-            'should_be_published_at' => [
+            'scheduled_publish_date' => [
                 'nullable',
                 'date',
                 'after_or_equal:today',
@@ -129,6 +129,12 @@ class PostForm extends Form
     public function isEvent(): bool
     {
         return $this->type === PostType::Event;
+    }
+
+    #[Computed]
+    public function isScheduled(): bool
+    {
+        return filled($this->scheduled_publish_date);
     }
 
     #[Computed]

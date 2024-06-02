@@ -11,7 +11,7 @@ return new class () extends Migration {
     public function up(): void
     {
         Schema::table('posts', function (Blueprint $table) {
-            $table->timestampTz('should_be_published_at')->nullable();
+            $table->timestampTz('scheduled_publish_date')->nullable();
         });
     }
 
@@ -21,7 +21,7 @@ return new class () extends Migration {
     public function down(): void
     {
         Schema::table('posts', function (Blueprint $table) {
-            $table->dropColumn('should_be_published_at');
+            $table->dropColumn('scheduled_publish_date');
         });
     }
 };

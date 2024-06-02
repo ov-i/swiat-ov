@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Posts\Post;
 use App\Repositories\Eloquent\Posts\PostRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 
 use function Pest\Laravel\actingAs;
 
@@ -75,17 +76,17 @@ describe('Post Repository', function () {
         expect($post->fresh()->getArchivedAt())->toBeInstanceOf(Date::class);
     })->with('unpublished-post');
 
-    it('should be able to set [delayed] status', function () {
+    it('should be able to set [scheduled] status', function () {
         $post = Post::factory()
             ->for(User::factory())
             ->for(Category::factory())
             ->unpublished()
-            ->create(['should_be_published_at' => now()->addHours(2)]);
+            ->create(['scheduled_publish_date' => now()->addHours(2)]);
 
-        $this->postRepository->setStatus($post, PostStatus::Delayed);
+        $this->postRepository->setStatus($post, PostStatus::Scheduled);
 
-        expect($post->getStatus())->toBe(PostStatus::Delayed);
-        expect($post->isDelayed())->toBeTrue();
+        expect($post->getStatus())->toBe(PostStatus::Scheduled);
+        expect($post->isScheduled())->toBeTrue();
     });
 
     it('should be able to set [inTrash] status', function (Post $post) {

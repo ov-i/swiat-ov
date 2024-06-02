@@ -3,6 +3,7 @@
 use App\Data\PostData;
 use App\Enums\PostStatus;
 use App\Enums\PostType;
+use App\Jobs\PublishPost;
 use App\Models\User;
 use App\Models\Posts\Category;
 use App\Models\Posts\Post;
@@ -40,7 +41,11 @@ describe('Post system', function () {
 
     it('must be able to publish unpublished post', function () {
         /** @var Post $unpublishedPost */
-        $unpublishedPost = Post::factory()->unpublished()->create();
+        $unpublishedPost = Post::factory()
+            ->for(User::factory())
+            ->for(Category::factory())
+            ->unpublished()
+            ->create();
 
         $this->postService->publishPost($unpublishedPost);
 

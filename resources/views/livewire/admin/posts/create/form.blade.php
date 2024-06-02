@@ -204,17 +204,17 @@
                             </aside>
                         @endif
     
-                        <!-- Publishable date time -->
+                        <!-- Scheduled date -->
                         @if (!$this->cantBePublished())
                             <aside class="aside-card">
                                 <div class="publishable-date">
                                     <x-fields.labelled-input 
                                         full
-                                        for='publishable date'
+                                        for='scheduled at'
                                         type="datetime-local" 
-                                        wire:model="postForm.should_be_published_at" />
+                                        wire:model="postForm.scheduled_publish_date" />
     
-                                    <x-input-error for='postForm.should_be_published_at' />
+                                    <x-input-error for='postForm.scheduled_publish_date' />
                                 </div>
                             </aside>
                         @endif
