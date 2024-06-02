@@ -9,7 +9,7 @@ trait HasCommentsPolicy
         return
             $this->isPublished()
             && !$this->isArchived()
-            && !$this->isDelayed()
+            && !$this->isScheduled()
             && !$this->isClosed()
             && !$this->isEvent();
     }
