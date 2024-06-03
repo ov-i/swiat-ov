@@ -197,9 +197,8 @@
                         @if (!$postForm->isEvent())
                             <aside class="aside-card">
                                 <div class="thumbnail-url">
-                                    <x-fields.labelled-input type="file" for='thumbnail' accept="image/png, image/jpgeg, image/svg, image/tiff, image/bmp" wire:model="postForm.thumbnailPath" />
-    
-                                    <x-input-error for='postForm.thumbnailPath' />
+                                    <h3 class="font-secondary">{{ __('Adding thumbnail is currently unavailable.') }}</h3>
+                                    <p class="font-secondary text-sm">{{ __('Post will use a Unsplash.it service instead.') }}</p>
                                 </div>
                             </aside>
                         @endif

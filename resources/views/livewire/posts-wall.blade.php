@@ -31,20 +31,20 @@
                                     <h2 class="text-2xl text-zinc-500 font-semibold mt-3 flex items-center gap-2 hover:text-zinc-600 active:text-zinc-700 border-b border-dashed border-zinc-400 transition-all duration-150 dark:text-asideMenu">
                                         <x-icon.lock-closed />
                                         
-                                        {{ str($post->getTitle())->words(5) }}
+                                        {{ str($post->getTitle())->words(10) }}
                                     </h2>
                                 </a>
                             @else
                                 <h2 class="text-2xl text-zinc-500 font-semibold mt-3 flex items-center gap-2 hover:text-zinc-600 active:text-zinc-700 border-b border-dashed border-zinc-400 transition-all duration-150 dark:text-asideMenu">
                                     <x-icon.lock-closed />
                                         
-                                    {{ str($post->getTitle())->words(5) }}
+                                    {{ str($post->getTitle())->words(10) }}
                                 </h2>
                             @endcan
                         @else
                             <a href="{{ route('posts.show', ['post' => $post]) }}">
                                 <h2 class="text-2xl text-zinc-500 font-semibold mt-3 flex items-center gap-2 hover:text-zinc-600 active:text-zinc-700 border-b border-dashed border-zinc-400 transition-all duration-150 dark:text-asideMenu">
-                                    {{ str($post->getTitle())->words(5) }}
+                                    {{ str($post->getTitle())->words(10) }}
                                 </h2>
                             </a>
                         @endif

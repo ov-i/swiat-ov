@@ -37,25 +37,9 @@
                         {{ __('Strona główna') }} /
                     </x-breadcrumb.item>
                     <x-breadcrumb.item :href="route('posts.show', $post)" :active="true">
-                        {{ str($post->toSlug()) }}
+                        {{ str($post->toSlug())->limit(30) }}
                     </x-breadcrumb.item>
                 </x-breadcrumb>
-            </section>
-            
-            <section class="mb-8 mt-3">
-                <x-alert type="warning">
-                    <h3 class="text-xl font-semibold flex items-center gap-2">
-                        <x-icon.exclamation-triangle class="text-red-600" />
-
-                        {{ __('universal.attention', locale: 'pl') }}!
-                    </h3>
-
-                    <p class="text-md text-white mb-3 mt-2">
-                        Wpis zostal zarchiwizony. Oznacza to brak możliwości komentania oraz udostępniania wpisu.
-                        Po więcej informacji, prosimy zgłosić się do administratora lub moderatora strony.
-                        Serdecznie dziękujemy za zrozumienie.
-                    </p>
-                </x-alert>
             </section>
 
             <secton class="flex items-center gap-2 justify-between mt-3">
@@ -117,7 +101,7 @@
                         </section>
 
                         <section>
-                            <p class="font-secondary text-sm text-zinc-600 font-semibold my-5">
+                            <p class="font-secondary text-sm text-zinc-600 font-semibold my-4">
                                 {{ __('Kategoria: ') }} 
                                 
                                 <span class="font-normal">
@@ -125,7 +109,15 @@
                                 </span>
                             </p>
 
-                            <h1 class="text-4xl font-bold text-zinc-500 mb-4">{{ $post->title }}</h1>
+                            @if ($post->isArchived())
+                                <x-badge type="warning" class="mb-2 text-md">
+                                    {{ __('zarchiwizowane') }}
+                                </x-badge>
+                            @endif
+
+                            <h1 class="text-4xl font-bold text-zinc-500 mb-4">
+                                {{ $post->title }}
+                            </h1>
 
                             <section data-content="excerpt" class="my-3">
                                 <p class="text-zinc-600 text-base font-primary pb-5 border-b border-gray-300">
@@ -133,24 +125,24 @@
                                 </p>
                             </section>
 
-                            <section class="flex items-center gap-2">
-                                <p>{{ __('Tagi: ') }} </p>
-                                @forelse ($post->tags as $tag)
-                                    <x-icon.tag class="w-5 h-5" />
-                
-                                    <p class="text-sm text-zinc-600 font-secondary">
-                                        {{ $tag->getName() }}
-                                    </p>
-                                @empty
-                                @endforelse
-                            </section>
+                            @if ($post->tags->count())
+                                <section class="flex items-center gap-2">
+                                    <p>{{ __('Tagi: ') }} </p>
+                                    @foreach ($post->tags as $tag)
+                                        <x-icon.tag class="w-5 h-5" />
+                    
+                                        <p class="text-sm text-zinc-600 font-secondary">
+                                            {{ $tag->getName() }}
+                                        </p>
+                                    @endforeach
+                                </section>
+                            @endif
                         </section>
 
 
                         <section class="mt-4">
                             <article class="text-zinc-600 text-base font-primary pb-5 border-b border-gray-300" id="post-content">
                                 {!! $post->content !!}
-                                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolores vitae placeat reiciendis aliquid quidem nulla doloribus dolorem eum culpa, nihil ab aspernatur voluptates deserunt hic magnam suscipit fuga velit saepe! Nihil non quod deserunt odio nemo accusantium ducimus natus fugiat odit, ratione delectus ex praesentium? Veritatis error assumenda esse asperiores ipsam laudantium iste aperiam numquam facere magnam. Dignissimos veniam neque, eaque, assumenda porro amet similique sit, blanditiis deserunt natus quos perspiciatis suscipit quam est distinctio molestias error laudantium? Mollitia eius dolorem, similique atque animi rem non eos dolore reprehenderit quidem quos praesentium aspernatur, enim excepturi aliquam impedit numquam neque nisi.
                             </article>
 
                             <article data-content="attachments">
@@ -188,7 +180,7 @@
                     <h2 class="text-xl font-semibold text-zinc-500">{{ __('Komentarze') }} ({{ $post->comments->count() }})</h2>
 
                     @auth
-                        <section class="mt-4">
+                        <section class="my-4">
                             <section class="flex items-start gap-2">
                                 <img src="{{ auth()->user()->profile_photo_url }}" alt="User profile image" class="h-12 w-auto object-cover rounded-full" />
                 

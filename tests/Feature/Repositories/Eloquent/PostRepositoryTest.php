@@ -8,7 +8,6 @@ use App\Models\User;
 use App\Models\Posts\Post;
 use App\Repositories\Eloquent\Posts\PostRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Queue;
 
 use function Pest\Laravel\actingAs;
 

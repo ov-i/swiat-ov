@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>Admin Panel | @yield('title', config('app.name', 'Admin Panel'))</title>
 
     <!--  Robots -->
     <meta name="robots" content="nofollow, noindex">
@@ -58,11 +58,15 @@
             </section>
 
             <section class="navigation-links w-full flex flex-col pl-4">
+                <section class="navigation-links__item my-2 mx-3">
+                    <x-nav-section route='home' icon='home' content='Home' target='_blank' />
+                </section>
+
                 <!-- single link -->
                 <article class="navigation-links__item my-2 mx-3">
                     <h2 class="text-lg resource-header text-gray-200">{{ __('Panels') }}</h2>
 
-                    <x-nav-section route='dashboard' icon='squares' content='Main' />
+                    <x-nav-section route='admin.dashboard' icon='squares' content='Main' />
                 </article>
 
                 <!-- single link -->
@@ -74,19 +78,19 @@
                         <article class="sub-resources pt-4">
                             <h3 class="sub-resource-header text-md text-gray-200">{{ __('Support') }}</h3>
 
-                            <x-nav-section route='users' icon="user" />
-                            <x-nav-section route='roles' icon='key' />
+                            <x-nav-section route='admin.users' icon="user" content="Users" />
+                            <x-nav-section route='admin.roles' icon='key' content="Roles" />
                         </article>
 
                         <!-- sub resource -->
                         <article class="sub-resources py-4">
                             <h3 class="sub-resource-header text-md text-gray-200">{{ __('Posts system') }}</h3>
 
-                            <x-nav-section route='comments' icon="chat-bubble-bottom-center" />
-                            <x-nav-section route='posts' icon='pencil-square' />
-                            <x-nav-section route='posts.categories' icon='rectangle-group' />
-                            <x-nav-section route='posts.tags' icon='tag' />
-                            <x-nav-section route='attachments' icon='cloud-arrow-up' />
+                            <x-nav-section route='admin.comments' icon="chat-bubble-bottom-center" content="Comments" />
+                            <x-nav-section route='admin.posts' icon='pencil-square' content="Posts" />
+                            <x-nav-section route='admin.posts.categories' icon='rectangle-group' content="Categories" />
+                            <x-nav-section route='admin.posts.tags' icon='tag' content="Tags" />
+                            <x-nav-section route='admin.attachments' icon='cloud-arrow-up' content="Attachments" />
                         </article>
                     </section>
                 </article>
@@ -111,7 +115,7 @@
                                 {{ __('Navigation menu icon that opens hidden menu on mobile') }}
                             </p>
                         </section>
-                        <article class="search-input flex items-center space-x-2 relative dark:text-white">
+                        <article class="search-input flex items-center space-x-2 relative dark:text-white" >
                             <x-icon.magnifying-glass class="absolute text-2xl inset-2.5 pl-2" />
 
                             <x-input 

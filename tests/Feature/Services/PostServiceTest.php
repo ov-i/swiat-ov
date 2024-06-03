@@ -3,7 +3,6 @@
 use App\Data\PostData;
 use App\Enums\PostStatus;
 use App\Enums\PostType;
-use App\Jobs\PublishPost;
 use App\Models\User;
 use App\Models\Posts\Category;
 use App\Models\Posts\Post;
