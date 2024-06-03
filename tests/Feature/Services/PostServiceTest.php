@@ -40,7 +40,11 @@ describe('Post system', function () {
 
     it('must be able to publish unpublished post', function () {
         /** @var Post $unpublishedPost */
-        $unpublishedPost = Post::factory()->unpublished()->create();
+        $unpublishedPost = Post::factory()
+            ->for(User::factory())
+            ->for(Category::factory())
+            ->unpublished()
+            ->create();
 
         $this->postService->publishPost($unpublishedPost);
 

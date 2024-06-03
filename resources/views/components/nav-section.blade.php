@@ -1,9 +1,9 @@
-@props(['route', 'icon', 'content' => __(ucfirst($route))])
+@props(['route', 'icon', 'content', 'target' => '_self'])
 
 <div 
-    class="sub-resource {{ request()->routeIs('admin.'.$route) ? 'font-semibold text-white' : 'text-gray-400' }}">
+    class="sub-resource {{ request()->routeIs($route) ? 'font-semibold text-white' : 'text-gray-400' }}">
     
-    <a href="{{ route('admin.'.$route) }}" class="flex items-center space-x-2 dark:text-white">
+    <a href="{{ route($route) }}" class="flex items-center space-x-2 dark:text-white" {{ $attributes->merge(['target' => $target]) }}>
         <x-dynamic-component :component="'icon.'.$icon" class="icon" />
         <span>{{ $content }}</span>
     </a>

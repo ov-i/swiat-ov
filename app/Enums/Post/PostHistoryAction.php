@@ -8,7 +8,7 @@ enum PostHistoryAction: string
 {
     case Created = 'created';
 
-    case Delayed = 'delayed';
+    case Scheduled = 'scheduled';
 
     case Updated = 'updated';
 

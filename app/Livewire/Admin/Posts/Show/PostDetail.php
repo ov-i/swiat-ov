@@ -50,7 +50,7 @@ class PostDetail extends Component
     #[Computed]
     public function getPublishDelay()
     {
-        $publishableDate = Carbon::parse($this->post->getPublishableDate());
+        $publishableDate = Carbon::parse($this->post->getScheduledAt());
         if ($publishableDate === null) {
             return;
         }

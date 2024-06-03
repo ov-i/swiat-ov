@@ -146,6 +146,7 @@ return [
 
     // Custom
     'admin_pass' => env('ADMIN_PASS', 'password'),
+    'gtag' => env('GOOGLE_GTAG_ID', null),
 
     /*
     |--------------------------------------------------------------------------

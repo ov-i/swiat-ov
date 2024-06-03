@@ -5,8 +5,8 @@
 
     <x-input
         x-on:click.outside="focused = false"
-        x-on:keyup.slash.window.prevent="$refs.search.focus(); focused = true"
-        x-on:keyup.escape.window.prevent="$refs.search.blur(); focused = false"
+        x-on:keyup.slash.window.stop="$refs.search.focus(); focused = true"
+        x-on:keyup.escape.window.stop="$refs.search.blur(); focused = false"
         x-ref="search"
         wire:model.live="search"
         placeholder="{{ __('What are you searching for?') }}" 

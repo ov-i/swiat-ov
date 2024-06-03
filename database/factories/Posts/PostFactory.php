@@ -67,4 +67,12 @@ class PostFactory extends Factory
             'type' => $type ?? PostType::Post
         ]);
     }
+
+    public function scheduled(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => PostStatus::Scheduled,
+            'scheduled_publish_date' => now()->addHours(2)
+        ]);
+    }
 }

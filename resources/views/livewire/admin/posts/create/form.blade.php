@@ -168,7 +168,7 @@
 
                             <x-input-error for='postForm.category_id' />
     
-                            @if (auth()->user()->can('write-category'))
+                            @can('write-category')
                                 <x-button type="button" component="button"
                                     class="outline-none bg-none text-cyan-500 hover:text-cyan-600 active:text-cyan-800 dark:text-white mt-3 flex items-center" wire:click="openModal()" >
                                     
@@ -177,7 +177,7 @@
                                 </x-button>
 
                                 <livewire:admin.posts.category-create wire:model="modalOpen" />
-                            @endif
+                            @endcan
                         </aside>
     
                         <!-- Tags -->
@@ -197,24 +197,23 @@
                         @if (!$postForm->isEvent())
                             <aside class="aside-card">
                                 <div class="thumbnail-url">
-                                    <x-fields.labelled-input type="file" for='thumbnail' accept="image/png, image/jpgeg, image/svg, image/tiff, image/bmp" wire:model="postForm.thumbnailPath" />
-    
-                                    <x-input-error for='postForm.thumbnailPath' />
+                                    <h3 class="font-secondary">{{ __('Adding thumbnail is currently unavailable.') }}</h3>
+                                    <p class="font-secondary text-sm">{{ __('Post will use a Unsplash.it service instead.') }}</p>
                                 </div>
                             </aside>
                         @endif
     
-                        <!-- Publishable date time -->
+                        <!-- Scheduled date -->
                         @if (!$this->cantBePublished())
                             <aside class="aside-card">
                                 <div class="publishable-date">
                                     <x-fields.labelled-input 
                                         full
-                                        for='publishable date'
+                                        for='scheduled at'
                                         type="datetime-local" 
-                                        wire:model="postForm.should_be_published_at" />
+                                        wire:model="postForm.scheduled_publish_date" />
     
-                                    <x-input-error for='postForm.should_be_published_at' />
+                                    <x-input-error for='postForm.scheduled_publish_date' />
                                 </div>
                             </aside>
                         @endif

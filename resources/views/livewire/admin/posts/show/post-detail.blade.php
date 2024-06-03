@@ -1,3 +1,7 @@
+@section('title')
+    Edit: {{ $post->getTitle() }}
+@endsection
+
 <section>
     <x-admin-card title="" class="mt-2 w-full overflow-x-auto">
         <div class="post-details w-full">

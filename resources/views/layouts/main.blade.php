@@ -20,9 +20,14 @@
         <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon.png') }}">
         <link rel="manifest" href="{{ asset('build/manifest.json') }}">
 
-        @yield('meta')
+        @yield('meta')  
 
         <script defer src="https://unpkg.com/@alpinejs/ui@3.13.3-beta.4/dist/cdn.min.js"></script>
+
+        @if (app()->environment('production'))
+            <x-config.clarity-config />
+            <x-config.ga-config />
+        @endif
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -31,6 +36,11 @@
         @livewireStyles
     </head>
     <body class="font-primary antialiased bg-gray-200 h-screen dark:bg-gray-900">
+        <!-- Google Tag Manager (noscript) -->
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NC3P4QHP"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <!-- End Google Tag Manager (noscript) -->
+
         <x-navigation.top-navbar />
         
         <div class="mt-[5.5rem]">

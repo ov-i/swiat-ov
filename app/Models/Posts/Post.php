@@ -43,7 +43,7 @@ class Post extends Model implements Followable, Sluggable
         'archived',
         'archived_at',
         'published_at',
-        'should_be_published_at',
+        'scheduled_publish_date',
         'excerpt'
     ];
 
@@ -130,9 +130,9 @@ class Post extends Model implements Followable, Sluggable
         return $this->published_at;
     }
 
-    public function getPublishableDate(): ?string
+    public function getScheduledAt(): ?string
     {
-        return $this->should_be_published_at;
+        return $this->scheduled_publish_date;
     }
 
     public function getDescription(): ?string
@@ -213,9 +213,9 @@ class Post extends Model implements Followable, Sluggable
         return $this->type === PostType::Event;
     }
 
-    public function isDelayed(): bool
+    public function isScheduled(): bool
     {
-        return filled($this->getPublishableDate());
+        return filled($this->getScheduledAt());
     }
 
     public function toSearchableArray(): array

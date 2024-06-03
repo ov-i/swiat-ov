@@ -77,8 +77,15 @@ class StatusUpdate extends Component
         return $availableStatus;
     }
 
-    public function render()
+    /**
+     * @return non-empty-list<array-key, string>
+     */
+    public function rules(): array
     {
-        return view('livewire.status-update');
+        return [
+            'newStatus' => [
+                'required',
+            ]
+        ];
     }
 }

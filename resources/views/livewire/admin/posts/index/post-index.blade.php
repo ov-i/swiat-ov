@@ -1,4 +1,4 @@
-<section id="page-section">
+<section id="page-section" class="relative" wire:keydown.n.window="$dispatch('post.create-new')">
     <x-back-button :to="route('admin.dashboard')">
         {{ __('Back to dashboard') }}
     </x-back-button>
