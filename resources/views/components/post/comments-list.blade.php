@@ -1,8 +1,8 @@
-@props(['post'])
+@props(['comments'])
 
 <section>
-    @forelse ($post->comments as $comment)
-        <section class="flex items-start gap-2 my-5 first:mt-0 last:mb-0">
+    @forelse ($comments as $comment)
+        <section class="flex items-start gap-2 my-5 first:mt-0 last:mb-0" :key="$comment->getKey()" id="comment-{{ $comment->getKey() }}">
             <img src="{{ $comment->user->profile_photo_url }}" alt="User profile image" class="h-12 w-auto object-cover rounded-full" />
 
             <section class="bg-white rounded shadow p-4 w-full">
@@ -30,6 +30,45 @@
                             </p>
                         </section>
                     </section>
+                    @auth
+                    <section class="self-start">
+                        @can('viewAdmin')
+                            <x-menu>
+                                <x-menu.button>
+                                    <x-icon.ellipsis-horizontal />
+                                </x-menu.button>
+                                <x-menu.items>
+                                    <x-menu.close>
+                                        <x-menu.item>
+                                            <x-icon.trash />
+                                            Usuń
+                                        </x-menu.item>
+                                    </x-menu.close>
+                                    <x-menu.close>
+                                        <x-menu.item>
+                                            <x-icon.pencil-square />
+                                            Zdejmij
+                                        </x-menu.item>
+                                    </x-menu.close>
+                                </x-menu.items>
+                            </x-menu>
+                        @elseif(auth()->user()->isPostAuthor($comment->post) || $comment->user->getName() === auth()->user()->name)
+                            <x-menu>
+                                <x-menu.button>
+                                    <x-icon.ellipsis-horizontal />
+                                </x-menu.button>
+                                <x-menu.items>
+                                    <x-menu.close>
+                                        <x-menu.item>
+                                            <x-icon.trash />
+                                            Usuń
+                                        </x-menu.item>
+                                    </x-menu.close>
+                                </x-menu.items>
+                            </x-menu>
+                        @endcan
+                    </section>
+                    @endauth
                 </section>
             </section>
         </section>
@@ -41,6 +80,5 @@
         </section>
     @endforelse
 
-    <x-pagination-links 
-        :resource="$post->comments()->paginate(\App\Enums\ItemsPerPage::Default->value)" />
+    <x-pagination-links :resource="$comments" />
 </section>

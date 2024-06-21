@@ -2,6 +2,7 @@
 
 namespace App\Models\Posts;
 
+use App\Enums\Post\CommentStatus;
 use Database\Factories\Posts\CommentFactory;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -20,6 +21,18 @@ class Comment extends Model
         'content',
         'status'
     ];
+
+    public function __toString(): string
+    {
+        return str($this->title)->words(10)->toString();
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'status' => CommentStatus::class
+        ];
+    }
 
     /**
      * @return BelongsTo<Post, self>
@@ -43,5 +56,40 @@ class Comment extends Model
     protected static function newFactory(): Factory
     {
         return CommentFactory::new();
+    }
+
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    public function getContent(): string
+    {
+        return $this->content;
+    }
+
+    public function getStatus(): ?CommentStatus
+    {
+        return $this->status;
+    }
+
+    public function isAccepted(): bool
+    {
+        return $this->getStatus() === CommentStatus::Accepted;
+    }
+
+    public function isInReview(): bool
+    {
+        return $this->getStatus() === CommentStatus::InReview;
+    }
+
+    public function isInTrash(): bool
+    {
+        return $this->getStatus() === CommentStatus::InTrash;
+    }
+
+    public function isArchived(): bool
+    {
+        return $this->getStatus() === CommentStatus::Accepted;
     }
 }

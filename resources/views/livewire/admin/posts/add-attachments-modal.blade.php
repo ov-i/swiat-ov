@@ -1,8 +1,6 @@
 <section>
     <x-button type="button" class="text-sm md:text-md lg:text-base" wire:click="openModal()">
-        <x-material-icon>
-            attach_file_add
-        </x-material-icon>
+        <x-icon.paper-clip />
 
         {{ __('Add new') }}
     </x-button>
@@ -40,13 +38,11 @@
                 <x-button
                     disabled
                     wire:loading.flex>
-                    <x-material-icon class="animate-spin">
-                        sync
-                    </x-material-icon>
+
+                    <x-icon.spinner class="animate-spin" />
                 </x-button>
 
                 <x-input-error for="addAttachmentForm.attachments.*" />
-
             </form>
             
             <livewire:admin.posts.attachments.attachment-preview wire:model.live="addAttachmentForm.attachments" />

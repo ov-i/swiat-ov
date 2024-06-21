@@ -11,18 +11,30 @@ class UserPostFollowRepository extends BaseRepository
 {
     public function isPostFollowable(Post &$post, User &$user): bool
     {
-        return $post->isPublished() && !$post->followers()
-            ->where('user_id', $user->getKey())
-            ->exists();
+        return
+            $post->isPublished() &&
+            !$user->isPostAuthor($post) &&
+            !$post->isFollowed($user);
     }
 
-    public function followPost(Post &$post, User &$user): void
+    public function followPost(Post &$post, User &$user): bool
     {
         if (!$this->isPostFollowable($post, $user)) {
-            return;
+            return false;
         }
 
         $post->followers()->attach($user->getKey());
+
+        return true;
+    }
+
+    public function unfollowPost(Post &$post, User &$user): bool
+    {
+        if (!$post->isFollowed($user)) {
+            return false;
+        }
+
+        return $post->followers()->detach($user->getKey());
     }
 
     /**

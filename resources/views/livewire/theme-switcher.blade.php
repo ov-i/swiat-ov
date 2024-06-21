@@ -3,7 +3,7 @@
     @if ($this->theme() === \App\Enums\AppTheme::Light)
       <x-icon.moon class="dark:text-white" />
     @else
-      <x-icon.light-bulb class="dark:text-white" />
+      <x-icon.light-bulb class="dark:text-yellow-600" />
     @endif
   </button>
 </section>

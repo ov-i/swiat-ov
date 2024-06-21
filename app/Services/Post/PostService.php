@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Post;
 
 use App\Data\PostData;
+use App\Enums\Post\CommentStatus;
 use App\Enums\Post\PostHistoryAction;
 use App\Enums\PostStatus;
 use App\Events\PostPublished;
@@ -14,6 +15,7 @@ use App\Repositories\Eloquent\Posts\AttachmentRepository;
 use App\Repositories\Eloquent\Posts\PostHistoryRepository;
 use App\Repositories\Eloquent\Posts\PostRepository;
 use App\Traits\IntersectsArray;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
 class PostService
@@ -119,6 +121,13 @@ class PostService
         $this->postHistoryRepository->addHistory($post, PostHistoryAction::Restored);
 
         return $restored;
+    }
+
+    public function getAcceptedComments(Post &$post): Builder
+    {
+        return $post->comments()
+            ->where('status', CommentStatus::Accepted)
+            ->latest();
     }
 
     /**

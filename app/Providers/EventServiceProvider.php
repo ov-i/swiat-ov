@@ -6,6 +6,7 @@ use App\Events\Auth\UserDeleted;
 use App\Events\Auth\UserLocked;
 use App\Events\Auth\UserUnlocked;
 use App\Events\PostPublished;
+use App\Listeners\AddToUnlockQueue;
 use App\Listeners\Auth\UpdateLastLoginAt;
 use App\Listeners\Auth\SaveLockToHistory;
 use App\Listeners\Auth\SaveUnlockToHistory;
@@ -29,6 +30,7 @@ class EventServiceProvider extends ServiceProvider
             UpdateLastLoginAt::class,
         ],
         UserLocked::class => [
+            AddToUnlockQueue::class,
             SendLockNotification::class,
             SaveLockToHistory::class
         ],

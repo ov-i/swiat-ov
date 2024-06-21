@@ -6,16 +6,17 @@ use App\Contracts\Followable;
 use App\Enums\PostStatus;
 use App\Models\Posts\Attachment;
 use App\Models\Posts\Category;
+use App\Models\Posts\Comment;
 use App\Models\Posts\Post;
 use App\Models\User;
 use App\Policies\ApiTokenPolicy;
 use App\Policies\AttachmentPolicy;
 use App\Policies\CategoryPolicy;
+use App\Policies\CommentPolicy;
 use App\Policies\PostPolicy;
 use App\Policies\TagPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Sanctum\PersonalAccessToken;
 
@@ -30,6 +31,7 @@ class AuthServiceProvider extends ServiceProvider
         PersonalAccessToken::class => ApiTokenPolicy::class,
         User::class => UserPolicy::class,
         Post::class => PostPolicy::class,
+        Comment::class => CommentPolicy::class,
         Attachment::class => AttachmentPolicy::class,
         Category::class => CategoryPolicy::class,
     ];
@@ -46,6 +48,8 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('view-attachments', [AttachmentPolicy::class, 'viewAny']);
         Gate::define('view-attachment', [AttachmentPolicy::class, 'view']);
         Gate::define('create-attachment', [AttachmentPolicy::class, 'create']);
+
+        Gate::define('create-comment', [CommentPolicy::class, 'create']);
 
         Gate::define('view-users', [UserPolicy::class, 'viewAny']);
         Gate::define('view-user', [UserPolicy::class, 'view']);
@@ -69,17 +73,12 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('view-vip-posts', fn (User $user) => $user->isVip() || $user->isAdmin() || $user->isModerator());
 
         Gate::define('can-follow', function (User $user, Followable $followable) {
-            $canFollow = false;
-            if (!Auth::check() || $user->isBlocked()) {
-                return false;
+            if ($followable instanceof Post && !$user->isBlocked()) {
+                /** @var Post $followable */
+                return $followable->getStatus() !== PostStatus::Closed;
             }
 
-            $isPost = false;
-            if ($followable instanceof Post) {
-                $isPost = $followable->getStatus() === PostStatus::Published;
-            }
-
-            return $canFollow === $isPost && Gate::allows('viewAdmin', $user);
+            return false;
         });
     }
 }

@@ -28,14 +28,14 @@
                         @if ($post->isVipOnly())
                             @can('view-vip-posts')
                                 <a href="{{ route('posts.show', ['post' => $post]) }}">
-                                    <h2 class="text-2xl text-zinc-500 font-semibold mt-3 flex items-center gap-2 hover:text-zinc-600 active:text-zinc-700 border-b border-dashed border-zinc-400 transition-all duration-150 dark:text-asideMenu">
+                                    <h2 class="text-2xl text-zinc-500 dark:text-zinc-200 font-semibold mt-3 flex items-center gap-2 hover:text-zinc-600 dark:hover:text-zinc-300 active:text-zinc-700 dark:active:text-zinc-400 border-b border-dashed border-zinc-400 transition-all duration-150">
                                         <x-icon.lock-closed />
                                         
                                         {{ str($post->getTitle())->words(10) }}
                                     </h2>
                                 </a>
                             @else
-                                <h2 class="text-2xl text-zinc-500 font-semibold mt-3 flex items-center gap-2 hover:text-zinc-600 active:text-zinc-700 border-b border-dashed border-zinc-400 transition-all duration-150 dark:text-asideMenu">
+                                <h2 class="text-2xl text-zinc-500 dark:text-zinc-200 font-semibold mt-3 flex items-center gap-2 hover:text-zinc-600 dark:hover:text-zinc-300 active:text-zinc-700 dark:active:text-zinc-400 border-b border-dashed border-zinc-400 transition-all duration-150">
                                     <x-icon.lock-closed />
                                         
                                     {{ str($post->getTitle())->words(10) }}
@@ -43,7 +43,7 @@
                             @endcan
                         @else
                             <a href="{{ route('posts.show', ['post' => $post]) }}">
-                                <h2 class="text-2xl text-zinc-500 font-semibold mt-3 flex items-center gap-2 hover:text-zinc-600 active:text-zinc-700 border-b border-dashed border-zinc-400 transition-all duration-150 dark:text-asideMenu">
+                                <h2 class="text-2xl text-zinc-500 dark:text-zinc-200 font-semibold mt-3 flex items-center gap-2 hover:text-zinc-600 dark:hover:text-zinc-300 active:text-zinc-700 dark:active:text-zinc-400 border-b border-dashed border-zinc-400 transition-all duration-150">
                                     {{ str($post->getTitle())->words(10) }}
                                 </h2>
                             </a>
@@ -56,7 +56,7 @@
                         <div class="comments-reactions flex items-center mt-2">
                             <div class="flex items-center gap-2 mt-3">
                                 <x-icon.chat-bubble-bottom-center class="w-5 h-5 text-zinc-500" />
-                                <span class="text-zinc-500">{{ $post->comments()->count() }}</span>
+                                <span class="text-zinc-500">{{ $post->comments()->where('status', \App\Enums\Post\CommentStatus::Accepted)->count() }}</span>
                             </div>
 
                             @forelse ($post->tags()->select('name')->get() as $tag)

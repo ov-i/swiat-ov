@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
@@ -10,7 +11,7 @@ use App\Livewire\Admin\Posts\AttachmentEdit;
 use App\Livewire\Admin\Posts\AttachmentShow;
 use App\Livewire\Admin\Posts\Category;
 use App\Livewire\Admin\Posts\CategoryShow;
-use App\Livewire\Admin\Posts\Comment;
+use App\Livewire\Admin\Posts\CommentIndex;
 use App\Livewire\Admin\Posts\Create\PostCreate;
 use App\Livewire\Admin\Posts\Edit\PostEdit;
 use App\Livewire\Admin\Posts\Show\PostShow;
@@ -23,18 +24,6 @@ use App\Livewire\Admin\Users\UserShow;
 use App\Livewire\Admin\Posts\CategoryCreate;
 use App\Livewire\Admin\Posts\Index\PostIndex;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
-
 $authSessionMiddleware = config('jetstream.auth_session', false)
     ? config('jetstream.auth_session')
     : null;
@@ -44,13 +33,13 @@ $authMiddleware = config('jetstream.guard')
     : 'auth';
 
 $profileMiddlewares = array_filter([$authMiddleware, $authSessionMiddleware]);
+
 $dashboardMiddlewares = array_filter([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'blocked',
     'verified',
 ]);
-
 
 $adminMiddlewares = [
     config('jetstream.auth_session'),
@@ -59,14 +48,10 @@ $adminMiddlewares = [
     'can:viewAdmin'
 ];
 
-// User profile
-Route::middleware($profileMiddlewares)->group(function () {
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
-});
-
+// User routes
 Route::group([], function () use (&$dashboardMiddlewares, &$profileMiddlewares) {
-    Route::get('/', [HomeController::class, 'index'])->name('home');
-
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->middleware($dashboardMiddlewares)->name('dashboard');
@@ -75,8 +60,14 @@ Route::group([], function () use (&$dashboardMiddlewares, &$profileMiddlewares) 
         ->name('profile.show')
         ->middleware($profileMiddlewares);
 
-    Route::get('/{post:slug}', [PostController::class, 'show'])
-        ->name('posts.show');
+    Route::prefix('wpisy')->group(function () {
+        Route::get('/{post:slug}', [PostController::class, 'show'])
+            ->name('posts.show');
+
+        Route::post('/{post:slug}/komentarze', [CommentController::class, '__invoke'])
+            ->middleware(['throttle:add_comment'])
+            ->name('posts.comments.store');
+    });
 });
 
 
@@ -94,7 +85,7 @@ Route::prefix('admin')->middleware($adminMiddlewares)->group(function () {
         Route::get('/categories', Category::class)->name('admin.posts.categories');
         Route::get('/categories/create', CategoryCreate::class)->name('admin.categories.create');
         Route::get('categories/show/{category}', CategoryShow::class)->name('admin.posts.categories.show');
-        Route::get('/comments', Comment::class)->name('admin.comments');
+        Route::get('/comments', CommentIndex::class)->name('admin.comments');
         Route::get('/tags', Tag::class)->name('admin.posts.tags');
         Route::get('/tags/create', TagsCreate::class)->name('admin.posts.tags.create');
         Route::get('/attachments', Attachment::class)->name('admin.attachments');

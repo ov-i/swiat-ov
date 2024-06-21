@@ -2,7 +2,7 @@
 
 namespace Database\Factories\Posts;
 
-use App\Enums\Post\CommentStatusEnum;
+use App\Enums\Post\CommentStatus;
 use App\Models\Posts\Comment;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -29,9 +29,8 @@ class CommentFactory extends Factory
     {
         return [
             'user_id' => 1,
-            'title' => fake()->realText(60),
             'content' => fake()->realText(120),
-            'status' => fake()->randomElement(CommentStatusEnum::toValues()),
+            'status' => fake()->randomElement(CommentStatus::toArray()),
         ];
     }
 }

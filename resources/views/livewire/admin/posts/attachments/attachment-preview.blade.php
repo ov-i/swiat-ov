@@ -8,10 +8,9 @@
             @forelse ($attachments as $attachment)
                 <x-dotted-list liClass="py-2 first:pt-0 last:pb-0">
                     <div class="flex w-full items-center text-center justify-between">
-                        <section class="flex items-center">
-                            <x-material-icon class="text-[2rem]">
-                                draft
-                            </x-material-icon>
+                        <section class="flex items-center gap-1">
+                            <x-icon.document-arrow-up />
+
                             <p>{{ $attachment->getClientOriginalName() }}</p>
                         </section>
                         <p class="px-2 first:pl-0 last:pr-0 border-r last:border-none italic">

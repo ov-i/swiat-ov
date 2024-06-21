@@ -37,14 +37,14 @@
         <section class="wall-wrapper flex flex-col-reverse md:inline-grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 items-start">
             <aside class="left-sidebar col-span-1 w-full md:w-auto">
                 <x-card class="w-full mx-auto">
-                    <x-card.header class="border-b border-zinc-200 pb-1">
-                        <h2 class="text-md text-gray-600 font-secondary">
+                    <x-card.header class="border-b border-zinc-200 dark:border-gray-600 pb-1">
+                        <h2 class="text-md text-gray-600 dark:text-white font-secondary">
                             Hej! Witaj w naszym świecie!
                         </h2>
                     </x-card.header>
 
                     <x-card.body class="pt-3">
-                        <p class="text-sm text-gray-500 font-primary">
+                        <p class="text-sm text-gray-500 dark:text-zinc-400 font-primary">
                             Miło nam Cię powitać na naszej platformie. Stworzyliśmy ją z myślą o ludziach,
                             którzy posiadają szerokie spektrum zainteresowań. Niezależnie od tego, czy interesuję Cię
                             <span>Medycyna</span>, <span>Kulinaria</span>, <span>Programowanie</span>, Cyberbezpieczeństwo,
@@ -58,7 +58,7 @@
                     <section class="mt-3 w-full mx-auto">
                         <x-card>
                             <x-card.header>
-                                <h2 class="text-md text-gray-600 font-secondary">
+                                <h2 class="text-md text-gray-600 dark:text-white font-secondary">
                                     Kategorie
                                 </h2>
                             </x-card.header>    
@@ -66,7 +66,7 @@
                                 <x-scrollable-list>
                                     <x-scrollable-list.list>
                                         @foreach (\App\Models\Posts\Category::select('name')->get() as $category)
-                                            <li class="border-b border-zinc-200 last:border-none first:pt-0 last:pb-0 py-1">
+                                            <li class="border-b border-zinc-200 dark:border-gray-600 last:border-none first:pt-0 last:pb-0 py-1">
                                                 <a href="{{ route('home') }}" class="text-zinc-500 ">
                                                     {{ $category->getName() }}
                                                 </a>
@@ -82,7 +82,7 @@
                     <section class="mt-3 w-full mx-auto">
                         <x-card>
                             <x-card.header>
-                                <h2 class="text-md text-gray-600 font-secondary">
+                                <h2 class="text-md text-gray-600 dark:text-white font-secondary">
                                     Popularne tagi
                                 </h2>
                             </x-card.header>    
@@ -112,19 +112,19 @@
                     <section class="mt-3 w-full mx-auto">
                         <x-card>
                             <x-card.header>
-                                <h2 class="text-md text-gray-600 font-secondary">
+                                <h2 class="text-md text-gray-600 dark:text-white font-secondary">
                                     Inne
                                 </h2>
                             </x-card.header>    
                             <x-card.body>
                                 <x-scrollable-list>
                                     <x-scrollable-list.list>
-                                        <li class="border-b border-zinc-200 last:border-none first:pt-0 last:pb-0 py-1">
+                                        <li class="border-b border-zinc-200 dark:border-gray-600 last:border-none first:pt-0 last:pb-0 py-1">
                                             <A href="{{ route('home') }}" class="text-zinc-500 ">
                                                 {{ __('Zasady użytkowania') }}
                                             </A>
                                         </li>
-                                        <li class="border-b border-zinc-200 last:border-none first:pt-0 last:pb-0 py-1">
+                                        <li class="border-b border-zinc-200 dark:border-gray-600 last:border-none first:pt-0 last:pb-0 py-1">
                                             <A href="{{ route('home') }}" class="text-zinc-500 ">
                                                 {{ __('Polityka prywatności') }}
                                             </A>
@@ -155,7 +155,7 @@
             {{-- Prawy aside --}}
             <aside class="left-sidebar col-span-1 w-full md:w-auto hidden xl:block">
                 <x-card class="w-full mx-auto">
-                    <x-card.header class="border-b border-zinc-200 pb-1">
+                    <x-card.header class="border-b border-zinc-200 dark:border-gray-600 pb-1">
                         <h2 class="text-md text-gray-600 font-secondary">
                             Najwyżej oceniane artykuły
                         </h2>

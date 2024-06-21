@@ -31,8 +31,12 @@
     @apply border-b py-4 border-zinc-100 w-full grid grid-cols-2 v-large:grid-cols-3 last:border-none items-center dark:border-gray-700;
 }
 
+#post-content > h1 {
+    @apply text-3xl font-semibold font-secondary mt-8 mb-6 text-gray-600 dark:text-zinc-400;
+}
+
 #post-content > h2 {
-    @apply text-2xl font-semibold font-secondary mt-8 mb-6 text-gray-600;
+    @apply text-2xl font-semibold font-secondary mt-8 mb-6 text-gray-600 dark:text-zinc-400;
 }
 #post-content > h3 {
     @apply text-lg font-semibold font-secondary mt-6 mb-4;
@@ -43,9 +47,19 @@
 #post-content > ul {
     @apply list-disc my-5 px-4 lg:px-10;
 }
+
 #post-content > ul li {
     @apply mb-4 font-primary;
 }
+
+#post-content > ol {
+    @apply list-decimal my-5 px-4 lg:px-10;
+}
+
+#post-content > ol li {
+    @apply mb-4 font-primary;
+}
+
 #post-content > pre {
     @apply bg-gray-800 text-white p-5 overflow-x-auto rounded-lg my-5 font-secondary border border-gray-700
     max-h-96;
@@ -63,7 +77,7 @@
 }
 
 #post-content > blockquote {
-    @apply bg-gray-100 border-l-4 border-zinc-500 p-4 my-5 mx-auto block;
+    @apply bg-gray-100 dark:bg-zinc-600 rounded italic border-l-4 border-zinc-500 p-4 my-5 mx-auto block;
 }
 
 #post-content > blockquote.twitter-tweet {

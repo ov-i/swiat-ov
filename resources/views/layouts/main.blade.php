@@ -24,7 +24,7 @@
 
         <script defer src="https://unpkg.com/@alpinejs/ui@3.13.3-beta.4/dist/cdn.min.js"></script>
 
-        @if (app()->environment('production'))
+        @if (\App\Lib\SwiatOv\Features::hasAnalytics())
             <x-config.clarity-config />
             <x-config.ga-config />
         @endif
@@ -50,3 +50,31 @@
         @livewireScripts
     </body>
 </html>
+
+<script>
+    function isAuthenticated() {
+        return @js(auth()->check())
+    }
+
+    function addDataThemeAttr() {
+        const htmlTag = document.querySelector('html')
+        
+        htmlTag.setAttribute('data-theme', getTheme());
+    }
+
+    function getTheme() {
+        let userTheme = null;
+
+        if (localStorage.getItem('theme') !== null) {
+            userTheme = localStorage.getItem('theme')
+        } else if (isAuthenticated()) {
+            userTheme = @js(auth()->user()?->getTheme())
+        } else {
+            userTheme = 'light'
+        }
+
+        return userTheme
+    }
+
+    addDataThemeAttr(isAuthenticated());
+</script>

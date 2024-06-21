@@ -119,20 +119,21 @@ class PostRepository extends BaseRepository
     public function getPublishedPosts(): Builder
     {
         return $this->findWhere(params: function (Builder $query) {
-            $query
-                ->where(function () use (&$query) {
-                    $query
-                        ->where('status', PostStatus::Published)
-                        ->orWhere('status', PostStatus::Archived)
-                        ->orWhere('status', PostStatus::Closed);
-                })
-                ->where(function () use (&$query) {
-                    $query->where('type', PostType::Post)
-                        ->orWhere('type', PostType::Vip);
-                })
-                ->orderBy('published_at', 'desc');
+            $query->where(function ($query) {
+                $query->where('status', PostStatus::Published)
+                    ->orWhere('status', PostStatus::Archived)
+                    ->orWhere('status', PostStatus::Closed);
+            })
+            ->where(function ($query) {
+                $query->where('type', PostType::Post)
+                    ->orWhere('type', PostType::Vip);
+            })
+            ->where('type', '!=', PostType::Event)
+            ->whereNull('deleted_at')
+            ->orderBy('published_at', 'desc');
         });
     }
+
 
     /**
      * Binds current post status with it's timestamps / boolean values
@@ -142,6 +143,11 @@ class PostRepository extends BaseRepository
         switch($status) {
             case PostStatus::Published:
                 $post->published_at = now();
+                if ($post->isArchived()) {
+                    $post->archived = false;
+                    $post->archived_at = null;
+                }
+
                 break;
             case PostStatus::Archived:
                 $post->archived = true;

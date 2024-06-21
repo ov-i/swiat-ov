@@ -43,7 +43,7 @@
                 <section class="flex justify-between items-center border-b dark:border-gray-600 last:border-none py-4">
                     <section class="flex items-start py-2">
                         <article class="left-side pr-2">
-                            <img src="{{ $attachment->getPublicUrl() }}" alt="{{ __('Attachment image') }}" class="w-20 object-cover">
+                            <img src="{{ $attachment->getPublicUrl() }}" alt="{{ __('Attachment image') }}" class="w-20 object-cover h-12">
                         </article>
                         <article class="right-side">
                             <h2 class="text-sm md:text-md dark:text-zinc-200">

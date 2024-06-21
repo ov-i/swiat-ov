@@ -7,6 +7,4 @@ Livewire.on('app.theme-change', ([{ theme }]) => {
   html.setAttribute('data-theme', theme);
 
   localStorage.setItem('theme', theme);
-
-  // Livewire.dispatch('app.alert', 'theme changed');
 })
