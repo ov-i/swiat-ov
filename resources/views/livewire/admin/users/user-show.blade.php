@@ -10,6 +10,7 @@
             </x-slot>
 
             <x-slot name="actions">
+                <livewire:admin.users.user-lock :$user />
                 <x-user.index.row-dropdown :$user />
             </x-slot>
         </x-flex-content>

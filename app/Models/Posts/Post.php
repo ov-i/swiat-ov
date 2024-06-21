@@ -111,7 +111,7 @@ class Post extends Model implements Followable, Sluggable
         return $this->excerpt;
     }
 
-    public function isArchived(): bool
+    public function isArchived(): ?bool
     {
         return $this->archived;
     }

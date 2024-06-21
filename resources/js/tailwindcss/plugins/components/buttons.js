@@ -35,16 +35,17 @@ export const buttons = plugin(function ({ addComponents, theme }) {
       ...buttonStyles(theme),
 
       backgroundColor: theme('backgroundColor.transparent'),
-      color: theme('textColor.zinc.600'),
+      color: theme('textColor.zinc.500'),
       borderColor: theme('borderColor.cyan.500'),
       '&:hover': {
         backgroundColor: theme('backgroundColor.cyan.600'),
         borderColor: theme('borderColor.cyan.600'),
-        color: theme('textColor.zinc.300'),
+        color: theme('textColor.zinc.200'),
       },
       '&:active': {
         backgroundColor: theme('backgroundColor.cyan.700'),
         borderColor: theme('borderColor.inherit'),
+        color: theme('textColor.zinc.300'),
       },
       '&:disabled': {
         cursor: theme('cursor.not-allowed'),

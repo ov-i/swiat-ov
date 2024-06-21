@@ -1,22 +1,11 @@
 <div class="info-card__actions flex flex-row space-x-2 items-center py-6 text-sm">
     <div class="action-button">
-        <x-button>
-            <x-iconed-link
-                link="{{ route('admin.users.edit', ['user' => $user]) }}"
-                icon='person'
-                icon_size='md'>
-                {{ __('Edit user') }}
-            </x-iconed-link>
-        </x-button>
-    </div>
-    <div class="action-button">
         @if (!$user->isAdmin() && !$user->isBlocked())
             <x-button 
                 wire:click.throttle="lockUserConfirmation = true" 
+                class="flex items-center gap-2"
                 component="button-danger">
-                <x-material-icon>
-                    lock
-                </x-material-icon>
+                <x-icon.lock-closed class="!w-5" />
 
                 {{ __('Lock user') }}
             </x-button>
@@ -27,11 +16,10 @@
                 type="button"
                 wire:click="unlockUser"
                 component="button-info"
+                class="flex gap-2 items-center"
                 wire:loading.remove
                 wire:confirm="{{ __('Are you sure about unlocking this user?') }}">
-                <x-material-icon>
-                    lock_open
-                </x-material-icon>
+                <x-icon.lock-open class="!w-5" />
 
                 {{ __('Unlock user') }}
             </x-button>

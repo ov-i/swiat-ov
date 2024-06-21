@@ -13,4 +13,12 @@ trait Followable
     {
         return $this->morphToMany(User::class, 'followable', 'user_follows')->withTimestamps();
     }
+
+    public function isFollowed(User &$user): bool
+    {
+        return $this
+            ->followers()
+            ->where('user_id', $user->getKey())
+            ->exists();
+    }
 }
