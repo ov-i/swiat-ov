@@ -1,7 +1,5 @@
 <?php
 
-use App\Enums\PostStatus;
-use App\Models\Posts\Category as PostsCategory;
 use App\Models\Posts\Post;
 use App\Models\User;
 use App\Repositories\Eloquent\Posts\UserPostFollowRepository;
