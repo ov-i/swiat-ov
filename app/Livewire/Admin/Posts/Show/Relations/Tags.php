@@ -3,15 +3,18 @@
 namespace App\Livewire\Admin\Posts\Show\Relations;
 
 use App\Models\Posts\Post;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Modelable;
 use Livewire\Component;
 
 class Tags extends Component
 {
+    #[Modelable]
     public Post $post;
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.admin.posts.show.relations.tags');
     }

@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\AppThemeEnum;
+use App\Enums\AppTheme;
 use App\Livewire\ThemeSwitcher;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -11,7 +11,7 @@ use function Pest\Laravel\actingAs;
 
 uses(RefreshDatabase::class);
 
-test('app theme can be set to Light from Dark', function (User $user, AppThemeEnum $theme) {
+test('app theme can be set to Light from Dark', function (User $user, AppTheme $theme) {
     actingAs($user);
 
     $component = Livewire::test(ThemeSwitcher::class)
@@ -21,14 +21,14 @@ test('app theme can be set to Light from Dark', function (User $user, AppThemeEn
     $component->assertOk();
     $component->assertDispatched('app.theme-change');
 
-    if ($theme->value === AppThemeEnum::LIGHT) {
-        expect($user->getTheme())->toBe(AppThemeEnum::DARK->value);
+    if ($theme->value === AppTheme::Light) {
+        expect($user->getTheme())->toBe(AppTheme::Dark->value);
     }
 
-    if ($theme->value === AppThemeEnum::DARK) {
-        expect($user->getTheme())->toBe(AppThemeEnum::LIGHT->value);
+    if ($theme->value === AppTheme::Dark) {
+        expect($user->getTheme())->toBe(AppTheme::Light->value);
     }
-})->with('custom-user', [AppThemeEnum::LIGHT, AppThemeEnum::DARK]);
+})->with('custom-user', [AppTheme::Light, AppTheme::Dark]);
 
 test('unlogged user can toggle his theme', function () {
     $component = Livewire::test(ThemeSwitcher::class)

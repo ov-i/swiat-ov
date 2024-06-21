@@ -72,7 +72,7 @@ describe('Post Repository', function () {
         expect($post->fresh()->getStatus())->toBe(PostStatus::Archived);
         expect($post->fresh()->isPublished())->toBeFalse();
         expect($post->fresh()->isArchived())->toBeTrue();
-        expect($post->fresh()->getArchivedAt())->toBeInstanceOf(Date::class);
+        expect($post->fresh()->getArchivedAt())->toBeInstanceOf(DateTime::class);
     })->with('unpublished-post');
 
     it('should be able to set [scheduled] status', function () {
@@ -102,14 +102,17 @@ describe('Post Repository', function () {
         expect($post->fresh()->isClosed())->toBeTrue();
     })->with('unpublished-post');
 
-    test('isAnyEventPublished method returns true, if there is any published event', function () {
-        $post = Post::factory()->published(PostType::Event)->create();
+    test('isAnyEventPublished method returns true, if there is any published event', function (User $user) {
+        $post = Post::factory()
+            ->for(Category::factory())
+            ->for($user)
+            ->published(PostType::Event)
+            ->create();
 
-        $isPublished = $this->postRepository->isAnyEventPublished();
+        $isAnyEventPublished = $this->postRepository->isAnyEventPublished();
 
-        expect($post)->toBeInstanceOf(Post::class);
         expect($post->getStatus())->toBe(PostStatus::Published);
         expect($post->getType())->toBe(PostType::Event);
-        expect($isPublished)->toBeTrue();
-    });
+        expect($isAnyEventPublished)->toBeTrue();
+    })->with('custom-user');
 });
