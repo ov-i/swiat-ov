@@ -59,7 +59,8 @@ class Post extends Model implements Followable, Sluggable
     {
         return [
             'type' => PostType::class,
-            'status' => PostStatus::class
+            'status' => PostStatus::class,
+            'archived_at' => 'datetime:Y-m-d'
         ];
     }
 

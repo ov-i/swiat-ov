@@ -17,16 +17,16 @@ class Comment extends Model
     protected $fillable = [
         'user_id',
         'post_id',
-        'title',
         'content',
         'status'
     ];
 
     public function __toString(): string
     {
-        return str($this->title)->words(10)->toString();
+        return "Comment #{$this->getKey()}";
     }
 
+    /** @return array<string, class-string<\BackedEnum> */
     protected function casts(): array
     {
         return [
@@ -56,11 +56,6 @@ class Comment extends Model
     protected static function newFactory(): Factory
     {
         return CommentFactory::new();
-    }
-
-    public function getTitle(): string
-    {
-        return $this->title;
     }
 
     public function getContent(): string
