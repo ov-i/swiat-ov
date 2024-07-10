@@ -8,15 +8,16 @@ export const buttons = plugin(function ({ addComponents, theme }) {
   addComponents({
     '.button-info': {
       ...buttonStyles(theme),
-      backgroundColor: theme('backgroundColor.cyan.600'),
+      backgroundColor: theme('backgroundColor.cyan.700'),
       color: theme('textColor.white'),
       '&:hover': {
-        backgroundColor: theme('backgroundColor.cyan.500'),
+        backgroundColor: theme('backgroundColor.cyan.600'),
         borderColor: theme('borderColor.cyan.500'),
       },
       '&:active': {
-        backgroundColor: theme('backgroundColor.cyan.700'),
+        borderRadius: theme('borderRadius.3xl'),
         borderColor: theme('borderColor.inherit'),
+        transitionTimingFunction: theme('transitionTimingFunction.in-out'),
       },
       '&:disabled': {
         cursor: theme('cursor.not-allowed'),

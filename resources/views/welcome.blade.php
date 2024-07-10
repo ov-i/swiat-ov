@@ -6,7 +6,7 @@
 
 @section('meta')
     <meta name="description" content="Świat OV - platforma dla ludzi z pasją">
-    <mete name="keywords" content="Świat OV, pasja, hobby, nauka, kuchnia, medycyna, programowanie, cyberbezpieczeństwo">
+    <meta name="keywords" content="Świat OV, pasja, hobby, nauka, kuchnia, medycyna, programowanie, cyberbezpieczeństwo">
     <meta name="author" content="Bartosz Pazdur">
     <meta name="robots" content="index, follow">
     <meta name="revisit-after" content="7 days">

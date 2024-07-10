@@ -1,10 +1,8 @@
-<nav {{ $attributes->class(['w-full px-4 py-3 fixed top-0 z-10 bg-white shadow dark:bg-asideMenu dark:text-white']) }} {{ $attributes }}>
-    <section class="nav-wrapper flex items-center justify-between w-full">
+<nav id="top-navbar" {{ $attributes->class(['w-full fixed top-0 px-4 py-3 z-10 bg-white shadow dark:bg-asideMenu dark:text-white']) }} {{ $attributes }}>
+    <section class="nav-wrapper flex items-center justify-between w-full py-3">
         <section class="nav-brand flex items-center gap-2">
             <a href="{{ route('home') }}" class="flex">
                 <x-application-logo class="h-12 md:h-16 w-auto dark:fill-white" />
-
-                {{-- <img src="{{ asset('images/swiat-ov.svg') }}" class="block h-12 md:h-16 w-auto " alt="Swiat Ov Logo"> --}}
             </a>
             <div class="search-tool relative hidden md:block">
                 <x-icon.magnifying-glass class="absolute top-1/2 left-2 transform -translate-y-1/3" />
