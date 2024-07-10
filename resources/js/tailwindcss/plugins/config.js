@@ -12,7 +12,7 @@ export const buttonStyles = (theme) => ({
   padding: theme('padding.3'),
   transitionTimingFunction: theme('transitionTimingFunction.linear'),
   transitionDuration: theme('transitionDuration.DEFAULT'),
-  transitionProperty: theme('transitionProperty.colors'),
+  transitionProperty: theme('transitionProperty.all'),
   display: 'inline-flex',
   alignItems: 'center'
-})
+})  

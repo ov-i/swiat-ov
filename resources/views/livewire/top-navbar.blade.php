@@ -1,4 +1,4 @@
-<nav class="top-navbar sticky top-0" aria-label="Top navbar">
+<nav class="top-navbar sticky top-0" id="top-navbar" aria-label="Top navbar">
     <section class="top-navbar__search flex justify-between items-center">
         <article class="search-input flex items-center space-x-2">
             <x-icon.magnifying-glass />

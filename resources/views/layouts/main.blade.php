@@ -35,7 +35,7 @@
         <!-- Styles -->
         @livewireStyles
     </head>
-    <body class="font-primary antialiased bg-gray-200 h-screen dark:bg-gray-900">
+    <body class="font-primary antialiased bg-gray-200 max-h-screen dark:bg-gray-900">
         <!-- Google Tag Manager (noscript) -->
         <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NC3P4QHP"
         height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -43,8 +43,10 @@
 
         <x-navigation.top-navbar />
         
-        <div class="mt-[5.5rem]">
-            @yield('content')
+        <div>
+            <section class="mt-[6rem] md:mt-[7rem]">
+                @yield('content')
+            </section>
         </div>
 
         @livewireScripts
@@ -53,11 +55,11 @@
 
 <script>
     function isAuthenticated() {
-        return @js(auth()->check())
+        return @js(auth()->check());
     }
 
     function addDataThemeAttr() {
-        const htmlTag = document.querySelector('html')
+        const htmlTag = document.querySelector('html');
         
         htmlTag.setAttribute('data-theme', getTheme());
     }
@@ -66,14 +68,14 @@
         let userTheme = null;
 
         if (localStorage.getItem('theme') !== null) {
-            userTheme = localStorage.getItem('theme')
+            userTheme = localStorage.getItem('theme');
         } else if (isAuthenticated()) {
-            userTheme = @js(auth()->user()?->getTheme())
+            userTheme = @js(auth()->user()?->getTheme());
         } else {
-            userTheme = 'light'
+            userTheme = 'light';
         }
 
-        return userTheme
+        return userTheme;
     }
 
     addDataThemeAttr(isAuthenticated());

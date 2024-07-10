@@ -9,7 +9,7 @@
             <span>{{ auth()->user()->getName() }}</span>
 
             <template x-if="!menuOpen">
-                <x-icon.chevron-down class="w-4 h-4" />
+                <x-icon.chevron-down class="w-4 h-auto" />
             </template>
 
             <x-icon.chevron-up x-show="menuOpen" class="w-4 h-4" />
@@ -17,12 +17,17 @@
     </x-menu.button>
 
     <x-menu.items>
-        <p class="ml-2 my-2 text-gray-500 user-select-none pointer-events-none">Dashboard</p>
+        <x-menu.close>
+            <x-menu.link :link="route('dashboard')">
+                <x-icon.squares />
+                {{ __('Dashboard') }}
+            </x-menu.link>
+        </x-menu.close>
 
         <x-menu.close>
             <x-menu.link :link="route('profile.show')">
-                <x-icon.user />
-                {{ __('Profile') }}
+                <x-icon.cog-6-tooth />
+                {{ __('Ustawienia') }}
             </x-menu.link>
         </x-menu.close>
 
@@ -32,7 +37,7 @@
                     @csrf
                     <div class="w-full flex items-center">
                         <x-icon.arrow-left-start-on-rectangle class="mr-2" />
-                        {{ __('Logout') }}
+                        {{ __('Wyloguj się') }}
                     </div>
                 </x-menu.item>
             </form>
