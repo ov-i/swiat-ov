@@ -27,7 +27,6 @@
         "livewire/livewire": "^3.0",
         "meilisearch/meilisearch-php": "^1.6",
         "moneyphp/money": "^4.2",
-        "ov-i/wp-eloquent-models": "^1.0.0",
         "ramsey/uuid": "^4.7",
         "spatie/enum": "^3.13",
         "spatie/laravel-backup": "^8.3",
